@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>SmartBr - Live</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {{#each css}}
+    <link rel="stylesheet" href="/css/{{this}}">
+  {{/each}}
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">  
+  {{>_default/_aside_left}}
+  {{>_default/_navbar}}
+  <div class="content-wrapper">
+    <section class="content">
+        <div class="row">
+          <section class="col-lg-7 connectedSortable">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="content-header">
+                  <div class="container-fluid">
+                    <div class="row mb-2">
+                      <div class="col-sm-6">
+                        <h1 class="m-0 text-dark">Dashboard</h1>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {{{body}}}
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </div>
+  {{>_default/_direct_chat}}
+  {{>_default/_footer}}
+</div>
+{{#each jquery}}
+    <script src="/js/{{this}}"></script>
+{{/each}}
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+{{#each js}}
+    <script src="/js/{{this}}"></script>
+{{/each}}
+</body>
+</html>

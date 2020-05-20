@@ -1,0 +1,8 @@
+-a - Usar mecanismo de credenciais de longo prazo
+-o - Executa o processo do servidor como daemon
+-v - modo detalhado 'Moderado'.
+-n - nenhum arquivo de configuração
+--no-dtls - Não inicia ouvintes DTLS
+--no-tls - Não inicia ouvintes TLS
+-u - credenciais de usuário a serem usadas
+-r - região padrão a ser usada, necessidade da API TURN REST

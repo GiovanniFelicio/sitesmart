@@ -1,0 +1,29 @@
+{
+  "name": "liveNode",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.5",
+    "cryptr": "^6.0.2",
+    "express": "^4.17.1",
+    "express-handlebars": "^4.0.4",
+    "express-session": "^1.17.1",
+    "knex": "^0.21.1",
+    "moment": "^2.25.3",
+    "mysql": "^2.18.1",
+    "mysql2": "2.1.0",
+    "node-pre-gyp": "^0.14.0",
+    "nodetable": "^1.0.2",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0"
+  },
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
