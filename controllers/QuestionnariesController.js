@@ -6,8 +6,9 @@ const Moment = require('moment');
 module.exports = {
     async index(req, res, next){
         var questionnaries = await knex('sbr_qnr');
-        questionnaries.forEach(e => {
+        questionnaries.forEach(async e => {
             e.id = cryptr.encrypt(e.id);
+            e.id_sbr_users = await findUser(e.id_sbr_users);
             e.created_at = Moment(e.created_at).format('DD-MM-Y  H:m:ss');
         });
         return res.render('questionnaries/questionnaries',{
@@ -136,24 +137,24 @@ module.exports = {
         }
     }
 }
-async function findSub(id){
+async function findUser(id){
     try{
-        var findQuestion = await knex('sbr_groups_sub_qn').where('question', question);
-        if(findQuestion > 0){
-            return true;
+        var user = await knex('sbr_users').where('id', id).first();
+        if(user){
+            return user.name;
         }
         else{
-            return false;
+            return null;
         }
     }
     catch(error){
-        return true;
+        return mull;
     }
 }
 async function findQuestionnaries(name, id){
     try{
         var qnr = await knex('sbr_qnr').where('name', name).where('id_sbr_users', id);
-        if(qnr > 0){
+        if(qnr.length > 0){
             return false;
         }
         else{

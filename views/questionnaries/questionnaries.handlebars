@@ -17,10 +17,13 @@
                         {{#each questionnaries}}
                             <tr>
                                 <td>{{name}}</td>
-                                <td></td>
+                                <td>{{id_sbr_users}}</td>
                                 <td>{{created_at}}</td>
-                                <td></td>
-                                <td></td>
+                                <td>{{status}}</td>
+                                <td>
+                                    <a class="btn btn-success" title="Reply" href="/questionnaries/reply/{{id}}">Reply</a>
+                                    <button class="btn btn-danger del" data-id="{{id}}" title="Delete"><i class="fa fa-trash"></i></button>
+                                </td>
                             </tr>
                         {{/each}}
                     </tbody>

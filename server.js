@@ -54,7 +54,24 @@ app.use((req, res, next)=>{
 //catch all
 app.use((error, req, res, next)=>{
     res.status(error.status || 500);
-    res.json({error: error.message});
+    if(error.status == 404){
+        res.render('errors/404',{
+            layout: '',
+            style: ['styles/style.css'],
+        });
+    }
+    else if(error.status == 403){
+        res.render('errors/403',{
+            layout: '',
+            style: ['styles/style.css'],
+        });
+    }
+    else if(error.status == 500){
+        res.render('errors/500',{
+            layout: '',
+            style: ['styles/style.css'],
+        });
+    }
 });
 
 app.listen(3333, ()=>{
