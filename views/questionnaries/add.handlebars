@@ -16,51 +16,60 @@
     }
 </style>
 <div class="pd-20 bg-white border-radius-4 box-shadow mb-30">
-    <form>
+    <form method="POST" action="/questionnaries">
         <div class="form-group">
             <label for="inputAddress">Name:</label>
             <input type="text" class="form-control" name="name" id="name" placeholder="Ex: Example">
         </div>
+        <div class="form-group">
+          {{#each groups}}
+            <div class="panel panel-light">
+              <div class="panel-heading ">
+                <div class="row pd-10 align-items-center">
+                  <span onclick="clickGroup({{id}})" id="group{{id}}" class="pull-right clickable mr-4"><i class="fa fa-plus"></i></span>
+                  <div class="custom-control custom-checkbox">
+                      <input name="groupCheck[]" type="checkbox" class="custom-control-input" id="groupCheck{{id}}" onchange="checkAll({{id}})" onchange="this.value = this.checked ? {{id}} : 0;">
+                      <label class="custom-control-label" for="groupCheck{{id}}"></label>
+                  </div>
+                  <label for="groupCheck{{id}}">{{name}}</label>
+                </div>
+              </div>
+              <div class="panel-body">
+                {{#each subgroups}}
+                  <div class="panel panel-light sub">
+                    <div class="panel-heading panel-collapsed">
+                      <div class="row pd-10 align-items-center">
+                        <div class="clickable">
+                          <span onclick="clickSubGroup({{id}})" id="subgroup{{id}}" class="pull-right mr-4"><i class="fa fa-minus"></i></span>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input name="subgroupCheck[]" type="checkbox" class="custom-control-input subgroupCheck{{../id}}" id="subgroupCheck{{id}}" onclick="uncheck({{../id}})" onchange="this.value = this.checked ? {{id}} : 0;">
+                            <label class="custom-control-label" for="subgroupCheck{{id}}"></label>
+                        </div>
+                        <label for="subgroupCheck{{id}}">{{name}}</label>
+                      </div>
+                    </div>
+                    <div class="panel-body ml-4">
+                      <div class="row ml-4 ">
+                        {{#each questions}}
+                          <div class="custom-control custom-checkbox mb-4">
+                              {{@index}}) {{question}}
+                          </div>
+                        {{/each}}
+                      </div>
+                      
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+          {{/each}}
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-info">Generate</button>
+        </div>
     </form>
 </div>
-
-{{#each groups}}
-  <div class="panel panel-light">
-    <div class="panel-heading ">
-      <div class="row pd-10 align-items-center">
-        <span onclick="clickGroup({{id}})" id="group{{id}}" class="pull-right clickable mr-4"><i class="fa fa-plus"></i></span>
-        <div class="custom-control custom-checkbox">
-            <input name="groupCheck{{id}}" type="checkbox" class="custom-control-input" id="groupCheck{{id}}" onchange="this.value = this.checked ? 1 : 0;">
-            <label class="custom-control-label" for="groupCheck{{id}}"></label>
-        </div>
-        {{name}}
-      </div>
-    </div>
-    <div class="panel-body">
-      {{#each subgroups}}
-        <div class="panel panel-light sub">
-          <div class="panel-heading panel-collapsed">
-            <div class="row pd-10 align-items-center">
-              <div class="clickable">
-                <span onclick="clickSubGroup({{id}})" id="subgroup{{id}}" class="pull-right mr-4"><i class="fa fa-minus"></i></span>
-              </div>
-              <div class="custom-control custom-checkbox">
-                  <input name="subgroupCheck{{id}}" type="checkbox" class="custom-control-input" id="subgroupCheck{{id}}" onchange="this.value = this.checked ? 1 : 0;">
-                  <label class="custom-control-label" for="subgroupCheck{{id}}"></label>
-              </div>
-              {{name}}
-            </div>
-          </div>
-          <div class="panel-body">
-            {{#each questions}}
-              {{question}}
-            {{/each}}
-          </div>
-        </div>
-      {{/each}}
-    </div>
-  </div>
-{{/each}}
 
 <script>
   function clickGroup(i){
@@ -88,32 +97,34 @@
         $this.find('i').removeClass('fa fa-plus').addClass('fa fa-minus');
       }
   }
-  /*$(document).on('click', '.panel-heading span.clickable', function(e) {
-  var $this = $(this);
-  //console.log($this);
-  if (!$this.hasClass('panel-collapsed')) {
-    $this.closest('.panel').find('.panel-body').slideUp();
-    $this.addClass('panel-collapsed');
-    $this.find('i').removeClass('fa fa-minus').addClass('fa fa-plus');
-  } else {
-    $this.closest('.panel').find('.panel-body').slideDown();
-    $this.removeClass('panel-collapsed');
-    $this.find('i').removeClass('fa fa-plus').addClass('fa fa-minus');
-  }
-});
-$(document).on('click', '.sub div.clickable', function(e) {
-  var $this = $(this);
-  if (!$this.hasClass('panel-collapsed')) {
-    $this.closest('.sub').find('.panel-body').slideUp();
-    $this.addClass('panel-collapsed');
-    $this.find('i').removeClass('fa fa-minus').addClass('fa fa-plus');
-  } else {
-    $this.closest('.sub').find('.panel-body').slideDown();
-    $this.removeClass('panel-collapsed');
-    $this.find('i').removeClass('fa fa-plus').addClass('fa fa-minus');
-  }
-});*/
 $(document).ready(function() {
   $('.panel-heading span.clickable').click();
 });
+  function checkAll(id){
+    if($("#groupCheck"+id).is(':checked')){
+      $(".subgroupCheck"+id).each(function(){
+        this.checked=id;
+      })              
+    }else{
+      $(".subgroupCheck"+id).each(function(){
+        this.checked=0;
+      })              
+    }
+  }
+function uncheck(id){
+  if ($('.subgroupCheck'+id).is(":checked")){
+    var isAllChecked = 0;
+    $(".subgroupCheck"+id).each(function(){
+      if(!$('.subgroupCheck'+id).is(":checked")){
+          isAllChecked = 1;
+      }
+    })        
+    console.log(isAllChecked);      
+    if(isAllChecked == 0){ $("#groupCheck"+id).prop("checked", 0);}
+  }
+  else {
+    console.log("ola");
+    $("#groupCheck"+id).prop("checked", 0);
+  }
+}
 </script>
