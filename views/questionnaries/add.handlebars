@@ -28,7 +28,7 @@
                 <div class="row pd-10 align-items-center">
                   <span onclick="clickGroup({{id}})" id="group{{id}}" class="pull-right clickable mr-4"><i class="fa fa-plus"></i></span>
                   <div class="custom-control custom-checkbox">
-                      <input name="groupCheck[]" type="checkbox" class="custom-control-input" id="groupCheck{{id}}" onchange="checkAll({{id}})" onchange="this.value = this.checked ? {{id}} : 0;">
+                      <input name="groupCheck[]" type="checkbox" class="custom-control-input" id="groupCheck{{id}}" onchange="checkAll({{id}})">
                       <label class="custom-control-label" for="groupCheck{{id}}"></label>
                   </div>
                   <label for="groupCheck{{id}}">{{name}}</label>
@@ -43,7 +43,7 @@
                           <span onclick="clickSubGroup({{id}})" id="subgroup{{id}}" class="pull-right mr-4"><i class="fa fa-minus"></i></span>
                         </div>
                         <div class="custom-control custom-checkbox">
-                            <input name="subgroupCheck[]" type="checkbox" class="custom-control-input subgroupCheck{{../id}}" id="subgroupCheck{{id}}" onclick="uncheck({{../id}})" onchange="this.value = this.checked ? {{id}} : 0;">
+                            <input name="subgroupCheck[]" type="checkbox" class="custom-control-input subgroupCheck{{../id}}" id="subgroupCheck{{id}}" onclick="uncheck({{../id}})" data-id="{{id}}">
                             <label class="custom-control-label" for="subgroupCheck{{id}}"></label>
                         </div>
                         <label for="subgroupCheck{{id}}">{{name}}</label>
@@ -57,7 +57,6 @@
                           </div>
                         {{/each}}
                       </div>
-                      
                     </div>
                   </div>
                 {{/each}}
@@ -97,17 +96,20 @@
         $this.find('i').removeClass('fa fa-plus').addClass('fa fa-minus');
       }
   }
-$(document).ready(function() {
-  $('.panel-heading span.clickable').click();
-});
+  $(document).ready(function() {
+    $('.panel-heading span.clickable').click();
+  });
   function checkAll(id){
     if($("#groupCheck"+id).is(':checked')){
+      $("#groupCheck"+id).val(id);
       $(".subgroupCheck"+id).each(function(){
-        this.checked=id;
+        this.checked=true;
+        this.value = $(this).attr('data-id');
+
       })              
     }else{
       $(".subgroupCheck"+id).each(function(){
-        this.checked=0;
+        this.checked=false;
       })              
     }
   }
@@ -119,11 +121,9 @@ function uncheck(id){
           isAllChecked = 1;
       }
     })        
-    console.log(isAllChecked);      
     if(isAllChecked == 0){ $("#groupCheck"+id).prop("checked", 0);}
   }
   else {
-    console.log("ola");
     $("#groupCheck"+id).prop("checked", 0);
   }
 }

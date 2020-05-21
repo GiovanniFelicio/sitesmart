@@ -5,7 +5,11 @@ const Moment = require('moment');
 
 module.exports = {
     async index(req, res, next){
-        
+        var questionnaries = await knex('sbr_qnr');
+        questionnaries.forEach(e => {
+            e.id = cryptr.encrypt(e.id);
+            e.created_at = Moment(e.created_at).format('DD-MM-Y  H:m:ss');
+        });
         return res.render('questionnaries/questionnaries',{
             layout: 'default',
             style: ['styles/style.css'],
@@ -18,7 +22,8 @@ module.exports = {
                 'jquery.datatable.min.js',
                 'dataTables.bootstrap4.min.js',
                 'select2.min.js'],
-            vendors: ['scripts/script.js']
+            vendors: ['scripts/script.js'],
+            questionnaries: questionnaries
         });
     },
     async add(req, res, next){
@@ -45,29 +50,40 @@ module.exports = {
     async create(req, res, next){
         var errors = [];
         var error_msg = '';
-        res.send(req.body);
-        /*if( !req.body.name || typeof req.body.name  == undefined || req.body.name  == null){
+        if( !req.body.name || typeof req.body.name == undefined || req.body.name  == null){
             errors.push('Invalid Name');
         }
+        if(await findQuestionnaries(req.body.name, 1) == false){
+            req.flash('error_msg', 'The Questionnaries already exist');
+            res.redirect(req.header('Referer') || '/');
+        }
+        var subgroupsId = [];
         if(req.body.groupCheck || typeof req.body.groupCheck  != undefined || req.body.groupCheck  != null){
             var groups = await knex('sbr_groups').whereIn('id', req.body.groupCheck);
-            var subgroupsId = [];
             for(let i = 0; i < groups.length; i++){
                 subgroupsId.push(await findSubGroupId(groups[i].id));
             }
-            res.send(subgroupsId);
         }
-        //res.send(subgroupsId);
-        if(req.body.subgroupCheck || typeof req.body.subgroupCheck  != undefined || req.body.subgroupCheck  != null){
-            var subgroups = await knex('sbr_groups_sub').whereIn('id', req.body.subgroupCheck).whereNotIn('id', subgroupsId);
-            //res.send(subgroups);
-            var subgroups = [];
-            for(let i = 0; i < groups.length; i++){
-                subgroups[i] = await findSubGroup(groups[i].id);
+        var subgroups = [];
+        if(req.body.subgroupCheck || typeof req.body.subgroupCheck  != undefined || req.body.subgroupCheck  != null){   
+            if(subgroupsId.length > 0){
+                for (let i = 0; i < subgroupsId.length; i++) {
+                    subgroups.push(await knex('sbr_groups_sub').whereNotIn('id', req.body.subgroupCheck).pluck('id'));
+                }
             }
-            //res.send(subgroups);
         }
-        /*
+        var groupCheck;
+        var subgroupCheck;
+        try {
+            if(req.body.groupCheck.length > 0){
+                groupCheck = req.body.groupCheck.join(',');
+            }
+            if(subgroups.length > 0 ){
+                subgroupCheck = subgroups.join(',');
+            }
+        } catch (error) {
+            //
+        }
         if(errors.length > 0){
             errors.forEach(e => {
                 error_msg += e + ', ';
@@ -77,20 +93,28 @@ module.exports = {
         }
         else{
             try{
-                await knex('sbr_groups_sub_qn').insert({
-                    id_sbr_groups_sub: cryptr.decrypt(reference),
-                    question: question,
-                    type: type,
-                    model: model || null,
-                    value: value || null
-                });
+                if(await findQuestionnaries(req.body.name, 1)){
+                    var insertQnr = await knex('sbr_qnr').insert({
+                        name: req.body.name,
+                        id_sbr_users: 1
+                    });
+                    var insertQnrQn = await knex('sbr_groups_sub_qn_qnr').insert({
+                        id_sbr_groups: groupCheck || null,
+                        id_sbr_groups_sub: subgroupCheck || null,
+                        id_sbr_qnr: insertQnr
+                    });
+                    req.flash('success_msg', 'Added Questionnarie');
+                    res.redirect('/questionnaries');
+                }
+                else{
+                    req.flash('error', 'Error when adding');
+                    res.redirect(req.header('Referer') || '/');
+                }
             }
             catch(error){
                 next(error);
             }
-            req.flash('success_msg', 'Added Question');
-            res.redirect(req.header('Referer') || '/');
-        }*/
+        }
     },
     async delete(req,res,next){
         var idEncrypt = req.params.id;
@@ -112,7 +136,7 @@ module.exports = {
         }
     }
 }
-async function findQuestion(question){
+async function findSub(id){
     try{
         var findQuestion = await knex('sbr_groups_sub_qn').where('question', question);
         if(findQuestion > 0){
@@ -126,18 +150,18 @@ async function findQuestion(question){
         return true;
     }
 }
-async function findModel(type, model){
+async function findQuestionnaries(name, id){
     try{
-        var model = await knex('sbr_groups_sub_qn_models').where('type', type).where('model', model);
-        if(model > 0){
-            return true;
+        var qnr = await knex('sbr_qnr').where('name', name).where('id_sbr_users', id);
+        if(qnr > 0){
+            return false;
         }
         else{
-            return false;
+            return true;
         }
     }
     catch(error){
-        return true;
+        return false;
     }
 }
 async function findSubGroup(id){
@@ -148,5 +172,5 @@ async function findSubGroup(id){
     return subgroups;
 }
 async function findSubGroupId(id){
-    return await knex.select('id').from('sbr_groups_sub').where('id_sbr_groups', id);
+    return await knex('sbr_groups_sub').where('id_sbr_groups', id).pluck('id');
 }
