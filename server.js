@@ -5,6 +5,7 @@ const homeRoutes = require('./routes/home');
 const groupsRoutes = require('./routes/groups');
 const subgroupsRoutes = require('./routes/subgroups');
 const questionsRoutes = require('./routes/questions');
+const questionnariesRoutes = require('./routes/questionnaries');
 
 const app = express();
 const expressHandle = require('express-handlebars');
@@ -41,7 +42,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json());
 
-app.use([authRoutes, homeRoutes, groupsRoutes, subgroupsRoutes, questionsRoutes]);
+app.use([authRoutes, homeRoutes, groupsRoutes, subgroupsRoutes, questionsRoutes, questionnariesRoutes]);
 
 //Not  Found
 app.use((req, res, next)=>{

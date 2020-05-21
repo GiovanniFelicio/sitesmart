@@ -1,0 +1,37 @@
+<div class="container">
+    <div class="row">
+        <div class="col mt-5">
+            <a class="btn btn-info float-right" href="/questionnaries/add"><i class="fa fa-plus mr-2"></i>ADD QUESTIONNARIE</a>
+            <div class="table-responsive mt-5">
+                <table id="questionnaries" class="table table-bordered questionnaries text-center" style="width: 100%;">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Create By</th>
+                        <th>Added In</th>
+                        <th>Status</th>
+                        <th>Options</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {{#each questionnaries}}
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var table = $('#questionnaries').DataTable({
+        "scrollY": "500px",
+        "scrollCollapse": true
+    });
+</script>
