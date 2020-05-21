@@ -1,0 +1,140 @@
+<div class="container">
+    <div class="row">
+        <div class="col mt-5">
+            <button class="btn btn-info float-right" data-toggle="modal" data-target="#addQuestion"><i class="fa fa-plus mr-2"></i>ADD QUESTION</button>
+            <div class="table-responsive mt-5">
+                <table id="questions" class="table table-bordered questions text-center" style="width: 100%;">
+                    <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Question</th>
+                        <th>Type</th>
+                        <th>Model</th>
+                        <th>Value</th>
+                        <th>Added In</th>
+                        <th>Options</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {{#each questions}}
+                            <tr>
+                                <td>{{number}}</td>
+                                <td>{{question}}</td>
+                                <td>{{type}}</td>
+                                <td>{{model}}</td>
+                                <td>{{value}}</td>
+                                <td>{{created_at}}</td>
+                                <td>
+                                    <button class="btn btn-danger del" data-id="{{id}}" title="Delete"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addQuestion" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> ADD QUESTION </h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>X</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="/groups/sub/questions" id="createQuestion">
+                    <input hidden name="reference" value="{{reference}}">
+                    <div class="form-group">
+                        <label>Question:</label>
+                        <textarea name="question" id="question" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Type Question:</label>
+                        <select name="type" id="type" class="form-control">
+                            <option selected disabled>Select the type question</option>
+                            <option value="1">Open Question</option>
+                            <option value="2">Closed Question</option>
+                        </select>
+                    </div>
+                    <div id="divModel" class="form-group">
+                        <div id="type1" hidden>
+                            <label for="model" class="col-form-label">Question Model</label>
+                            <select disabled name="model" id="model" class="form-control">
+                                <option selected disabled>Select the Model</option>
+                                {{#each models}}
+                                    <option value="{{id}}">{{model}}</option>
+                                {{/each}}
+                                <option value="0">Another Model</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="divModelAnother" class="form-group" hidden>
+                        <label for="anotherModel" class="col-form-label">Question Model</label>
+                        <div class="input-group">
+                            <select multiple name="anotherModel[]" id="anotherModel" style="width: 100%" disabled></select>
+                        </div>
+                        <label for="modelValue" class="col-form-label">Model Value</label>
+                        <div class="input-group">
+                            <select multiple name="value[]" id="modelValue" style="width: 100%" disabled></select>
+                        </div>
+                        <br>
+                        <div class="custom-control custom-checkbox">
+                            <input disabled name="checkToSave" type="checkbox" class="custom-control-input" id="checkToSave" onchange="this.value = this.checked ? 1 : 0;">
+                            <label class="custom-control-label" for="checkToSave">Save model</label>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">ADD</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#questions').DataTable({
+        "scrollY": "1000px",
+        "scrollCollapse": true
+    });
+    $('#anotherModel').select2({
+        tags: true,
+        tokenSeparators: ['#'],
+        placeholder: "Add model here",
+        selectOnClose: true,
+        closeOnSelect: false
+    });
+    $('#modelValue').select2({
+        tags: true,
+        tokenSeparators: ['#'],
+        placeholder: "Add values here",
+        selectOnClose: true,
+        closeOnSelect: false
+    });
+    $('#type').on('change', function(){
+        let value = $('#type').val();
+        if(value == 1){
+            $('#type1').prop('hidden', true);$("#model").prop('disabled', true);
+            $('#divModelAnother').prop('hidden', true);$('#anotherModel').prop('disabled', true);
+            $('#checkToSave').prop('disabled', true);$('#modelValue').prop('disabled', true);
+        }
+        else if(value == 2){
+            $('#type1').prop('hidden', false);$("#model").prop('disabled', false);
+            $('#divModelAnother').prop('hidden', true);$('#anotherModel').prop('disabled', true);
+            $('#checkToSave').prop('disabled', true);$('#modelValue').prop('disabled', true);
+        }
+    });
+    $('#model').on('change', function(){
+        let value = $(this).val();
+        if(value == 0){
+            $('#divModelAnother').prop('hidden', false);$('#anotherModel').prop('disabled', false);
+            $('#checkToSave').prop('disabled', false);$('#modelValue').prop('disabled', false);
+        }
+        else{
+            $('#divModelAnother').prop('hidden', true);$('#anotherModel').prop('disabled', true);
+            $('#checkToSave').prop('disabled', true);$('#modelValue').prop('disabled', true);
+        }
+    });
+</script>

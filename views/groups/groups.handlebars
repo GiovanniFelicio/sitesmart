@@ -1,0 +1,59 @@
+<div class="container">
+    <div class="row">
+        <div class="col mt-5">
+            <button class="btn btn-info float-right" data-toggle="modal" data-target="#addGroup"><i class="fa fa-plus mr-2"></i>ADD GROUP</button>
+            <div class="table-responsive mt-5">
+                <table id="groups" class="table table-bordered groups text-center" style="width: 100%;">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Added In</th>
+                        <th>Options</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {{#each groups}}
+                            <tr>
+                                <td>{{name}}</td>
+                                <td>{{created_at}}</td>
+                                <td>
+                                    <a class="btn btn-success" href="/groups/sub/{{id}}" title="View"><i class="fa fa-eye"></i></a>
+                                    <button class="btn btn-danger del" data-id="{{id}}" title="Delete"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addGroup" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> ADD </h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>X</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="/groups" id="createGroup">
+                    <div class="form-group">
+                        <label>Name Sector</label>
+                        <input class="form-control" id="name" type="text" name="name" placeholder="Ex: Comercial" autofocus>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">ADD</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#groups').DataTable({
+        "scrollY": "500px",
+        "scrollCollapse": true
+    });
+</script>

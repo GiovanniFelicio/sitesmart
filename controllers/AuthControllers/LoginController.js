@@ -10,11 +10,11 @@ module.exports = {
         res.clearCookie("success", { httpOnly: true });
         return res.render('auth/login',{
             layout: '',
-            css: ['bootstrap/bootstrap.css',
+            css: ['bootstrap.css',
                 'all.min.css',
                 'myLogin.css'],
-            js: ['jquery/jquery.min.js', 
-                'bootstrap/bootstrap.js'],
+            js: ['jquery.min.js', 
+                'bootstrap.js'],
             errors: errors,
             success: success
         });

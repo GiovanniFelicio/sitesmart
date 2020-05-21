@@ -4,6 +4,6 @@ const {isAuth} = require('../helpers/middlewares');
 
 const HomeController = require('../controllers/HomeController');
 
-routes.get('/', isAuth, HomeController.index);
+routes.get('/', HomeController.index);
 
 module.exports = routes;

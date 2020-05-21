@@ -1,10 +1,10 @@
 const express = require('express');
 /*ROTAS*/
 const authRoutes = require('./routes/auth');
-const coursesRoutes = require('./routes/courses');
 const homeRoutes = require('./routes/home');
-const testRoutes = require('./routes/tests');
-const usersRoutes = require('./routes/users');
+const groupsRoutes = require('./routes/groups');
+const subgroupsRoutes = require('./routes/subgroups');
+const questionsRoutes = require('./routes/questions');
 
 const app = express();
 const expressHandle = require('express-handlebars');
@@ -41,7 +41,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json());
 
-app.use([authRoutes, coursesRoutes, homeRoutes, usersRoutes, testRoutes]);
+app.use([authRoutes, homeRoutes, groupsRoutes, subgroupsRoutes, questionsRoutes]);
 
 //Not  Found
 app.use((req, res, next)=>{

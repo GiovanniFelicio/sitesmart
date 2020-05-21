@@ -2,8 +2,8 @@ const LocalStrategy = require('passport-local').Strategy;
 const knex = require('../database');
 
 module.exports= (passport)=>{
-    passport.use(new LocalStrategy({usernameField: 'cpf', passwordField: 'password'}, (cpf, password, done)=>{
-        knex('users').where('cpf', cpf).first()
+    passport.use(new LocalStrategy({usernameField: 'username', passwordField: 'password'}, (username, password, done)=>{
+        knex('sbr_users').where('username', username).first()
             .then((user)=>{
                 if(!user){
                     return done(null, false, {message: 'This account does not exist'});
@@ -24,7 +24,7 @@ module.exports= (passport)=>{
     });
 
     passport.deserializeUser((id, done) => {
-        knex('users').where({id}).first()
+        knex('sbr_users').where({id}).first()
         .then((user) => { 
             done(null, user); 
         })
