@@ -1,63 +1,119 @@
+<style>
+  #more-button{border-style:none;background:none;font:16px Serif;color:blue;}
 
+  #grow input:checked{color:red;}
+
+  #more-button:hover{color:black;}
+
+  .grow {
+      -moz-transition: height .5s;
+      -ms-transition: height .5s;
+      -o-transition: height .5s;
+      -webkit-transition: height .5s;
+      transition: height .5s;
+      height: 0;
+      overflow: hidden;
+    }
+</style>
 <div class="pd-20 bg-white border-radius-4 box-shadow mb-30">
     <form>
         <div class="form-group">
             <label for="inputAddress">Name:</label>
             <input type="text" class="form-control" name="name" id="name" placeholder="Ex: Example">
         </div>
-        <button type="submit" class="btn btn-primary">Sign in</button>
     </form>
 </div>
 
-
-<style>
-.collapsible {
-  background-color: #777;
-  color: white;
-  cursor: pointer;
-  padding: 18px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
-  font-size: 15px;
-}
-
-.active, .collapsible:hover {
-  background-color: #555;
-}
-
-.content {
-  padding: 0 18px;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.2s ease-out;
-  background-color: #f1f1f1;
-}
-</style>
-
-<div class="collapsible">
-    <button class="collapsibleButton"><i class="fa fa-plus"></i></button>
-</div>
-<div class="content">
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-</div>
-
+{{#each groups}}
+  <div class="panel panel-light">
+    <div class="panel-heading ">
+      <div class="row pd-10 align-items-center">
+        <span onclick="clickGroup({{id}})" id="group{{id}}" class="pull-right clickable mr-4"><i class="fa fa-plus"></i></span>
+        <div class="custom-control custom-checkbox">
+            <input name="groupCheck{{id}}" type="checkbox" class="custom-control-input" id="groupCheck{{id}}" onchange="this.value = this.checked ? 1 : 0;">
+            <label class="custom-control-label" for="groupCheck{{id}}"></label>
+        </div>
+        {{name}}
+      </div>
+    </div>
+    <div class="panel-body">
+      {{#each subgroups}}
+        <div class="panel panel-light sub">
+          <div class="panel-heading panel-collapsed">
+            <div class="row pd-10 align-items-center">
+              <div class="clickable">
+                <span onclick="clickSubGroup({{id}})" id="subgroup{{id}}" class="pull-right mr-4"><i class="fa fa-minus"></i></span>
+              </div>
+              <div class="custom-control custom-checkbox">
+                  <input name="subgroupCheck{{id}}" type="checkbox" class="custom-control-input" id="subgroupCheck{{id}}" onchange="this.value = this.checked ? 1 : 0;">
+                  <label class="custom-control-label" for="subgroupCheck{{id}}"></label>
+              </div>
+              {{name}}
+            </div>
+          </div>
+          <div class="panel-body">
+            {{#each questions}}
+              {{question}}
+            {{/each}}
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+{{/each}}
 
 <script>
-var coll = document.getElementsByClassName("collapsibleButton");
-var i;
+  function clickGroup(i){
+      var $this = $('#group'+i);
+      if (!$this.hasClass('panel-collapsed')) {
+        $this.closest('.panel').find('.panel-body').slideUp();
+        $this.addClass('panel-collapsed');
+        $this.find('i').removeClass('fa fa-minus').addClass('fa fa-plus');
 
-for (i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var content = this.nextElementSibling;
-    if (content.style.maxHeight){
-      content.style.maxHeight = null;
-    } else {
-      content.style.maxHeight = content.scrollHeight + "px";
-    } 
-  });
-}
+      } else {
+        $this.closest('.panel').find('.panel-body').slideDown();
+        $this.removeClass('panel-collapsed');
+        $this.find('i').removeClass('fa fa-plus').addClass('fa fa-minus');
+      }
+  }
+  function clickSubGroup(i){
+      var $this = $('#subgroup'+i);
+      if (!$this.hasClass('panel-collapsed')) {
+        $this.closest('.sub').find('.panel-body').slideUp();
+        $this.addClass('panel-collapsed');
+        $this.find('i').removeClass('fa fa-minus').addClass('fa fa-plus');
+      } else {
+        $this.closest('.sub').find('.panel-body').slideDown();
+        $this.removeClass('panel-collapsed');
+        $this.find('i').removeClass('fa fa-plus').addClass('fa fa-minus');
+      }
+  }
+  /*$(document).on('click', '.panel-heading span.clickable', function(e) {
+  var $this = $(this);
+  //console.log($this);
+  if (!$this.hasClass('panel-collapsed')) {
+    $this.closest('.panel').find('.panel-body').slideUp();
+    $this.addClass('panel-collapsed');
+    $this.find('i').removeClass('fa fa-minus').addClass('fa fa-plus');
+  } else {
+    $this.closest('.panel').find('.panel-body').slideDown();
+    $this.removeClass('panel-collapsed');
+    $this.find('i').removeClass('fa fa-plus').addClass('fa fa-minus');
+  }
+});
+$(document).on('click', '.sub div.clickable', function(e) {
+  var $this = $(this);
+  if (!$this.hasClass('panel-collapsed')) {
+    $this.closest('.sub').find('.panel-body').slideUp();
+    $this.addClass('panel-collapsed');
+    $this.find('i').removeClass('fa fa-minus').addClass('fa fa-plus');
+  } else {
+    $this.closest('.sub').find('.panel-body').slideDown();
+    $this.removeClass('panel-collapsed');
+    $this.find('i').removeClass('fa fa-plus').addClass('fa fa-minus');
+  }
+});*/
+$(document).ready(function() {
+  $('.panel-heading span.clickable').click();
+});
 </script>
-

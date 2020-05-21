@@ -5,6 +5,7 @@ const Moment = require('moment');
 
 module.exports = {
     async index(req, res, next){
+        
         return res.render('questionnaries/questionnaries',{
             layout: 'default',
             style: ['styles/style.css'],
@@ -21,10 +22,15 @@ module.exports = {
         });
     },
     async add(req, res, next){
+        var groups = await knex('sbr_groups');
+        for(let i = 0; i<groups.length; i++){
+            groups[i].subgroups = await findSubGroup(groups[i].id);
+            console.log(groups[i]);
+        }
         return res.render('questionnaries/add',{
             layout: 'default',
             style: ['styles/style.css'],
-            css: ['dataTables.bootstrap4.min.css'],
+            css: ['dataTables.bootstrap4.min.css', 'bootstrap.min.css'],
             jquery: ['jquery.min.js'],
             src: ['plugins/highcharts-6.0.7/code/highcharts.js',
                 'plugins/highcharts-6.0.7/code/highcharts-more.js'],
@@ -33,7 +39,8 @@ module.exports = {
                 'jquery.datatable.min.js',
                 'dataTables.bootstrap4.min.js',
                 'select2.min.js'],
-            vendors: ['scripts/script.js']
+            vendors: ['scripts/script.js'],
+            groups: groups
         });
     },
     async create(req, res, next){
@@ -168,10 +175,15 @@ async function findModel(type, model){
         return true;
     }
 }
-async function insertModel(type, model, value){
-    var model = await knex('sbr_groups_sub_qn_models').insert({
-        type: type,
-        model: model,
-        value, value
-    });
+async function findSubGroup(id){
+    var subgroups = await knex('sbr_groups_sub').where('id_sbr_groups', id);
+    console.log('subgroups',subgroups);
+    for (let i = 0; i < subgroups.length; i++) {
+        subgroups[i].questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', subgroups[i].id);;
+    }
+    console.log('subgroups',subgroups);
+    return subgroups;
+}
+async function findSubGroupQuestions(id){
+    return await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', id);
 }
