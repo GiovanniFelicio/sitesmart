@@ -43,7 +43,7 @@
                           <span onclick="clickSubGroup({{id}})" id="subgroup{{id}}" class="pull-right mr-4"><i class="fa fa-minus"></i></span>
                         </div>
                         <div class="custom-control custom-checkbox">
-                            <input name="subgroupCheck[]" type="checkbox" class="custom-control-input subgroupCheck{{../id}}" id="subgroupCheck{{id}}" onclick="uncheck({{../id}})" data-id="{{id}}">
+                            <input name="subgroupCheck[]" type="checkbox" class="custom-control-input subgroupCheck{{../id}}" id="subgroupCheck{{id}}" value="" onchange="this.value =  this.checked ? {{id}} : 0" onclick="uncheck({{../id}})" data-id="{{id}}">
                             <label class="custom-control-label" for="subgroupCheck{{id}}"></label>
                         </div>
                         <label for="subgroupCheck{{id}}">{{name}}</label>
@@ -53,7 +53,7 @@
                       <div class="row ml-4 ">
                         {{#each questions}}
                           <div class="custom-control custom-checkbox mb-4">
-                              {{@index1}}) {{question}}
+                              {{@index}}) {{question}}
                           </div>
                         {{/each}}
                       </div>

@@ -17,12 +17,12 @@ module.exports = {
             e.id = cryptr.encrypt(e.id);
             e.created_at = Moment(e.created_at).format('DD-MM-Y  H:m:ss');
         });
-        try {
-            var models = await knex('sbr_groups_sub_qn_models');
-        } catch (error) {
-            req.flash('error_msg', 'Internal Error');
-            res.redirect(req.header('Referer') || '/');
+        var models = [];
+        var modelsAgroup = await knex.select('agroup').from('sbr_groups_sub_qn_models').groupBy('agroup');
+        for (let i = 0; i < modelsAgroup.length; i++) {
+            models.push({'agroup': modelsAgroup[i].agroup, 'model': await findModels(modelsAgroup[i].agroup)});
         }
+
         return res.render('questions/questions',{
             layout: 'default',
             style: ['styles/style.css'],
@@ -65,11 +65,13 @@ module.exports = {
         }
 
         var {reference, question, type} = req.body;
+        //res.send({reference, question, type});
         if(type == 2){
             if( !req.body.model || typeof req.body.model  == undefined || req.body.model  == null){
                 errors.push('Invalid Model');
+                console.log('ola');
             }
-            else if(req.body.model == 0){
+            /*else if(req.body.model == 0){
                 if( !req.body.anotherModel || typeof req.body.anotherModel  == undefined || req.body.anotherModel  == null){
                     errors.push('Invalid Another Model');
                 }
@@ -80,27 +82,24 @@ module.exports = {
                     req.flash('error_msg', 'Model quantities and Values ​​are different');
                     res.redirect(req.header('Referer') || '/');
                 }
-                try {
-                    var model = req.body.anotherModel.join('#');
-                    var value = req.body.value.join('#');
-                } catch (error) {
-                    req.flash('error_msg', 'Error in values');
-                    res.redirect(req.header('Referer') || '/');
-                }
-                if (req.body.checkToSave && typeof req.body.checkToSave  != undefined && req.body.checkToSave  != null) {
+                
+                /*if (req.body.checkToSave && typeof req.body.checkToSave  != undefined && req.body.checkToSave  != null) {
                     if(await findModel(type, model) == false){
-                        await insertModel(type, model, value);
+                        res.send(model);
+                        var teste = await insertModel(type, req.body.anotherModel, req.body.value);
+                        console.log(teste);
                     }
                     var check = 1;
                 }
                 else{
                     var check = 0;
                 }
-            }
+            }*/
             else{
-                var model = req.body.model; 
+                var model = req.body.model;
             }
         }
+        
         if(errors.length > 0){
             errors.forEach(e => {
                 error_msg += e + ', ';
@@ -110,19 +109,25 @@ module.exports = {
         }
         else{
             try{
-                await knex('sbr_groups_sub_qn').insert({
+                var insert = await knex('sbr_groups_sub_qn').insert({
                     id_sbr_groups_sub: cryptr.decrypt(reference),
                     question: question,
                     type: type,
-                    model: model || null,
-                    value: value || null
+                    model: model || null
                 });
+                if(insert){
+                    req.flash('success_msg', 'Added Question');
+                    res.redirect(req.header('Referer') || '/');
+                }
+                else{
+                    req.flash('error_msg', 'Error when adding question');
+                    res.redirect(req.header('Referer') || '/');
+                }
             }
             catch(error){
                 next(error);
             }
-            req.flash('success_msg', 'Added Question');
-            res.redirect(req.header('Referer') || '/');
+            
         }
     },
     async delete(req,res,next){
@@ -145,6 +150,19 @@ module.exports = {
         }
     }
 }
+function removeDups(array) {
+    let unique = {};
+    array.forEach(function(i) {
+      if(!unique[i]) {
+        unique[i] = true;
+      }
+    });
+    return Object.keys(unique);
+  }
+async function findModels(agroup){
+    var model = await knex('sbr_groups_sub_qn_models').where('agroup', agroup).pluck('model');
+    return model.join(' - ');
+}
 async function findQuestion(question){
     try{
         var findQuestion = await knex('sbr_groups_sub_qn').where('question', question);
@@ -161,7 +179,9 @@ async function findQuestion(question){
 }
 async function findModel(type, model){
     try{
-        var model = await knex('sbr_groups_sub_qn_models').where('type', type).where('model', model);
+        model.forEach(async e => {
+            var model = await knex('sbr_groups_sub_qn_models').where('type', type).where('model', model);
+        });
         if(model > 0){
             return true;
         }
@@ -174,9 +194,32 @@ async function findModel(type, model){
     }
 }
 async function insertModel(type, model, value){
-    var model = await knex('sbr_groups_sub_qn_models').insert({
-        type: type,
-        model: model,
-        value, value
+    final.forEach(async e => {
+        var model = await knex('sbr_groups_sub_qn_models').insert({
+            type: type,
+            model: model,
+            value, value
+        });
     });
 }
+function compare(arr1,arr2){
+  
+    if(!arr1  || !arr2) return
+   
+     let result;
+   
+   arr1.forEach((e1,i)=>arr2.forEach(e2=>{
+     
+          if(e1.length > 1 && e2.length){
+             result = compare(e1,e2);
+          }else if(e1 !== e2 ){
+             result = false
+          }else{
+             result = true
+          }
+     })
+   )
+   
+   return result
+   
+ }

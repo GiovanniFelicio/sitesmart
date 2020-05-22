@@ -65,13 +65,13 @@
                             <select disabled name="model" id="model" class="form-control">
                                 <option selected disabled>Select the Model</option>
                                 {{#each models}}
-                                    <option value="{{id}}">{{model}}</option>
+                                    <option value="{{agroup}}">{{model}}</option>
                                 {{/each}}
-                                <option value="0">Another Model</option>
+                                {{!-- <option value="0">Another Model</option> --}}
                             </select>
                         </div>
                     </div>
-                    <div id="divModelAnother" class="form-group" hidden>
+                    {{!-- <div id="divModelAnother" class="form-group" hidden>
                         <label for="anotherModel" class="col-form-label">Question Model</label>
                         <div class="input-group">
                             <select multiple name="anotherModel[]" id="anotherModel" style="width: 100%" disabled></select>
@@ -85,7 +85,7 @@
                             <input disabled name="checkToSave" type="checkbox" class="custom-control-input" id="checkToSave" onchange="this.value = this.checked ? 1 : 0;">
                             <label class="custom-control-label" for="checkToSave">Save model</label>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary">ADD</button>
                     </div>
@@ -126,7 +126,7 @@
             $('#checkToSave').prop('disabled', true);$('#modelValue').prop('disabled', true);
         }
     });
-    $('#model').on('change', function(){
+    /*$('#model').on('change', function(){
         let value = $(this).val();
         if(value == 0){
             $('#divModelAnother').prop('hidden', false);$('#anotherModel').prop('disabled', false);
@@ -136,5 +136,5 @@
             $('#divModelAnother').prop('hidden', true);$('#anotherModel').prop('disabled', true);
             $('#checkToSave').prop('disabled', true);$('#modelValue').prop('disabled', true);
         }
-    });
+    });*/
 </script>
