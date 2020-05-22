@@ -117,6 +117,32 @@ module.exports = {
             }
         }
     },
+    async reply(req,res,next){
+        var id = cryptr.decrypt(req.params.id);
+        
+        var questions = await getQuestions(id);
+        res.send(questions);
+        // try {
+        // } catch (error) {
+        //     req.flash('error_msg', 'Internal Error');
+        //     res.redirect('/groups');
+        // }
+        /*return res.render('questionnaries/reply',{
+            layout: 'default',
+            style: ['styles/style.css'],
+            css: ['dataTables.bootstrap4.min.css', 'bootstrap.min.css'],
+            jquery: ['jquery.min.js'],
+            src: ['plugins/highcharts-6.0.7/code/highcharts.js',
+                'plugins/highcharts-6.0.7/code/highcharts-more.js'],
+            js: ['bootstrap.js',
+                'popper.min.js',
+                'jquery.datatable.min.js',
+                'dataTables.bootstrap4.min.js',
+                'select2.min.js'],
+            vendors: ['scripts/script.js'],
+            groups: groups
+        });*/
+    },
     async delete(req,res,next){
         var idEncrypt = req.params.id;
         var date = new Date();
@@ -136,6 +162,18 @@ module.exports = {
             res.redirect('/courses');
         }
     }
+}
+async function getQuestions(groups){
+    var all = await knex.raw(`SELECT gp.id as id_group, gp.name as name_group,
+                                    sub.id as id_sub, sub.name as name_sub,
+                                    q.id as id_question, q.question as question_name
+                                FROM sbr_groups_sub_qn q, sbr_groups_sub sub, sbr_groups gp
+                                WHERE q.id_sbr_groups_sub = sub.id
+                                AND gp.id = sub.id_sbr_groups
+                                AND gp.id in(${groups});`);
+    //var allSplitGroup = all.id_sbr_groups.split(',');
+    //const subgroups = await knex.select('id', 'name').from('sbr_groups_sub').whereIn('id_sbr_groups', allSplitGroup).where('deleted_at', null);
+    return all;
 }
 async function findUser(id){
     try{

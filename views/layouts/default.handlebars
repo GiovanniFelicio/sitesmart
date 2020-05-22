@@ -113,9 +113,17 @@
         {{error}}
       </div>
     {{/if}}
-  {{#each js}}
-      <script src="/js/{{this}}"></script>
-  {{/each}}
+	<div class="col-md-6 col-sm-12">
+		<nav aria-label="breadcrumb" role="navigation">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="/">Home</a></li>
+				<li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+			</ol>
+		</nav>
+	</div>
+	{{#each js}}
+		<script src="/js/{{this}}"></script>
+	{{/each}}
 		<div class="pd-ltr-20 xs-pd-20-10">
         {{{body}}}
         <div class="footer-wrap bg-white pd-20 mb-20 border-radius-5 box-shadow">
