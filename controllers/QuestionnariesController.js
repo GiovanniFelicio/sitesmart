@@ -54,7 +54,7 @@ module.exports = {
         if( !req.body.name || typeof req.body.name == undefined || req.body.name  == null){
             errors.push('Invalid Name');
         }
-        if(await findQuestionnaries(req.body.name, 1) == false){
+        if(await findQuestionnaries(req.body.name, req.user.id) == false){
             req.flash('error_msg', 'The Questionnaries already exist');
             res.redirect(req.header('Referer') || '/');
         }
@@ -94,7 +94,7 @@ module.exports = {
                 if(await findQuestionnaries(req.body.name, 1)){
                     var insertQnr = await knex('sbr_qnr').insert({
                         name: req.body.name,
-                        id_sbr_users: 1
+                        id_sbr_users: req.user.id
                     });
                     for (let i = 0; i < groupsAndSubgroups.length; i++) {
                         insertQnrQn = await knex('sbr_groups_sub_qn_qnr').insert({
@@ -137,9 +137,10 @@ module.exports = {
                     sub.questions.forEach(async q => {
                         q.model = await knex.select('id', 'model', 'value', 'agroup').from('sbr_groups_sub_qn_models').where('agroup', q.model);
                         answer = await knex('sbr_groups_sub_qn_answers')
-                                    .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
-                                    .where('id_sbr_groups_sub_qn', q.id);
-                        (answer.length > 0) ? q.answer = 1 : q.answer = 0;
+                                            .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
+                                            .where('id_sbr_groups_sub_qn', q.id)
+                                            .first();
+                        (answer != undefined) ? q.answer = answer.id_sbr_groups_sub_qn_models : q.answer = null;
                     });
                 });
                 questions.push(group);
@@ -158,18 +159,19 @@ module.exports = {
                             q.model = await knex.select('id', 'model', 'value', 'agroup').from('sbr_groups_sub_qn_models').where('agroup', q.model);
                             answer = await knex('sbr_groups_sub_qn_answers')
                                             .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
-                                            .where('id_sbr_groups_sub_qn', q.id);
-                            (answer.length > 0) ? q.answer = 1 : q.answer = 0;
+                                            .where('id_sbr_groups_sub_qn', q.id)
+                                            .first();
+
+                            (answer != undefined) ? q.answer = answer.id_sbr_groups_sub_qn_models : q.answer = null;
                         });
                     });
                     questions.push(group);
                 }
                 catch(error){
-
                 }
             }
         }
-        //res.send(questions);
+       //res.send(questions);
         return res.render('questionnaries/reply',{
             layout: 'default',
             style: ['styles/style.css'],
@@ -182,8 +184,28 @@ module.exports = {
                 'jquery.datatable.min.js',
                 'dataTables.bootstrap4.min.js'],
             vendors: ['scripts/script.js'],
-            groups: questions
+            groups: questions,
+            reference: id
         });
+    },
+    async saveQuestionnaries(req,res,next){
+        if( !req.body.qnr || typeof req.body.qnr == undefined || req.body.qnr  == null){
+            res.send('0');
+        }
+        try{
+            updatedQnr = await knex('sbr_qnr').where('id', req.body.qnr).update({
+                status: 3
+            });
+            if(updatedQnr){
+                res.send('1');
+            }
+            else{
+                res.send('0');
+            }
+        }
+        catch(e){
+            res.send('0');
+        }
     },
     async delete(req,res,next){
         var idEncrypt = req.params.id;

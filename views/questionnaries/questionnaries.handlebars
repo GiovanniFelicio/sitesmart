@@ -19,7 +19,15 @@
                                 <td>{{name}}</td>
                                 <td>{{id_sbr_users}}</td>
                                 <td>{{created_at}}</td>
-                                <td>{{status}}</td>
+                                {{#compare status '==' 1}}
+                                    <td class="text-primary">Open</td>
+                                {{else compare status '==' 2}}
+                                    <td class="text-warning">Pending</td>
+                                {{else compare status '==' 3}}
+                                    <td class="text-success">Finished</td>
+                                {{else}}
+                                    <td class="text-danger">Invalid</td>
+                                {{/compare}}
                                 <td>
                                     <a class="btn btn-success" title="Reply" href="/questionnaries/reply/{{id}}">Reply</a>
                                     <button class="btn btn-danger del" data-id="{{id}}" title="Delete"><i class="fa fa-trash"></i></button>

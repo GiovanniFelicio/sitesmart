@@ -6,9 +6,10 @@ module.exports = {
     client: 'mysql',
     connection: {
         host: '127.0.0.1',
+        
         database: "site",
         user: "root",
-        password: ""
+        password: "09112013"
     },
     migrations:{
       tableName: 'knex_migrations',

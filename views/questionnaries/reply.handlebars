@@ -24,25 +24,25 @@
                                                 {{#compare type '==' 2}}
                                                     {{#each model as |m keymodel|}}
                                                         <div class="custom-control custom-radio">
-                                                            {{#compare quest.answer '==' 1}}
-                                                                <input checked type="radio" class="custom-control-input" id="answer{{key}}{{keymodel}}" name="answer{{key}}" value="{{m.value}}">
+                                                            {{#compare quest.answer '==' m.value}}
+                                                                <input checked data-idquestion="{{quest.id}}" data-value="{{m.value}}" type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.value}}">
                                                             {{else}}
-                                                                <input onchange="active('{{key}}')" type="radio" class="custom-control-input" id="answer{{key}}{{keymodel}}" name="answer{{key}}" value="{{m.value}}">
+                                                                <input data-idquestion="{{quest.id}}" data-value="{{m.value}}" onchange="active('{{quest.id}}')" type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.value}}">
                                                             {{/compare}}
-                                                            <label class="custom-control-label" for="answer{{key}}{{keymodel}}">{{m.model}}</label>
+                                                            <label class="custom-control-label mb-2" for="answer{{quest.id}}{{m.id}}">{{m.model}}</label>
                                                         </div>
                                                     {{/each}}
                                                 {{/compare}}
                                                 <br>
                                                 <div class="float-right row align-items-center mr-1">
-                                                    <div id="divButtonSave">
-                                                        {{#compare quest.answer '!=' 0}}
+                                                    <div id="divButtonSave{{quest.id}}">
+                                                        {{#compare quest.answer '!=' null}}
                                                             <i class="fa fa-check text-success mr-2"></i>
                                                         {{else}}
                                                             <i class="fa fa-ban text-danger mr-2"></i>
                                                         {{/compare}}
                                                     </div>
-                                                    <button disabled type="button" data-id="{{id}}" id="button{{key}}" data-answer="answer{{key}}" class="btn btn-secondary saveQuestion">Save Answer</button>
+                                                    <button disabled type="button" data-id="{{id}}" onchange="desactive({{quest.id}})" id="button{{quest.id}}" data-answer="answer{{quest.id}}" class="btn btn-secondary saveQuestion">Save Answer</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -62,4 +62,82 @@
             </div>
         </div>
     {{/each}}
+    <div class="row align-items-center ml-1">
+        <button type="button" id="saveAll" class="btn btn-success mb-4 mr-4">Save All</button>
+        <div id="divButtonSave">
+        </div>
+    </div>
 {{/if}}
+
+<script>
+    $('#saveAll').click(function(){
+        var qnr = {{reference}};
+        /*var inputs = $('input:checked');
+        var questions = [];
+        for(let i = 0; i<inputs.length; i++){
+            questions.push({'idQuestion': inputs[i].getAttribute('data-idquestion'), 'answer':inputs[i].getAttribute('data-value'), 'qnr': qnr});
+        }*/
+        $.ajax({
+            type: "POST",
+            url: "/questionnaries/save",
+            data: {qnr: qnr},
+            success: function(data){
+                console.log(data);
+                if(data == 1){
+                    window.location.href = "/questionnaries"; 
+                }
+                else{
+                    $('#divButtonSave').html(' ');
+                    $('#divButtonSave').html('<i class="fa fa-ban text-danger mr-2"></i>');
+                }
+                //desactive(this);
+            }
+        });
+    });
+    $('.saveQuestion').click(function(){
+        var idQuestion = $( this ).attr('data-id');
+        var answer;
+        var button = $(this);
+        if($('input[name='+$(this).attr('data-answer')+']:checked').val() == undefined){
+            answer = $('#'+$(this).attr('data-answer')+'').val(); 
+        }
+        else{
+            answer = $('input[name='+$(this).attr('data-answer')+']:checked').val(); 
+        }
+        if(typeof answer != undefined){
+            var qnr = {{reference}};
+            $.ajax({
+                type: "POST",
+                url: "/savequestion",
+                data: {idQuestion: idQuestion, answer:answer, qnr: qnr},
+                success: function(data){
+                    if(data == 1){
+                        $('#divButtonSave'+idQuestion+'').html(' ');
+                        $('#divButtonSave'+idQuestion+'').html('<i class="fa fa-check text-success mr-2"></i>');
+                    }
+                    else{
+                        $('#divButtonSave'+idQuestion+'').html(' ');
+                        $('#divButtonSave'+idQuestion+'').html('<i class="fa fa-ban text-danger mr-2"></i>');
+                    }
+                    desactive(idQuestion);
+                }
+            });
+            return false;
+        }
+        else{
+
+        }
+        /**/
+    });
+    function active(id){
+        $('#button'+id+'').prop('disabled', false);
+        $('#button'+id+'').removeClass('btn-secondary');
+        $('#button'+id+'').addClass('btn-success');
+    }
+    function desactive(id){
+        $('#button'+id+'').prop('disabled', true);
+        $('#button'+id+'').removeClass('btn-success');
+        $('#button'+id+'').addClass('btn-secondary');
+    }
+
+</script>

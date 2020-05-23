@@ -4,9 +4,10 @@ const {isAuth} = require('../helpers/middlewares');
 
 const QuestionnariesController = require('../controllers/QuestionnariesController');
 
-routes.get('/questionnaries', QuestionnariesController.index);
-routes.post('/questionnaries', QuestionnariesController.create);
-routes.get('/questionnaries/add', QuestionnariesController.add);
-routes.get('/questionnaries/reply/:id', QuestionnariesController.reply);
+routes.get('/questionnaries', isAuth, QuestionnariesController.index);
+routes.post('/questionnaries', isAuth, QuestionnariesController.create);
+routes.get('/questionnaries/add', isAuth, QuestionnariesController.add);
+routes.get('/questionnaries/reply/:id', isAuth, QuestionnariesController.reply);
+routes.post('/questionnaries/save', isAuth, QuestionnariesController.saveQuestionnaries);
 
 module.exports = routes;
