@@ -18,7 +18,7 @@
 --
 -- Table structure for table `knex_migrations`
 --
-
+-- create database site;
 DROP TABLE IF EXISTS `knex_migrations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;

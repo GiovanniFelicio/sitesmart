@@ -121,15 +121,56 @@ module.exports = {
     },
     async reply(req,res,next){
         var id = cryptr.decrypt(req.params.id);
+        var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id);
+        var questions = [];
+        var group = [];
+        for (let i = 0; i < qnr.length; i++) {
+            if(typeof qnr[i].id_sbr_groups != undefined || qnr[i].id_sbr_groups != null|| qnr[i].id_sbr_groups != ''){
+                group = await knex.select('id', 'name').from('sbr_groups').where('id', qnr[i].id_sbr_groups).first();
+                group.subgroups = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id_sbr_groups', qnr[i].id_sbr_groups);
+                group.subgroups.forEach(async sub => {
+                    sub.questions = await knex.select('id', 'id_sbr_groups_sub', 'question', 'type', 'model')
+                                                                .from('sbr_groups_sub_qn')
+                                                                .where('id_sbr_groups_sub', sub.id)
+                                                                .where('deleted_at', null);
+                    
+                    sub.questions.forEach(async q => {
+                        q.model = await knex.select('id', 'model', 'value', 'agroup').from('sbr_groups_sub_qn_models').where('agroup', q.model);
+                        answer = await knex('sbr_groups_sub_qn_answers')
+                                    .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
+                                    .where('id_sbr_groups_sub_qn', q.id);
+                        (answer.length > 0) ? q.answer = 1 : q.answer = 0;
+                    });
+                });
+                questions.push(group);
+            }
+            if(typeof qnr[i].id_sbr_groups_sub != undefined || qnr[i].id_sbr_groups_sub != null|| qnr[i].id_sbr_groups_sub != ''){
+                subgroup = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id', qnr[i].id_sbr_groups_sub);
+                try{
+                    group = await knex('sbr_groups').where('id', subgroup[0].id_sbr_groups).first();
+                    group.subgroups = subgroup;
+                    group.subgroups.forEach(async sub => {
+                        sub.questions = await knex.select('id', 'id_sbr_groups_sub', 'question', 'type', 'model')
+                                                                    .from('sbr_groups_sub_qn')
+                                                                    .where('id_sbr_groups_sub', sub.id)
+                                                                    .where('deleted_at', null);
+                        sub.questions.forEach(async q => {
+                            q.model = await knex.select('id', 'model', 'value', 'agroup').from('sbr_groups_sub_qn_models').where('agroup', q.model);
+                            answer = await knex('sbr_groups_sub_qn_answers')
+                                            .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
+                                            .where('id_sbr_groups_sub_qn', q.id);
+                            (answer.length > 0) ? q.answer = 1 : q.answer = 0;
+                        });
+                    });
+                    questions.push(group);
+                }
+                catch(error){
 
-        var questions = await getQuestions(id);
-        res.send(questions);
-        // try {
-        // } catch (error) {
-        //     req.flash('error_msg', 'Internal Error');
-        //     res.redirect('/groups');
-        // }
-        /*return res.render('questionnaries/reply',{
+                }
+            }
+        }
+        //res.send(questions);
+        return res.render('questionnaries/reply',{
             layout: 'default',
             style: ['styles/style.css'],
             css: ['dataTables.bootstrap4.min.css', 'bootstrap.min.css'],
@@ -139,11 +180,10 @@ module.exports = {
             js: ['bootstrap.js',
                 'popper.min.js',
                 'jquery.datatable.min.js',
-                'dataTables.bootstrap4.min.js',
-                'select2.min.js'],
+                'dataTables.bootstrap4.min.js'],
             vendors: ['scripts/script.js'],
-            groups: groups
-        });*/
+            groups: questions
+        });
     },
     async delete(req,res,next){
         var idEncrypt = req.params.id;

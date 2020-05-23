@@ -34,8 +34,12 @@ app.use((req, res, next)=>{
 });
 app.use(express.static(path.join(__dirname, 'static')));
 
-app.engine('handlebars', expressHandle({defaultLayout: 'default'}));
+app.engine('handlebars', expressHandle({defaultLayout: 'default',
+                                        extname: '.handlebars',
+                                        helpers: require('./helpers/conditions.js') //only need this}
+                                    }));
 app.set('view engine', 'handlebars');
+
 
 app.use(express.json());
 
