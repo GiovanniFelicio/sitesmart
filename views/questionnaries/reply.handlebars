@@ -27,7 +27,7 @@
                                                             {{#compare quest.answer '==' 1}}
                                                                 <input checked type="radio" class="custom-control-input" id="answer{{key}}{{keymodel}}" name="answer{{key}}" value="{{m.value}}">
                                                             {{else}}
-                                                                <input onchange="active('{{key}}')" type="radio" class="custom-control-input" id="answer{{key}}{{keymodel}}" name="answer{{key}}" value="{{m.value}}">
+                                                                <input onchange="active('{{key}}')" type="radio" class="custom-control-input" id="answer{{key}}{{keymodel}}" name="answer{{key}}" value="{{m.alue}}">
                                                             {{/compare}}
                                                             <label class="custom-control-label" for="answer{{key}}{{keymodel}}">{{m.model}}</label>
                                                         </div>
