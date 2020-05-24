@@ -30,6 +30,10 @@ module.exports = {
         if( !req.body.name || typeof req.body.name  == undefined || req.body.name  == null){
             errors.push('Invalid Name');
         }
+        /*group = await knex('sbr_groups')
+        if( !req.body.name || typeof req.body.name  == undefined || req.body.name  == null){
+            errors.push('Invalid Name');
+        }*/
         if(errors.length > 0){
             errors.forEach(e => {
                 error_msg +=e+', ';

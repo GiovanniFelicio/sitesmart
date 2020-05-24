@@ -130,6 +130,53 @@ module.exports = {
             
         }
     },
+    async save(req,res,next){
+        if( !req.body.idQuestion || typeof req.body.idQuestion  == undefined || req.body.idQuestion  == null){
+            return res.send('0');
+        }
+        else if( !req.body.answer || typeof req.body.answer  == undefined || req.body.answer  == null){
+            return res.send('0');
+        }
+        else if( !req.body.qnr || typeof req.body.qnr  == undefined || req.body.qnr  == null){
+            return res.send('0');
+        }
+        else{
+          var {idQuestion, answer, qnr} = req.body;
+            var savedQuests;
+            try{
+                savedQuests = await knex('sbr_groups_sub_qn_answers').where('id_sbr_groups_sub_qn', idQuestion).where('id_sbr_qnr', qnr);
+                getQnr = await knex('sbr_groups_sub_qn_answers').where('id_sbr_qnr', qnr);
+                if(getQnr.length <= 0){
+                    updatedQnr = await knex('sbr_qnr').where('id', req.body.qnr).update({
+                        status: 2
+                    });
+                }
+                if(savedQuests.length > 0){
+                    saveQuest = await knex('sbr_groups_sub_qn_answers').where('id_sbr_groups_sub_qn', idQuestion).where('id_sbr_qnr', qnr).update({
+                        id_sbr_groups_sub_qn_models: answer
+                    });
+                }
+                else{
+                    saveQuest = await knex('sbr_groups_sub_qn_answers').insert({
+                        id_sbr_groups_sub_qn: idQuestion,
+                        id_sbr_qnr: qnr,
+                        id_sbr_groups_sub_qn_models: answer
+                    });
+                }
+                
+                if(saveQuest){
+                    return res.send('1');
+                }
+                else{
+                    return res.send('0');
+                }
+            }
+            catch(e){
+                return res.send('0');
+            }  
+        }
+        
+    },
     async delete(req,res,next){
         var idEncrypt = req.params.id;
         var date = new Date();

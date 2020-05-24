@@ -8,5 +8,6 @@ routes.get('/questionnaries', QuestionnariesController.index);
 routes.post('/questionnaries', QuestionnariesController.create);
 routes.get('/questionnaries/add', QuestionnariesController.add);
 routes.get('/questionnaries/reply/:id', QuestionnariesController.reply);
+routes.post('/questionnaries/save', QuestionnariesController.saveQuestionnaries);
 
 module.exports = routes;

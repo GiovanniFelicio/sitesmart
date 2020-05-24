@@ -2,7 +2,7 @@ exports.up = function(knex) {
     return knex.schema.createTable('sbr_groups_sub_qn', (table)=>{
         table.increments('id');
         table.integer('id_sbr_groups_sub').notNullable();
-        table.string('question').notNullable();
+        table.text('question').notNullable();
         table.string('type').notNullable();
         table.string('model').notNullable();
         table.string('value').nullable();
