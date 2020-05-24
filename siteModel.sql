@@ -3,7 +3,10 @@
 -- Host: localhost    Database: site
 -- ------------------------------------------------------
 -- Server version	8.0.20
-
+ALTER TABLE sbr_groups_sub ADD CONSTRAINT fk_id_sbr_groups_sub 
+FOREIGN KEY(id_sbr_groups) REFERENCES sbr_groups(id) ON DELETE CASCADE;
+ALTER TABLE sbr_groups_sub ADD CONSTRAINT fk_deleted_at_sbr_groups_sub 
+FOREIGN KEY(deleted_at) REFERENCES sbr_groups(deleted_at) ON UPDATE CASCADE;
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;

@@ -6,6 +6,8 @@ exports.up = function(knex) {
         table.string('value').notNullable();
         table.timestamps(true, true);
         table.timestamp('deleted_at').nullable();
+        table.engine('innodb');
+        
     });
 };
 

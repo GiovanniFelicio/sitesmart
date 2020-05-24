@@ -29,7 +29,9 @@
                                     <td class="text-danger">Invalid</td>
                                 {{/compare}}
                                 <td>
+                                {{#compare status '!=' 3}}
                                     <a class="btn btn-success" title="Reply" href="/questionnaries/reply/{{id}}">Reply</a>
+                                {{/compare}}
                                     <button class="btn btn-danger del" data-id="{{id}}" title="Delete"><i class="fa fa-trash"></i></button>
                                 </td>
                             </tr>
