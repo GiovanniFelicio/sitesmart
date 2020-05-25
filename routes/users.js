@@ -3,7 +3,7 @@ const routes = express.Router();
 const {isAuth} = require('../helpers/middlewares');
 
 const UserController = require('../controllers/UserController');
-routes.get('/users', UserController.index);
-routes.post('/users', UserController.create);
+routes.get('/users', isAuth, UserController.index);
+routes.post('/users', isAuth, UserController.create);
 
 module.exports = routes;

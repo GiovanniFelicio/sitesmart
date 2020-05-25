@@ -28,11 +28,11 @@ module.exports = {
         var errors = [];
         var error_msg = '';
         if( !req.body.name || typeof req.body.name  == undefined || req.body.name  == null){
-            errors.push('Invalid Name');
+            errors.push('Nome Inválido');
         }
         var group = await knex('sbr_groups').where('name', req.body.name);
         if(group.length > 0){
-            req.flash('error_msg', 'This group already exists');
+            req.flash('error_msg', 'Este grupo já existe');
             res.redirect('/groups');
         }
         if(errors.length > 0){
@@ -51,7 +51,7 @@ module.exports = {
             catch(error){
                 next(error);
             }
-            req.flash('success_msg', 'Added Course');
+            req.flash('success_msg', 'Grupo adicionado com sucesso');
             res.redirect('/groups');
         }
     },

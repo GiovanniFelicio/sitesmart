@@ -9,7 +9,6 @@ exports.up = function(knex) {
         table.string('value').nullable();
         table.timestamps(true, true);
         table.timestamp('deleted_at').nullable();
-        table.foreign('id_sbr_groups_sub').references('sbr_groups_sub.id').onDelete('CASCADE');
         table.engine('innodb');
     });
 };

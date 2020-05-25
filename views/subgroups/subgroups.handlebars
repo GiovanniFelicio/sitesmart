@@ -1,14 +1,14 @@
 <div class="container">
     <div class="row">
         <div class="col mt-5">
-            <button class="btn btn-info float-right" data-toggle="modal" data-target="#addSubGroup"><i class="fa fa-plus mr-2"></i>ADD SUB GROUP</button>
+            <button class="btn btn-info float-right" data-toggle="modal" data-target="#addSubGroup"><i class="fa fa-plus mr-2"></i>ADD SUBGRUPO</button>
             <div class="table-responsive mt-5">
                 <table id="subgroups" class="table table-bordered subgroups text-center" style="width: 100%;">
                     <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Added In</th>
-                        <th>Options</th>
+                        <th>Nome</th>
+                        <th>Adicionado Em</th>
+                        <th>Opções</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -41,7 +41,7 @@
                 <form method="POST" action="/groups/sub" id="createSubGroup">
                     <input value="{{reference}}" name="reference" hidden/>
                     <div class="form-group">
-                        <label>SubGroup Name</label>
+                        <label>Nome do SubGrupo</label>
                         <input class="form-control" id="name" type="text" name="name" placeholder="Ex: Realização da compra" autofocus>
                     </div>
                     <div class="text-center">

@@ -4,7 +4,7 @@ const {isAuth} = require('../helpers/middlewares');
 
 const SubGroupsController = require('../controllers/SubGroupsController');
 
-routes.get('/groups/sub/:id', SubGroupsController.index);
-routes.post('/groups/sub', SubGroupsController.create);
+routes.get('/groups/sub/:id', isAuth, SubGroupsController.index);
+routes.post('/groups/sub', isAuth, SubGroupsController.create);
 
 module.exports = routes;

@@ -33,52 +33,57 @@ module.exports = {
     async create(req, res, next){
         var errors = [];
         var error_msg = '';
-        if( !req.body.name || typeof req.body.name  == undefined || req.body.name  == null){
-            errors.push('Invalid Name');
-        }
-        if( !req.body.username || typeof req.body.username  == undefined || req.body.username  == null){
-            errors.push('Invalid Username');
-        }
-        if( !req.body.email || typeof req.body.email  == undefined || req.body.email  == null){
-            errors.push('Invalid E-mail');
-        }
-        var findUser = await knex('sbr_users').where('username', req.body.username).orWhere('email', req.body.email);
-        if(findUser.length > 0){
-            req.flash('error_msg', 'This Username or E-mail already exists !!');
-            res.redirect('/users');
-        }
-        if( !req.body.password || typeof req.body.password  == undefined || req.body.password  == null){
-            errors.push('Invalid Password');
-        }
-        if(errors.length > 0){
-            errors.forEach(e => {
-                error_msg += e + ', ';
-            });
-            req.flash('error_msg', error_msg);
-            res.redirect('/users');
-        }
-        else{
-            var {name, username, email, password} = req.body;
-            try{
-                var insert = await knex('sbr_users').insert({
-                    name: name,
-                    username: username,
-                    email: email,
-                    password: password,
-                    role: 0
+        try {
+            if( !req.body.name || typeof req.body.name  == undefined || req.body.name  == null){
+                errors.push('Nome Inválido');
+            }
+            if( !req.body.username || typeof req.body.username  == undefined || req.body.username  == null){
+                errors.push('Username Inválido');
+            }
+            if( !req.body.email || typeof req.body.email  == undefined || req.body.email  == null){
+                errors.push('E-mail inválido');
+            }
+            var findUser = await knex('sbr_users').where('username', req.body.username).orWhere('email', req.body.email);
+            if(findUser.length > 0){
+                req.flash('error_msg', 'Este usuário ou e-mail já existe!!');
+                res.redirect('/users');
+            }
+            if( !req.body.password || typeof req.body.password  == undefined || req.body.password  == null){
+                errors.push('Senha inválida');
+            }
+            if(errors.length > 0){
+                errors.forEach(e => {
+                    error_msg += e + ', ';
                 });
-                if(insert){
-                    req.flash('success_msg', 'Added Question');
-                    res.redirect('/users');
+                req.flash('error_msg', error_msg);
+                res.redirect('/users');
+            }
+            else{
+                var {name, username, email, password} = req.body;
+                try{
+                    var insert = await knex('sbr_users').insert({
+                        name: name,
+                        username: username,
+                        email: email,
+                        password: password,
+                        role: 0
+                    });
+                    if(insert){
+                        req.flash('success_msg', 'Usuário adicionado com sucesso');
+                        res.redirect('/users');
+                    }
+                    else{
+                        req.flash('error_msg', 'Error ao adicionar usuário');
+                        res.redirect('/users');
+                    }
                 }
-                else{
-                    req.flash('error_msg', 'Error when adding question');
-                    res.redirect('/users');
+                catch(error){
+                    next(error);
                 }
             }
-            catch(error){
-                next(error);
-            }
+        } catch (error) {
+            req.flash('error_msg', 'Error interno do servidor');
+            res.redirect('/users');
         }
     },
     async delete(req,res,next){
