@@ -7,7 +7,7 @@ module.exports = {
         var groups = await knex('sbr_groups');
         groups.forEach(e => {
             e.id = cryptr.encrypt(e.id);
-            e.created_at = Moment(e.created_at).format('DD-MM-Y  H:m:ss');
+            e.created_at = Moment(e.created_at).format('DD-MM-Y  HH:mm:ss');
         });
         return res.render('groups/groups',{
             layout: 'default',
@@ -30,10 +30,11 @@ module.exports = {
         if( !req.body.name || typeof req.body.name  == undefined || req.body.name  == null){
             errors.push('Invalid Name');
         }
-        /*group = await knex('sbr_groups')
-        if( !req.body.name || typeof req.body.name  == undefined || req.body.name  == null){
-            errors.push('Invalid Name');
-        }*/
+        var group = await knex('sbr_groups').where('name', req.body.name);
+        if(group.length > 0){
+            req.flash('error_msg', 'This group already exists');
+            res.redirect('/groups');
+        }
         if(errors.length > 0){
             errors.forEach(e => {
                 error_msg +=e+', ';
@@ -60,17 +61,24 @@ module.exports = {
         var currentDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
         try{
             var idDecrypt = cryptr.decrypt(idEncrypt);
-            const course = await knex('courses')
-                .where({id: idDecrypt})
-                .update({
-                    deleted_at: currentDate
-                });
-            req.flash('success_msg', 'Deleted Course');
-            res.redirect('/courses');
+            const groupsDel = await knex.raw(`
+                UPDATE sbr_groups gp, sbr_groups_sub sub, sbr_groups_sub_qn qn
+                SET 
+                gp.deleted_at = current_timestamp(),
+                sub.deleted_at = current_timestamp(),
+                qn.deleted_at = current_timestamp()
+                WHERE gp.id = ${idDecrypt}
+                AND sub.id_sbr_groups = ${idDecrypt}
+                AND qn.id_sbr_groups = ${idDecrypt};`);
+            
+            if(groupsDel){
+                return res.send('1');
+            }
+            throw 'Error';
+            
         }
         catch(e){
-            req.flash('error_msg', 'Error when deleting the Course');
-            res.redirect('/courses');
+            return res.send('0');
         }
     }
 }

@@ -9,7 +9,7 @@ module.exports = {
         
         database: "site",
         user: "root",
-        password: ""
+        password: "09112013"
     },
     migrations:{
       tableName: 'knex_migrations',

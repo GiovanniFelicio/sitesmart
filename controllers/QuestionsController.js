@@ -63,38 +63,12 @@ module.exports = {
         if( !req.body.type || typeof req.body.type  == undefined || req.body.type  == null){
             errors.push('Invalid Type');
         }
-
         var {reference, question, type} = req.body;
-        //res.send({reference, question, type});
         if(type == 2){
             if( !req.body.model || typeof req.body.model  == undefined || req.body.model  == null){
                 errors.push('Invalid Model');
                 console.log('ola');
             }
-            /*else if(req.body.model == 0){
-                if( !req.body.anotherModel || typeof req.body.anotherModel  == undefined || req.body.anotherModel  == null){
-                    errors.push('Invalid Another Model');
-                }
-                if( !req.body.value || typeof req.body.value  == undefined || req.body.value  == null){
-                    errors.push('Invalid Value');
-                }
-                if(req.body.anotherModel.length != req.body.value.length){
-                    req.flash('error_msg', 'Model quantities and Values ​​are different');
-                    res.redirect(req.header('Referer') || '/');
-                }
-                
-                /*if (req.body.checkToSave && typeof req.body.checkToSave  != undefined && req.body.checkToSave  != null) {
-                    if(await findModel(type, model) == false){
-                        res.send(model);
-                        var teste = await insertModel(type, req.body.anotherModel, req.body.value);
-                        console.log(teste);
-                    }
-                    var check = 1;
-                }
-                else{
-                    var check = 0;
-                }
-            }*/
             else{
                 var model = req.body.model;
             }
@@ -109,8 +83,11 @@ module.exports = {
         }
         else{
             try{
+                var idSub = cryptr.decrypt(reference);
+                var subgroup = await knex('sbr_groups_sub').where('id', idSub).first();
                 var insert = await knex('sbr_groups_sub_qn').insert({
-                    id_sbr_groups_sub: cryptr.decrypt(reference),
+                    id_sbr_groups: subgroup.id_sbr_groups,
+                    id_sbr_groups_sub: idSub,
                     question: question,
                     type: type,
                     model: model || null
