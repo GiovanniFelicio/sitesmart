@@ -35,7 +35,7 @@
                                                 {{#compare type '==' 2}}
                                                     {{#each model as |m keymodel|}}
                                                         <div class="custom-control custom-radio">
-                                                            {{#compare quest.answer '==' m.value}}
+                                                            {{#compare quest.answer '==' m.id}}
                                                                 <input checked type="radio" class="custom-control-input">
                                                             {{else}}
                                                                 <input type="radio" class="custom-control-input">
