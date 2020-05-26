@@ -76,7 +76,7 @@ module.exports = {
             if( !req.body.name || typeof req.body.name == undefined || req.body.name  == null){
                 errors.push('Nome Inválido');
             }
-            if(await findQuestionnaries(req.body.name, req.user.id) == false){
+            if(await findQuestionnaries(req.body.name, 1) == false){
                 req.flash('error_msg', 'Este questionário já existe');
                 return res.redirect('/questionnaries');
             }
@@ -102,10 +102,10 @@ module.exports = {
             }
             else{
                 try{
-                    if(await findQuestionnaries(req.body.name, req.user.id)){
+                    if(await findQuestionnaries(req.body.name, 1)){
                         var insertQnr = await knex('sbr_qnr').insert({
                             name: req.body.name,
-                            id_sbr_users: req.user.id
+                            id_sbr_users: 1
                         });
                         try {
                             subgroups.forEach(async sub => {
@@ -136,7 +136,7 @@ module.exports = {
             res.redirect('/questionnaries');
         }
     },
-    async reply(req,res,next){
+    async reply(req, res, next){
         var id = cryptr.decrypt(req.params.id);
         var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id);
         var checkQnr = await checkQuestionnarie(id);
@@ -154,8 +154,20 @@ module.exports = {
                 subgroup = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id', qnr[i].id_sbr_groups_sub);
                 try{
                     group = await knex('sbr_groups').where('id', subgroup[0].id_sbr_groups).first();
-                    group.subgroups = subgroup;
-                    group.subgroups.forEach(async sub => {
+                    group.questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups', group.id).where('deleted_at', null);
+                    group.questions.forEach(async q => {
+                        q.model = await knex.select('id', 'model', 'value', 'agroup')
+                                    .from('sbr_groups_sub_qn_models')
+                                    .where('agroup', q.model);
+                        answer = await knex('sbr_groups_sub_qn_answers')
+                                    .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
+                                    .where('id_sbr_groups_sub_qn', q.id)
+                                    .first();
+                        (answer != undefined) ? q.answer = answer.id_sbr_groups_sub_qn_models : q.answer = null;
+                    });
+                    //res.send(group);
+                    //group.subgroups = subgroup;
+                    /*group.subgroups.forEach(async sub => {
                         sub.questions = await knex.select('id', 'id_sbr_groups_sub', 'question', 'type', 'model')
                                                                     .from('sbr_groups_sub_qn')
                                                                     .where('id_sbr_groups_sub', sub.id)
@@ -171,7 +183,7 @@ module.exports = {
 
                             (answer != undefined) ? q.answer = answer.id_sbr_groups_sub_qn_models : q.answer = null;
                         });
-                    });
+                    });*/
                     questions.push(group);
                 }
                 catch(error){

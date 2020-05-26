@@ -5,7 +5,6 @@ exports.up = function(knex) {
         table.string('name').notNullable();
         table.timestamps(true, true);
         table.timestamp('deleted_at').nullable();
-        table.foreign('id_sbr_groups').references('sbr_groups.id').onDelete('CASCADE');
         table.engine('innodb');
     });
 };

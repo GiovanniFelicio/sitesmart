@@ -22,7 +22,7 @@ module.exports = {
             var models = [];
             var modelsAgroup = await knex.select('agroup').from('sbr_groups_sub_qn_models').groupBy('agroup');
             for (let i = 0; i < modelsAgroup.length; i++) {
-                models.push({'agroup': modelsAgroup[i].agroup, 'model': await findModels(modelsAgroup[i].agroup)});
+               models.push({'agroup': modelsAgroup[i].agroup, 'model': await findModels(modelsAgroup[i].agroup)});
             }
             return res.render('questions/questions',{
                 layout: 'default',
@@ -46,6 +46,7 @@ module.exports = {
                 sub_name: sub_name
             });
         } catch (error) {
+            console.log(error);
             req.flash('error_msg', 'Error interno');
             res.redirect(req.header('Referer') || '/');
         }

@@ -6,8 +6,6 @@ exports.up = function(knex) {
         table.integer('id_sbr_groups_sub_qn_models').notNullable();
         table.timestamps(true, true);
         table.timestamp('deleted_at').nullable();
-        table.foreign('id_sbr_groups_sub_qn').references('sbr_groups_sub_qn.id').onDelete('CASCADE');
-        table.foreign('id_sbr_qnr').references('sbr_qnr.id').onDelete('CASCADE');
         table.engine('innodb');
     });
 };

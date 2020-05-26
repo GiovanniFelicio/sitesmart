@@ -4,6 +4,7 @@ exports.up = function(knex) {
         table.string('type').notNullable();
         table.string('model').notNullable();
         table.string('value').notNullable();
+        table.integer('agroup', 1).notNullable();
         table.timestamps(true, true);
         table.timestamp('deleted_at').nullable();
         table.engine('innodb');

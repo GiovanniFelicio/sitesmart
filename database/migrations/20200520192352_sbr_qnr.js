@@ -6,7 +6,6 @@ exports.up = function(knex) {
         table.integer('status', 2).default(1);
         table.timestamps(true, true);
         table.timestamp('deleted_at').nullable();
-        table.foreign('id_sbr_users').references('sbr_users.id').onDelete('CASCADE');
         table.engine('innodb');
     });
 };

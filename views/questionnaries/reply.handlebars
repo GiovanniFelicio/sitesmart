@@ -7,55 +7,42 @@
                     <div class="card-header">{{name}}</div>
                     <div class="card-body">
                         <div class="card-text">
-{{#each subgroups}}
-    <div class="row">
-        <div class="col-12">
-            <div class="card bg-light mb-3" style="max-width: 100%;">
-                <div class="card-header"><b>{{name}}</b></div>
-                <div class="card-body">
-                    <div class="card-text">
-                        {{#each questions as |quest key|}}
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="card bg-light mb-3" style="max-width: 100%;">
-                                        <div class="card-header">
-                                            {{key}}) {{quest.question}}
-                                            <div class="float-right row align-items-center mr-1">
-                                                <div id="divButtonSave{{quest.id}}">
-                                                    {{#compare quest.answer '!=' null}}
-                                                        <i class="fa fa-check text-success mr-2"></i>
-                                                    {{else}}
-                                                        <i class="fa fa-ban text-danger mr-2"></i>
-                                                    {{/compare}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="card-text">
-                                                {{#compare type '==' 2}}
-                                                    {{#each model as |m keymodel|}}
-                                                        <div class="custom-control custom-radio">
-                                                            {{#compare quest.answer '==' m.id}}
-                                                                <input checked type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.value}}">
-                                                            {{else}}
-                                                                <input onchange="save({{quest.id}},{{m.id}})" type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.value}}">
-                                                            {{/compare}}
-                                                            <label class="custom-control-label mb-2" for="answer{{quest.id}}{{m.id}}">{{m.model}}</label>
-                                                        </div>
-                                                    {{/each}}
-                                                {{/compare}}
-                                                <br>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+{{#each questions as |quest key|}}
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-light mb-3" style="max-width: 100%;">
+            <div class="card-header">
+                {{key}}) {{quest.question}}
+                <div class="float-right row align-items-center mr-1">
+                    <div id="divButtonSave{{quest.id}}">
+                        {{#compare quest.answer '!=' null}}
+                            <i class="fa fa-check text-success mr-2"></i>
+                        {{else}}
+                            <i class="fa fa-ban text-danger mr-2"></i>
+                        {{/compare}}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="card-text">
+                    {{#compare type '==' 2}}
+                        {{#each model as |m keymodel|}}
+                            <div class="custom-control custom-radio">
+                                {{#compare quest.answer '==' m.id}}
+                                    <input checked type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.value}}">
+                                {{else}}
+                                    <input onchange="save({{quest.id}},{{m.id}})" type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.value}}">
+                                {{/compare}}
+                                <label class="custom-control-label mb-2" for="answer{{quest.id}}{{m.id}}">{{m.model}}</label>
                             </div>
                         {{/each}}
-                    </div>
+                    {{/compare}}
+                    <br>
                 </div>
             </div>
         </div>
     </div>
+</div>
 {{/each}}
                         </div>
                     </div>
