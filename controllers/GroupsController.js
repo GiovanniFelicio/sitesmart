@@ -29,6 +29,7 @@ module.exports = {
     async create(req, res, next){
         var errors = [];
         var error_msg = '';
+        
         if( !req.body.name || typeof req.body.name  == undefined || req.body.name  == null){
             errors.push('Nome Inválido');
         }

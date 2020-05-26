@@ -7,7 +7,7 @@
     </nav>
 </div>
 <hr>
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col mt-5">
             <button class="btn btn-info float-right" data-toggle="modal" data-target="#addGroup"><i class="fa fa-plus mr-2"></i>ADD GRUPO</button>
@@ -26,9 +26,7 @@
                                 <td>{{name}}</td>
                                 <td>{{created_at}}</td>
                                 {{#compare deleted_at '!=' null}}
-                                    <td>
-                                        Deletado
-                                    </td>
+                                    <td>Deletado</td>
                                 {{else}}
                                     <td>
                                         <a class="btn btn-success" href="/groups/sub/{{id}}" title="View"><i class="fa fa-eye"></i></a>

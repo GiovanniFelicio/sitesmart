@@ -7,12 +7,12 @@
         </ol>
     </nav>
 </div>
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col mt-5">
             <button class="btn btn-info float-right" data-toggle="modal" data-target="#addSubGroup"><i class="fa fa-plus mr-2"></i>ADD SUBGRUPO</button>
             <div class="table-responsive mt-5">
-                <table id="subgroups" class="table table-bordered subgroups text-center" style="width: 100%;">
+                <table id="subgroups" class="table table-bordered subgroups text-center display nowrap" style="width: 100%;">
                     <thead>
                     <tr>
                         <th>Nome</th>
@@ -63,6 +63,7 @@
 </div>
 <script>
     $('#subgroups').DataTable({
+        "responsive": true,
         "scrollY": "1000px",
         "scrollCollapse": true
     });

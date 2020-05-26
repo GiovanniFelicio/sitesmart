@@ -27,7 +27,8 @@ module.exports = {
             return res.render('questions/questions',{
                 layout: 'default',
                 style: ['styles/style.css'],
-                css: ['dataTables.bootstrap4.min.css'],
+                css: ['dataTables.bootstrap4.min.css',
+                        'responsive.dataTables.min.css'],
                 jquery: ['jquery.min.js'],
                 src: ['plugins/highcharts-6.0.7/code/highcharts.js',
                     'plugins/highcharts-6.0.7/code/highcharts-more.js'],
@@ -35,6 +36,7 @@ module.exports = {
                     'popper.min.js',
                     'jquery.datatable.min.js',
                     'dataTables.bootstrap4.min.js',
+                    'dataTables.responsive.min.js',
                     'select2.min.js'],
                 vendors: ['scripts/script.js'],
                 questions: questions,

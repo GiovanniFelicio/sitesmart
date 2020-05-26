@@ -1,9 +1,9 @@
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col mt-5">
             <a class="btn btn-info float-right" href="/questionnaries/add"><i class="fa fa-plus mr-2"></i>ADD QUESTIONÁRIO</a>
             <div class="table-responsive mt-5">
-                <table id="questionnaries" class="table table-bordered questionnaries text-center" style="width: 100%;">
+                <table id="questionnaries" class="table table-bordered questionnaries text-center display nowrap" style="width: 100%;">
                     <thead>
                     <tr>
                         <th>Nome</th>
@@ -31,6 +31,8 @@
                                 <td>
                                 {{#compare status '!=' 3}}
                                     <a class="btn btn-success" title="Reply" href="/questionnaries/reply/{{id}}">Reply</a>
+                                {{else}}
+                                    <a class="btn btn-primary" title="Review" href="/questionnaries/review/{{id}}">Review</a>
                                 {{/compare}}
                                     <button class="btn btn-danger del" data-id="{{id}}" title="Delete"><i class="fa fa-trash"></i></button>
                                 </td>
@@ -44,6 +46,7 @@
 </div>
 <script>
     var table = $('#questionnaries').DataTable({
+        "responsive": true,
         "scrollY": "500px",
         "scrollCollapse": true
     });
