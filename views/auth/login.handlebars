@@ -6,10 +6,12 @@
     {{#each css}}
         <link rel="stylesheet" href="/css/{{this}}">
     {{/each}}
+    {{#each vendors}}
+        <link rel="stylesheet" href="/vendors/{{this}}">
+    {{/each}}
     {{#each js}}
         <script src="/js/{{this}}"></script>
     {{/each}}
-	<link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
 <div class="container">
@@ -28,51 +30,36 @@
 			{{error}}
 		</div>
 	{{/if}}
-	
-	<div class="d-flex justify-content-center h-100">
-		<div class="card">
-			<div class="card-header">
-				<h3>Sign In</h3>
-				<div class="d-flex justify-content-end social_icon">
-					<span><i class="fab fa-facebook-square"></i></span>
-					<span><i class="fab fa-google-plus-square"></i></span>
-					<span><i class="fab fa-twitter-square"></i></span>
+	<div class="login-wrap customscroll d-flex align-items-center flex-wrap justify-content-center pd-20">
+		<div class="login-box bg-white box-shadow pd-30 border-radius-5">
+			<img src="vendors/images/login-img.png" alt="login" class="login-img">
+			<h2 class="text-center mb-30">Login</h2>
+			<form action="/login" method="POST">
+				<div class="input-group custom input-group-lg">
+					<input type="text" class="form-control" name="username" placeholder="Username">
+					<div class="input-group-append custom">
+						<span class="input-group-text"><i class="fa fa-user" aria-hidden="true"></i></span>
+					</div>
 				</div>
-			</div>
-			<div class="card-body">
-				<form method="POST" action="/login">
-					<div class="input-group form-group">
-						<div class="input-group-prepend">
-							<span class="input-group-text"><i class="fas fa-user"></i></span>
+				<div class="input-group custom input-group-lg">
+					<input type="password" class="form-control" name="password" placeholder="**********">
+					<div class="input-group-append custom">
+						<span class="input-group-text"><i class="fa fa-lock" aria-hidden="true"></i></span>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-6">
+						<div class="input-group">
+							<input class="btn btn-outline-primary btn-lg btn-block" type="submit" value="Sign In">
 						</div>
-						<input type="text" name="username" class="form-control" placeholder="username">
-						
 					</div>
-					<div class="input-group form-group">
-						<div class="input-group-prepend">
-							<span class="input-group-text"><i class="fas fa-key"></i></span>
-						</div>
-						<input type="password" name="password" class="form-control" placeholder="password">
+					<div class="col-sm-6">
+						<div class="forgot-password padding-top-10"><a href="forgot-password.php">Forgot Password</a></div>
 					</div>
-					<div class="row align-items-center remember">
-						<input type="checkbox">Remember Me
-					</div>
-					<div class="form-group">
-						<input type="submit" value="Login" class="btn float-right login_btn">
-					</div>
-				</form>
-			</div>
-			<div class="card-footer">
-				<div class="d-flex justify-content-center links">
-					Don't have an account?<a href="/register">Sign Up</a>
 				</div>
-				<div class="d-flex justify-content-center">
-					<a href="#">Forgot your password?</a>
-				</div>
-			</div>
+			</form>
 		</div>
 	</div>
-</div>
 <script>
 	$(".alert").fadeTo(3200, 800).slideUp(1000, function(){
 		$(".alert").slideUp(500);

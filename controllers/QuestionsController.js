@@ -8,6 +8,12 @@ module.exports = {
         try {
             var id = cryptr.decrypt(req.params.id);
             var questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', id);
+            var subgroups = await knex.raw(`select gp.name as gp_name, sub.name as sub_name 
+                                        from sbr_groups_sub sub, sbr_groups gp 
+                                        where sub.id = ${id}
+                                        and gp.id = sub.id_sbr_groups; `);
+            
+            var  {gp_name, sub_name} = subgroups[0][0];
             questions.forEach(e => {
                 e.number = e.id;
                 e.id = cryptr.encrypt(e.id);
@@ -33,7 +39,9 @@ module.exports = {
                 vendors: ['scripts/script.js'],
                 questions: questions,
                 reference: req.params.id,
-                models: models
+                models: models,
+                gp_name: gp_name,
+                sub_name: sub_name
             });
         } catch (error) {
             req.flash('error_msg', 'Error interno');

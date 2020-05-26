@@ -7,6 +7,7 @@ module.exports = {
     async index(req, res, next){
         try {
             var id = cryptr.decrypt(req.params.id);
+            var nameGroup = await knex('sbr_groups').where('id', id).pluck('name');
             var subgroups = await knex('sbr_groups_sub').where('id_sbr_groups', id);
             subgroups.forEach(e => {
                 e.id = cryptr.encrypt(e.id);
@@ -25,7 +26,8 @@ module.exports = {
                     'dataTables.bootstrap4.min.js'],
                 vendors: ['scripts/script.js'],
                 subgroups: subgroups,
-                reference: req.params.id
+                reference: req.params.id,
+                name: nameGroup
             });
         } catch (error) {
             req.flash('error_msg', 'Error Interno ');

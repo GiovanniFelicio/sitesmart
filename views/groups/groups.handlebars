@@ -1,9 +1,18 @@
+<div class="col-md-6 col-sm-12">
+    <nav aria-label="breadcrumb" role="navigation">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Grupos</li>
+        </ol>
+    </nav>
+</div>
+<hr>
 <div class="container">
     <div class="row">
         <div class="col mt-5">
-            <button class="btn btn-info float-right" data-toggle="modal" data-target="#delGroup"><i class="fa fa-plus mr-2"></i>ADD GRUPO</button>
+            <button class="btn btn-info float-right" data-toggle="modal" data-target="#addGroup"><i class="fa fa-plus mr-2"></i>ADD GRUPO</button>
             <div class="table-responsive mt-5">
-                <table id="groups" class="table table-bordered groups text-center" style="width: 100%;">
+                <table id="groups" class="table table-bordered groups text-center display nowrap" style="width: 100%;">
                     <thead>
                     <tr>
                         <th>Nome</th>
@@ -78,6 +87,7 @@
 </div>
 <script>
     $('#groups').DataTable({
+        "responsive": true,
         "scrollY": "500px",
         "scrollCollapse": true
     });

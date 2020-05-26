@@ -11,8 +11,8 @@ module.exports = {
         return res.render('auth/login',{
             layout: '',
             css: ['bootstrap.css',
-                'all.min.css',
-                'myLogin.css'],
+                'all.min.css'],
+            vendors: ['styles/style.css'],
             js: ['jquery.min.js', 
                 'bootstrap.js'],
             errors: errors,
