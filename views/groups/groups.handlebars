@@ -1,25 +1,38 @@
-<div class="container">
+<div class="col-md-6 col-sm-12">
+    <nav aria-label="breadcrumb" role="navigation">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Grupos</li>
+        </ol>
+    </nav>
+</div>
+<hr>
+<div class="container-fluid">
     <div class="row">
         <div class="col mt-5">
-            <button class="btn btn-info float-right" data-toggle="modal" data-target="#addGroup"><i class="fa fa-plus mr-2"></i>ADD GROUP</button>
+            <button class="btn btn-info float-right" data-toggle="modal" data-target="#addGroup"><i class="fa fa-plus mr-2"></i>ADD GRUPO</button>
             <div class="table-responsive mt-5">
-                <table id="groups" class="table table-bordered groups text-center" style="width: 100%;">
+                <table id="groups" class="table table-bordered groups text-center display nowrap" style="width: 100%;">
                     <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Added In</th>
-                        <th>Options</th>
+                        <th>Nome</th>
+                        <th>Adicionado Em</th>
+                        <th>Opções</th>
                     </tr>
                     </thead>
                     <tbody>
                         {{#each groups}}
-                            <tr>
+                            <tr {{#compare deleted_at '!=' null}} class="alert-danger" {{/compare}}>
                                 <td>{{name}}</td>
                                 <td>{{created_at}}</td>
-                                <td>
-                                    <a class="btn btn-success" href="/groups/sub/{{id}}" title="View"><i class="fa fa-eye"></i></a>
-                                    <button class="btn btn-danger del" data-id="{{id}}" title="Delete"><i class="fa fa-trash"></i></button>
-                                </td>
+                                {{#compare deleted_at '!=' null}}
+                                    <td>Deletado</td>
+                                {{else}}
+                                    <td>
+                                        <a class="btn btn-success" href="/groups/sub/{{id}}" title="View"><i class="fa fa-eye"></i></a>
+                                        <button class="btn btn-danger del" data-id="{{id}}" title="Delete"><i class="fa fa-trash"></i></button>
+                                    </td>
+                                {{/compare}}
                             </tr>
                         {{/each}}
                     </tbody>
@@ -40,7 +53,7 @@
             <div class="modal-body">
                 <form method="POST" action="/groups" id="createGroup">
                     <div class="form-group">
-                        <label>Name Sector</label>
+                        <label>Nome do Grupo</label>
                         <input class="form-control" id="name" type="text" name="name" placeholder="Ex: Comercial" autofocus>
                     </div>
                     <div class="text-center">
@@ -51,9 +64,50 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="delGroup" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> DELETE </h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>X</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Você deseja deletar este grupo mesmo ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">NÃO</button>
+                <button type="button" class="btn btn-primary yes">SIM</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     $('#groups').DataTable({
+        "responsive": true,
         "scrollY": "500px",
         "scrollCollapse": true
     });
+    let idEncrypt;
+    $('.del').click(function () {
+        idEncrypt = $(this).attr('data-id');
+        $('#delGroup').modal('show');
+    });
+    $('.yes').on('click', function () {
+        $.ajax({
+            url: '/groups/'+idEncrypt,
+            type: 'DELETE',
+            success: function(result) {
+                if(result == 1){
+                    window.location.replace('/groups');
+                }
+                else{
+                    $('#deleteSubgroup').hide();
+                    alert("Error when deleting");
+                }
+            }
+        });
+    });
+    
 </script>

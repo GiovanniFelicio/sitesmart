@@ -8,172 +8,166 @@ module.exports = {
         try {
             var id = cryptr.decrypt(req.params.id);
             var questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', id);
+            var subgroups = await knex.raw(`select gp.name as gp_name, sub.name as sub_name 
+                                        from sbr_groups_sub sub, sbr_groups gp 
+                                        where sub.id = ${id}
+                                        and gp.id = sub.id_sbr_groups; `);
+            
+            var  {gp_name, sub_name} = subgroups[0][0];
+            questions.forEach(e => {
+                e.number = e.id;
+                e.id = cryptr.encrypt(e.id);
+                e.created_at = Moment(e.created_at).format('DD-MM-Y  H:m:ss');
+            });
+            var models = [];
+            var modelsAgroup = await knex.select('agroup').from('sbr_groups_sub_qn_models').groupBy('agroup');
+            for (let i = 0; i < modelsAgroup.length; i++) {
+                models.push({'agroup': modelsAgroup[i].agroup, 'model': await findModels(modelsAgroup[i].agroup)});
+            }
+            return res.render('questions/questions',{
+                layout: 'default',
+                style: ['styles/style.css'],
+                css: ['dataTables.bootstrap4.min.css',
+                        'responsive.dataTables.min.css'],
+                jquery: ['jquery.min.js'],
+                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
+                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
+                js: ['bootstrap.js',
+                    'popper.min.js',
+                    'jquery.datatable.min.js',
+                    'dataTables.bootstrap4.min.js',
+                    'dataTables.responsive.min.js',
+                    'select2.min.js'],
+                vendors: ['scripts/script.js'],
+                questions: questions,
+                reference: req.params.id,
+                models: models,
+                gp_name: gp_name,
+                sub_name: sub_name
+            });
         } catch (error) {
-            req.flash('error_msg', 'Internal Error');
+            req.flash('error_msg', 'Error interno');
             res.redirect(req.header('Referer') || '/');
         }
-        questions.forEach(e => {
-            e.number = e.id;
-            e.id = cryptr.encrypt(e.id);
-            e.created_at = Moment(e.created_at).format('DD-MM-Y  H:m:ss');
-        });
-        var models = [];
-        var modelsAgroup = await knex.select('agroup').from('sbr_groups_sub_qn_models').groupBy('agroup');
-        for (let i = 0; i < modelsAgroup.length; i++) {
-            models.push({'agroup': modelsAgroup[i].agroup, 'model': await findModels(modelsAgroup[i].agroup)});
-        }
-
-        return res.render('questions/questions',{
-            layout: 'default',
-            style: ['styles/style.css'],
-            css: ['dataTables.bootstrap4.min.css'],
-            jquery: ['jquery.min.js'],
-            src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-            js: ['bootstrap.js',
-                'popper.min.js',
-                'jquery.datatable.min.js',
-                'dataTables.bootstrap4.min.js',
-                'select2.min.js'],
-            vendors: ['scripts/script.js'],
-            questions: questions,
-            reference: req.params.id,
-            models: models
-        });
     },
     async create(req, res, next){
         var errors = [];
         var error_msg = '';
-        if( !req.body.question || typeof req.body.question  == undefined || req.body.question  == null){
-            errors.push('Invalid Question');
-        }
-        try{
-            if(await findQuestion(req.body.question) == true){
-                req.flash('error_msg', 'This question already exists');
-                res.redirect(req.header('Referer') || '/');
+        try {
+            if( !req.body.question || typeof req.body.question  == undefined || req.body.question  == null){
+                errors.push('Questão Inválida');
             }
-        }
-        catch(error){
-            req.flash('error_msg', 'Internal Error');
-            res.redirect(req.header('Referer') || '/');
-        }
-        if( !req.body.reference || typeof req.body.reference  == undefined || req.body.reference  == null){
-            errors.push('Invalid Data');
-        }
-        if( !req.body.type || typeof req.body.type  == undefined || req.body.type  == null){
-            errors.push('Invalid Type');
-        }
-
-        var {reference, question, type} = req.body;
-        //res.send({reference, question, type});
-        if(type == 2){
-            if( !req.body.model || typeof req.body.model  == undefined || req.body.model  == null){
-                errors.push('Invalid Model');
-                console.log('ola');
-            }
-            /*else if(req.body.model == 0){
-                if( !req.body.anotherModel || typeof req.body.anotherModel  == undefined || req.body.anotherModel  == null){
-                    errors.push('Invalid Another Model');
-                }
-                if( !req.body.value || typeof req.body.value  == undefined || req.body.value  == null){
-                    errors.push('Invalid Value');
-                }
-                if(req.body.anotherModel.length != req.body.value.length){
-                    req.flash('error_msg', 'Model quantities and Values ​​are different');
-                    res.redirect(req.header('Referer') || '/');
-                }
-                
-                /*if (req.body.checkToSave && typeof req.body.checkToSave  != undefined && req.body.checkToSave  != null) {
-                    if(await findModel(type, model) == false){
-                        res.send(model);
-                        var teste = await insertModel(type, req.body.anotherModel, req.body.value);
-                        console.log(teste);
-                    }
-                    var check = 1;
-                }
-                else{
-                    var check = 0;
-                }
-            }*/
-            else{
-                var model = req.body.model;
-            }
-        }
-        
-        if(errors.length > 0){
-            errors.forEach(e => {
-                error_msg += e + ', ';
-            });
-            req.flash('error_msg', error_msg);
-            res.redirect(req.header('Referer') || '/');
-        }
-        else{
             try{
-                var insert = await knex('sbr_groups_sub_qn').insert({
-                    id_sbr_groups_sub: cryptr.decrypt(reference),
-                    question: question,
-                    type: type,
-                    model: model || null
-                });
-                if(insert){
-                    req.flash('success_msg', 'Added Question');
-                    res.redirect(req.header('Referer') || '/');
-                }
-                else{
-                    req.flash('error_msg', 'Error when adding question');
+                if(await findQuestion(req.body.question) == true){
+                    req.flash('error_msg', 'Esta questão já existe');
                     res.redirect(req.header('Referer') || '/');
                 }
             }
             catch(error){
-                next(error);
+                req.flash('error_msg', 'Error interno');
+                res.redirect(req.header('Referer') || '/');
+            }
+            if( !req.body.reference || typeof req.body.reference  == undefined || req.body.reference  == null){
+                errors.push('Erro de referência');
+            }
+            if( !req.body.type || typeof req.body.type  == undefined || req.body.type  == null){
+                errors.push('Tipo inválido');
+            }
+            var {reference, question, type} = req.body;
+            if(type == 2){
+                if( !req.body.model || typeof req.body.model  == undefined || req.body.model  == null){
+                    errors.push('Modelo Inválido');
+                }
+                else{
+                    var model = req.body.model;
+                }
             }
             
+            if(errors.length > 0){
+                errors.forEach(e => {
+                    error_msg += e + ', ';
+                });
+                req.flash('error_msg', error_msg);
+                res.redirect(req.header('Referer') || '/');
+            }
+            else{
+                try{
+                    var idSub = cryptr.decrypt(reference);
+                    var subgroup = await knex('sbr_groups_sub').where('id', idSub).first();
+                    var insert = await knex('sbr_groups_sub_qn').insert({
+                        id_sbr_groups: subgroup.id_sbr_groups,
+                        id_sbr_groups_sub: idSub,
+                        question: question,
+                        type: type,
+                        model: model || null
+                    });
+                    if(insert){
+                        req.flash('success_msg', 'Questão adicionada');
+                        return res.redirect(req.header('Referer') || '/');
+                    }
+                    else{
+                        req.flash('error_msg', 'Erro ao adicionar questão');
+                        return res.redirect(req.header('Referer') || '/');
+                    }
+                }
+                catch(error){
+                    next(error);
+                }
+                
+            }
+        } catch (error) {
+            req.flash('error_msg', 'Erro Interno do servidor');
+            return res.redirect(req.header('Referer') || '/');
         }
     },
     async save(req,res,next){
-        if( !req.body.idQuestion || typeof req.body.idQuestion  == undefined || req.body.idQuestion  == null){
-            return res.send('0');
-        }
-        else if( !req.body.answer || typeof req.body.answer  == undefined || req.body.answer  == null){
-            return res.send('0');
-        }
-        else if( !req.body.qnr || typeof req.body.qnr  == undefined || req.body.qnr  == null){
-            return res.send('0');
-        }
-        else{
-          var {idQuestion, answer, qnr} = req.body;
-            var savedQuests;
-            try{
-                savedQuests = await knex('sbr_groups_sub_qn_answers').where('id_sbr_groups_sub_qn', idQuestion).where('id_sbr_qnr', qnr);
-                getQnr = await knex('sbr_groups_sub_qn_answers').where('id_sbr_qnr', qnr);
-                if(getQnr.length <= 0){
-                    updatedQnr = await knex('sbr_qnr').where('id', req.body.qnr).update({
-                        status: 2
-                    });
-                }
-                if(savedQuests.length > 0){
-                    saveQuest = await knex('sbr_groups_sub_qn_answers').where('id_sbr_groups_sub_qn', idQuestion).where('id_sbr_qnr', qnr).update({
-                        id_sbr_groups_sub_qn_models: answer
-                    });
-                }
-                else{
-                    saveQuest = await knex('sbr_groups_sub_qn_answers').insert({
-                        id_sbr_groups_sub_qn: idQuestion,
-                        id_sbr_qnr: qnr,
-                        id_sbr_groups_sub_qn_models: answer
-                    });
-                }
-                
-                if(saveQuest){
-                    return res.send('1');
-                }
-                else{
-                    return res.send('0');
-                }
-            }
-            catch(e){
+        try {
+            if( !req.body.idQuestion || typeof req.body.idQuestion  == undefined || req.body.idQuestion  == null){
                 return res.send('0');
-            }  
+            }
+            else if( !req.body.answer || typeof req.body.answer  == undefined || req.body.answer  == null){
+                return res.send('0');
+            }
+            else if( !req.body.qnr || typeof req.body.qnr  == undefined || req.body.qnr  == null){
+                return res.send('0');
+            }
+            else{
+              var {idQuestion, answer, qnr} = req.body;
+                var savedQuests;
+                try{
+                    savedQuests = await knex('sbr_groups_sub_qn_answers').where('id_sbr_groups_sub_qn', idQuestion).where('id_sbr_qnr', qnr);
+                    getQnr = await knex('sbr_groups_sub_qn_answers').where('id_sbr_qnr', qnr);
+                    if(getQnr.length <= 0){
+                        updatedQnr = await knex('sbr_qnr').where('id', req.body.qnr).update({
+                            status: 2
+                        });
+                    }
+                    if(savedQuests.length > 0){
+                        saveQuest = await knex('sbr_groups_sub_qn_answers').where('id_sbr_groups_sub_qn', idQuestion).where('id_sbr_qnr', qnr).update({
+                            id_sbr_groups_sub_qn_models: answer
+                        });
+                    }
+                    else{
+                        saveQuest = await knex('sbr_groups_sub_qn_answers').insert({
+                            id_sbr_groups_sub_qn: idQuestion,
+                            id_sbr_qnr: qnr,
+                            id_sbr_groups_sub_qn_models: answer
+                        });
+                    }
+                    
+                    if(saveQuest){
+                        return res.send('1');
+                    }
+                    else{
+                        return res.send('0');
+                    }
+                }
+                catch(e){
+                    return res.send('0');
+                }  
+            }
+        } catch (error) {
+            return res.send('0');
         }
         
     },

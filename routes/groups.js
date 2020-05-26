@@ -4,7 +4,8 @@ const {isAuth} = require('../helpers/middlewares');
 
 const GroupsController = require('../controllers/GroupsController');
 
-routes.get('/groups', GroupsController.index);
-routes.post('/groups', GroupsController.create);
+routes.get('/groups', isAuth, GroupsController.index);
+routes.post('/groups', isAuth, GroupsController.create);
+routes.delete('/groups/:id', isAuth, GroupsController.delete);
 
 module.exports = routes;

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>SmartBR</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Free HTML5 Template by FREEHTML5.CO" />
+        <meta name="keywords" content="free html5, free template, free bootstrap, html5, css3, mobile first, responsive" />
+        <meta name="author" content="FREEHTML5.CO" />
+        <meta name="theme-color" content="#292424">
+
+        <!--
+              //////////////////////////////////////////////////////
+      
+              FREE HTML5 TEMPLATE
+              DESIGNED & DEVELOPED by FREEHTML5.CO
+      
+              Website: 		http://freehtml5.co/
+              Email: 			info@freehtml5.co
+              Twitter: 		http://twitter.com/fh5co
+              Facebook: 		https://www.facebook.com/fh5co
+      
+              //////////////////////////////////////////////////////
+        -->
+
+        <!-- Facebook and Twitter integration -->
+        <meta property="og:title" content=""/>
+        <meta property="og:image" content=""/>
+        <meta property="og:url" content=""/>
+        <meta property="og:site_name" content=""/>
+        <meta property="og:description" content=""/>
+        <meta name="twitter:title" content="" />
+        <meta name="twitter:image" content="" />
+        <meta name="twitter:url" content="" />
+        <meta name="twitter:card" content="" />
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <link rel="shortcut icon" href="favicon.ico">
+
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+
+        <link rel="stylesheet" href="css/site/animate.css">
+        <link rel="stylesheet" href="css/site/icomoon.css">
+        <link rel="stylesheet" href="css/site/simple-line-icons.css">
+        <link rel="stylesheet" href="css/site/magnific-popup.css">
+        <link rel="stylesheet" href="css/site/bootstrap.min.css">
+        <link rel="stylesheet" href="css/site/slick.css">
+        <link rel="stylesheet" href="css/site/slick-theme.css">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin=""/>
+     
+
+        <!--
+        Default Theme Style
+        You can change the style.css (default color purple) to one of these styles
+
+        1. pink.css
+        2. blue.css
+        3. turquoise.css
+        4. orange.css
+        5. lightblue.css
+        6. brown.css
+        7. green.css
+
+        -->
+        <link rel="stylesheet" href="css/site/style.css">
+        <link rel="stylesheet" href="css/site/main.css">
+
+        <!-- End demo purposes only -->
+        <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+
+        <style>
+            /* For demo purpose only */
+
+            /* For Demo Purposes Only ( You can delete this anytime :-) */
+            #colour-variations {
+                padding: 10px;
+                -webkit-transition: 0.5s;
+                -o-transition: 0.5s;
+                transition: 0.5s;
+                width: 140px;
+                position: fixed;
+                left: 0;
+                top: 100px;
+                z-index: 999999;
+                background: #fff;
+                /*border-radius: 4px;*/
+                border-top-right-radius: 4px;
+                border-bottom-right-radius: 4px;
+                -webkit-box-shadow: 0 0 9px 0 rgba(0,0,0,.1);
+                -moz-box-shadow: 0 0 9px 0 rgba(0,0,0,.1);
+                -ms-box-shadow: 0 0 9px 0 rgba(0,0,0,.1);
+                box-shadow: 0 0 9px 0 rgba(0,0,0,.1);
+            }
+            #colour-variations.sleep {
+                margin-left: -140px;
+            }
+            #colour-variations h3 {
+                text-align: center;;
+                font-size: 11px;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                color: #777;
+                margin: 0 0 10px 0;
+                padding: 0;;
+            }
+            #colour-variations ul,
+            #colour-variations ul li {
+                padding: 0;
+                margin: 0;
+            }
+            #colour-variations li {
+                list-style: none;
+                display: block;
+                margin-bottom: 5px !important;
+                float: left;
+                width: 100%;
+            }
+            #colour-variations li a {
+                width: 100%;
+                position: relative;
+                display: block;
+                overflow: hidden;
+                -webkit-border-radius: 4px;
+                -moz-border-radius: 4px;
+                -ms-border-radius: 4px;
+                border-radius: 4px;
+                -webkit-transition: 0.4s;
+                -o-transition: 0.4s;
+                transition: 0.4s;
+            }
+            #colour-variations li a:hover {
+                opacity: .9;
+            }
+            #colour-variations li a > span {
+                width: 33.33%;
+                height: 20px;
+                float: left;
+                display: -moz-inline-stack;
+                display: inline-block;
+                zoom: 1;
+                *display: inline;
+            }
+
+
+            .option-toggle {
+                position: absolute;
+                right: 0;
+                top: 0;
+                margin-top: 5px;
+                margin-right: -30px;
+                width: 30px;
+                height: 30px;
+                background: #f64662;
+                text-align: center;
+                border-top-right-radius: 4px;
+                border-bottom-right-radius: 4px;
+                color: #fff;
+                cursor: pointer;
+                -webkit-box-shadow: 0 0 9px 0 rgba(0,0,0,.1);
+                -moz-box-shadow: 0 0 9px 0 rgba(0,0,0,.1);
+                -ms-box-shadow: 0 0 9px 0 rgba(0,0,0,.1);
+                box-shadow: 0 0 9px 0 rgba(0,0,0,.1);
+            }
+            .option-toggle i {
+                top: 2px;
+                position: relative;
+            }
+            .option-toggle:hover, .option-toggle:focus, .option-toggle:active {
+                color:  #fff;
+                text-decoration: none;
+                outline: none;
+            }
+            .fh5co-service{
+                cursor: pointer;
+            }
+
+            .section-heading {
+                float: left;
+                margin-bottom: 50px;
+                clear: both;
+                max-width: 100%;
+            }
+        </style>
+        <!-- End demo purposes only -->
+
+        <!-- Modernizr JS -->
+        <script src="js/site/modernizr-2.6.2.min.js"></script>
+        <!-- FOR IE9 below -->
+        <!--[if lt IE 9]>
+        <script src="bower_components/respond/dest/respond.min.js"></script>
+        <![endif]-->
+
+    </head>
+    <body>
+        <div id="smart-contact-bar">
+            <div class="container" >
+                <ul class="items-right">
+                    <li><a href="#" ><span>contato@smartbr.com</span></a></li>
+                    <li><a href="#" ><span>45 3122 0004</span></a></li>
+                    <li><a href="https://www.facebook.com/smartbrtecnologia" ><span class="icon-facebook"></span></a></li>
+                    <li><a href="#" ><span class="icon-linkedin"></span></a></li>
+                    <li><a href="/login" >Interno</a></li>
+                </ul>
+            </div>
+        </div>
+        <header role="banner" id="fh5co-header"  >
+
+            <div class="container">
+
+                <nav class="navbar navbar-default">
+                    <div class="navbar-header">
+                        <!-- Mobile Toggle Menu Button -->
+                        <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"><i></i></a>
+                        <a class="navbar-brand" href="/">
+                            <span class="icon-smartbr-logo"></span>
+                        </a>
+                    </div>
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="active"><a href="#" data-nav-section="home"><span>Home</span></a></li>
+                            <li><a href="#" data-nav-section="services"><span>O que fazemos</span></a></li>
+                            <li><a href="#" data-nav-section="quemsomos"><span>Quem somos</span></a></li>
+                            <li><a href="#" data-nav-section="clientes"><span>Clientes</span></a></li>
+                            <li><a href="#" data-nav-section="contact"><span>Contato</span></a></li>
+                        </ul>
+                    </div>
+                </nav>
+
+            </div>
+        </header>
+
+        <section id="fh5co-home" data-section="home" data-vide-bg="mp4: vids/smart-movie-final,poster : img/frame_background"
+                 data-vide-options="posterType: png, loop: true, muted: false, position: 0% 0%">
+            <div class="gradient"></div>
+            <div class="container">
+                <div class="text-wrap">
+                    <div class="text-inner">
+                        <div class="row">
+
+                            <div class="col-md-8 col-md-offset-2">
+                                <h1 class="to-animate">Você precisa ser smart.</h1>
+                                <h2 class="to-animate">Conheça nossas soluções em tecnologia e veja sua empresa funcionar como nunca.</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slant"></div>
+        </section>
+
+        <section id="fh5co-intro" >
+            <div class="container">
+                <div class="row row-bottom-padded-lg">
+                    <div class="fh5co-block to-animate" style="background-image: url(img/img_7.jpg);">
+                        <div class="overlay-darker"></div>
+                        <div class="overlay"></div>
+                        <div class="fh5co-text">
+                            <i class="fh5co-intro-icon icon-ocean-symbol"></i>
+                            <h2>Ocean</h2>
+                            <p style="text-align: center;">Conheça o ERP que vai revolucionar o funcionamento da sua empresa e ganhe tempo para novos planos</p>
+                            <!-- <p><a href="#" class="btn btn-primary">Mergulhar</a></p> -->
+                        </div>
+                    </div>
+                    <div class="fh5co-block to-animate" style="background-image: url(img/img_8.jpg);">
+                        <div class="overlay-darker"></div>
+                        <div class="overlay"></div>
+                        <div class="fh5co-text">
+                            <i class="fh5co-intro-icon icon-sicon_data-center"></i>
+                            <h2>Data Center</h2>
+                            <p style="text-align: center;">Projeto, construção, implantação e treinamento. Oferecemos soluções completas para a instalação do seu bancos de dados</p>
+                            <!-- <p><a href="#" class="btn btn-primary">Ver mais</a></p> -->
+                        </div>
+                    </div>
+                    <div class="fh5co-block to-animate" style="background-image: url(img/img_10.jpg);">
+                        <div class="overlay-darker"></div>
+                        <div class="overlay"></div>
+                        <div class="fh5co-text">
+                            <i class="fh5co-intro-icon icon-rocket"></i>
+                            <h2>Consultoria</h2>
+                            <p style="text-align: center;">Contamos com profissionais especializados nas áreas de TI, contábil, fiscal e financeira. Tudo para fazer sua empresa decolar</p>
+                            <!-- <p><a href="#" class="btn btn-primary">Descobrir</a></p> -->
+                        </div>
+                    </div>
+                    <div class="fh5co-block to-animate" style="background-image: url(img/work_7.jpg);">
+                        <div class="overlay-darker"></div>
+                        <div class="overlay"></div>
+                        <div class="fh5co-text">
+                            <i class="fh5co-intro-icon icon-sicon_crm"></i>
+                            <h2>CRM</h2>
+                            <p style="text-align: center;">Faça prospecção e gerencie seus clientes de forma ágil e eficiente com nossas ferramentas e soluções de CRM em nuvem</p>
+                            <!-- <p><a href="#" class="btn btn-primary">Eu quero!</a></p> -->
+                        </div>
+                    </div>
+                </div>
+        </section>
+        <section id="fh5co-services" data-section="services">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 section-heading text-left">
+                        <h2 class=" left-border to-animate">O que fazemos</h2>
+                        <div class="row">
+                            <div class="col-md-8 subtext to-animate">
+                                <h3>Entregamos soluções em tecnologia para profissionais e empresas de todos os tamanhos, em todo o Brasil. 24 horas por dia. 7 dias por semana. Encaramos qualquer desafio.</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 fh5co-service to-animate" title="Ir para a página de serviços" >
+                        <i class="icon to-animate-2 icon-sicon_services"></i>
+                        <h3><a>Smart Services</a></h3>
+                        <style>
+                            a:link    {color:#fff; background-color:transparent; text-decoration:none}
+                            a:visited {color:#fff; background-color:transparent; text-decoration:none}
+                            a:hover   {color:#fff; background-color:transparent; text-decoration:none}
+                            a:active  {color:#fff; background-color:transparent; text-decoration:none}
+                        </style>
+                        <p>Se você e sua empresa precisam de serviços e ferramentas da área de tecnologia, nós podemos ajudar. Oferecemos uma série de serviços que vão desde um simples registro de domínio até a instalação do mais robusto data center.  </p>
+                    </div>
+                    <div class="col-md-6 col-sm-6 fh5co-service to-animate" title="Ir para a página de soluções">
+                        <i class="icon to-animate-2 icon-sicon_solutions"></i>
+                        <h3>Smart Solutions</h3>
+                        <p>Criamos soluções sob medida para empresas de pequeno a grande porte. Nosso sistema ERP OCEAN, por exemplo, agiliza o processo administrativo além de acelerar suas vendas, aprimorando a gestão e prospecção de clientes.</p>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6 col-sm-6 fh5co-service to-animate" title="Ir para a página de produtos">
+                        <i class="icon to-animate-2 icon-sicon_eng"></i>
+                        <h3>Smart Products</h3>
+                        <p>Nossa divisão de produtos busca desenvolver soluções práticas, sustentáveis e inovadoras para as demandas específicas do mercado e de cada cliente. Trabalhamos com a ajuda de nosso abrangente knowhow, sustentado por uma ampla equipe multidisciplinar formada por especialistas em gestão, design e engenharia. Isso torna possível o desenvolvimento de produtos desde o conceito até a produção.</p>
+                    </div>
+                    <div class="col-md-6 col-sm-6 fh5co-service to-animate" title="Ir para a página de consultoria">
+                        <i class="icon to-animate-2 icon-sicon_consult2"></i>
+                        <h3>Smart Consult</h3>
+                        <p>Ninguém cresce e evolui sozinho. O mesmo acontece com as empresas. Por isso, acreditamos que as parcerias podem acelerar o processo de crescimento de um negócio, possibilitando o planejamento a longo prazo e agilizando o fluxo cotidiano de trabalho. A Smart Consult foi criada para caminhar ao seu lado, oferecendo o embasamento e as ferramentas que sua empresa precisa para crescer com qualidade. </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="smart-quemsomos" data-section="quemsomos" >
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 section-heading text-center">
+                        <h2 class="to-animate">Somos a SmartBR</h2>
+                        <div class="row">
+                            <div class="col-md-8 col-md-offset-2 subtext to-animate">
+                                <h3>Somos uma empresa de tecnologia e inovação com um diferencial: somamos o conhecimento de profissionais de T.I., design, gestão de negócios e pessoas além dos mais variados ramos da engenharia para criar soluções práticas com custos sustentáveis. Nossa meta é entregar soluções inteligentes, simples ou complexas, que possam transformar a vida das pessoas. Alterando, assim, sua relação cotidiana com o mundo. Somos entusiastas da tecnologia. Por isso, nada nos faz mais felizes do que vê-la atuar em nosso dia a dia como uma ferramenta de inclusão, que socializa, educa e acelera nossa evolução como seres humanos.</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row grid row-bottom-padded-md">
+                    <div class="grid-sizer"></div>
+                    <div class="grid-item"></div>
+                    <div class="grid-item-2">
+                        <figure class="img-item figure-1" >
+                            <img src="img/figure-1.jpg"  alt="Imagens SmartBr" />
+                        </figure>
+                        <figure class="img-item figure-2">
+                            <img src="img/figure-2.jpg" alt="Imagens SmartBr" />
+                        </figure>
+                        <figure class="img-item figure-3">
+                            <img src="img/figure-3.jpg" class="figure-3" alt="Imagens SmartBr" />
+                        </figure>
+                        <figure class="img-item figure-4">
+                            <img src="img/figure-4.jpg" class="figure-4" alt="Imagens SmartBr" />
+                        </figure>
+                    </div>
+                    <div class="grid-item-1">
+                        <figure class="img-item-full figure-5">
+                            <img src="img/figure-5.jpg" class="fix-full figure-5" alt="Imagens SmartBr" />
+                        </figure>
+                    </div>
+                    <div class="grid-item-2">
+                        <figure class="img-item figure-6">
+                            <img src="img/figure-6.jpg" class="figure-6" alt="Imagens SmartBr" />
+                        </figure>
+                        <figure class="img-item figure-7">
+                            <img src="img/figure-7.jpg" class="figure-7" alt="Imagens SmartBr" />
+                        </figure>
+                        <figure class="img-item-full figure-8">
+                            <img src="img/figure-8.jpg" class="figure-8" alt="Imagens SmartBr" />
+                        </figure>
+                    </div>
+                    <div class="grid-item-2 ">
+                        <figure class="img-item-full figure-9">
+                            <img src="img/figure-9.jpg" class="figure-8" alt="" />
+                        </figure>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="fh5co-counters" style="background-image: url(img/full_image_1.jpg);" data-stellar-background-ratio="0.5">
+            <div class="fh5co-overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 section-heading text-center to-animate">
+                        <h2>Nossos números</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="fh5co-counter to-animate">
+                            <i class="fh5co-counter-icon icon-briefcase2 to-animate-2"></i>
+                            <span class="fh5co-counter-number js-counter" data-from="0" data-to="26" data-speed="4000" data-refresh-interval="50">89</span>
+                            <span class="fh5co-counter-label">Colaboradores</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="fh5co-counter to-animate">
+                            <i class="fh5co-counter-icon icon-code to-animate-2"></i>
+                            <span class="fh5co-counter-number js-counter" data-from="0" data-to="1253562" data-speed="4000" data-refresh-interval="50">9343409</span>
+                            <span class="fh5co-counter-label">Linhas de código</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="fh5co-counter to-animate">
+                            <i class="fh5co-counter-icon icon-cup to-animate-2"></i>
+                            <span class="fh5co-counter-number js-counter" data-from="0" data-to="10082" data-speed="4000" data-refresh-interval="50">2704</span>
+                            <span class="fh5co-counter-label">Litros de café</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="fh5co-counter to-animate">
+                            <i class="fh5co-counter-icon icon-sicon_experiencia to-animate-2"></i>
+                            <span class="fh5co-counter-number js-counter" data-from="0" data-to="16" data-speed="4000" data-refresh-interval="50">52</span>
+                            <span class="fh5co-counter-label">Anos de experiência</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="smart-clientes" data-section="clientes" style="    background-color: #edf8ff;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 section-heading text-center to-animate">
+                        <h2>Nossos Clientes</h2>
+                        <div class="row">
+                            <div class="col-md-8 col-md-offset-2 subtext to-animate">
+                                <h3>A SmartBR entrou no mercado há pouco tempo, porém, adquiriu muita experiência e knowhow prestando serviços e criando soluções para grandes indústrias, empresas e franquias das áreas de comércio, logística e serviços. </h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="slider slider-clientes">
+                                <div>
+                                    <img src="img/aoknon.png" alt="Logo Aoknon" />
+                                </div>
+                                <div>
+                                    <img src="img/arktus.png" alt="Logo Arktus" />
+                                </div>
+                                <div>
+                                    <img src="img/brw.png" alt="Logo BRW" />
+                                </div>
+                                <div>
+                                    <img src="img/isp3.png" alt="Logo ISP" />
+                                </div>
+                                <div>
+                                    <img src="img/evocont.png" alt="Logo Evocont" />
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="fh5co-contact" data-section="contact">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 section-heading text-center">
+                        <h2 class="to-animate">Entre em contato</h2>
+                        <div class="row">
+                            <div class="col-md-8 col-md-offset-2 subtext to-animate">
+                                <h3>Nós teclamos muito, mas não perdemos o prazer em uma boa conversa. Entre em contato e vamos encontrar a melhor solução para sua empresa juntos.</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row row-bottom-padded-md">
+                    <div class="col-md-6 to-animate">
+                        <ul class="fh5co-contact-info">
+                            <li class="fh5co-contact-address ">
+                                <i class="icon-home"></i>
+                                Rua Barão do Cerro Azul, 1246, Centro, Cascavel - PR <br/> CEP 85819-350
+                            </li>
+                            <li><i class="icon-phone"></i> (45) 3122 0004</li>
+                            <li><i class="icon-envelope"></i>contato@smartbr.com</li>
+                        </ul>
+                    </div>
+
+                    <form id="formularioContato" class="col-md-6 to-animate" >
+                        <div class="form-group ">
+                            <label for="name" class="sr-only">Nome</label>
+                            <input required id="name" data-text="Nome" name="name" class="form-control" value="" placeholder="Nome" type="text">
+                        </div>
+                        <div class="form-group ">
+                            <label for="email" class="sr-only">Email</label>
+                            <input required id="email" name="email" data-text="E-mail" class="form-control" value="" placeholder="Email" type="email">
+                        </div>
+                        <div class="form-group ">
+                            <label for="phone" class="sr-only">Telefone</label>
+                            <input required id="phone" name="phone" data-text="Telefone" class="form-control" value="" placeholder="Telefone" type="text">
+                        </div>
+                        <div class="form-group ">
+                            <label for="message" class="sr-only">Mensagem</label>
+                            <textarea required name="message" id="message" data-text="Mensagem" cols="30" rows="5" class="form-control" placeholder="Escreva aqui sua mensagem"></textarea>
+                        </div>
+                        <div class="form-group ">
+                            <input id="sendMailTo" class="btn btn-primary btn-lg" value="Enviar" type="button">
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div style="height: 520px; " id="mapid" class="to-animate"></div>
+        </section>
+
+        <footer id="footer" role="contentinfo">
+            <a href="#" class="gotop js-gotop"><i class="icon-arrow-up2"></i></a>
+            <div class="container">
+                <div class=""></div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <ul class="social social-circle">
+                        <li><a href="https://www.facebook.com/smartbrtecnologia"><i class="icon-facebook"></i></a></li>
+                    </ul>
+                    <div class="col-md-12 text-center">
+                        <p>&copy; SmartBR Soluções. Todos os direitos reservados.<br></p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <script src="js/site/jquery.min.js"></script>
+        <script src="js/site/jquery.easing.min.js"></script>
+        <script src="js/site/bootstrap.min.js"></script>
+        <script src="js/site/jquery.waypoints.min.js"></script>
+        <script src="js/site/jquery.stellar.min.js"></script>
+        <script src="js/site/jquery.countTo.js"></script>
+        <script src="js/site/jquery.magnific-popup.min.js"></script>
+        <script src="js/site/magnific-popup-options.js"></script>
+        <script src="js/site/slick.min.js"></script>
+        <script src="js/site/jquery.vide.min.js"></script>
+        <script src="js/site/masonry.pkgd.min.js"></script>
+        <script src="js/site/alertify.js"></script>
+        <script src="js/site/imagesloaded.pkgd.min.js"></script>
+        <!-- Google Map -->
+        <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZSHUnPZrmEjGnuxoZ1QfGFZvapTAOcvw&sensor=false"></script>
+        <script src="js/google_map.js"></script> -->
+             <!-- Make sure you put this AFTER Leaflet's CSS -->
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+        integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+        crossorigin=""></script>
+        <!-- For demo purposes only styleswitcher ( You may delete this anytime ) -->
+        <script src="js/site/jQuery.style.switcher.min.js"></script>
+        <script src="js/site/jquery.maskedinput.min.js"></script>
+
+        <style media="screen">
+
+            .grid-item, .grid-sizer {
+                width: 14.28%;
+            }
+
+            .grid {
+                background: #DDD;
+            }
+
+            /* clear fix */
+            .grid:after {
+                content: '';
+                display: block;
+                clear: both;
+            }
+
+            /* ---- .grid-item ---- */
+
+
+            .img-item-full {
+                width: 100%;
+                display: flex;
+                float: left;
+                overflow: hidden;
+            }
+
+            .grid-item img {
+                display: block;
+                max-width: 100%;
+                min-height: 111px
+            }
+        </style>
+        <script>
+            $(document).ready(() => {
+                // MagnificPopup
+                var magnifPopup = () => {
+                    $('.image-popup').magnificPopup({
+                    type: 'image',
+                    removalDelay: 300,
+                    mainClass: 'mfp-with-zoom',
+                    gallery: {
+                        enabled: true
+                    },
+                    zoom: {
+                        enabled: true,
+                        duration: 300,
+                        easing: 'ease-in-out', 
+                        opener: function(openerElement) {
+                            return openerElement.is('img') ? openerElement : openerElement.find('img');
+                        }
+                    }
+                    });
+                };
+
+                var magnifVideo = () => {
+                    $('.popup-youtube, .popup-vimeo, .popup-gmaps').magnificPopup({
+                    disableOn: 700,
+                    type: 'iframe',
+                    mainClass: 'mfp-fade',
+                    removalDelay: 160,
+                    preloader: false,
+
+                    fixedContentPos: false
+                    });
+                };
+
+                // Call the functions
+                magnifPopup();
+                magnifVideo();
+                });
+            var mymap = L.map('mapid').setView([-24.9549667,-53.4521501], 16);
+            L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1,
+                accessToken: 'pk.eyJ1IjoiZ2lvdmFubmlmYyIsImEiOiJjazlqeW11ZXIxcGh1M2tud3dzcGpiem82In0.BpAeP0Rgy8hp2DhbIeb5OA'
+            }).addTo(mymap);
+            var marker = L.marker([-24.9549667,-53.4521501]).addTo(mymap);
+            $(function () {
+                $('#colour-variations ul').styleSwitcher({
+                    defaultThemeId: 'theme-switch',
+                    hasPreview: false,
+                    cookie: {
+                        expires: 30,
+                        isManagingLoad: true
+                    }
+                });
+                $('.option-toggle').click(function () {
+                    $('#colour-variations').toggleClass('sleep');
+                });
+                // init Masonry
+                var $grid = $('.grid').masonry({
+                    itemSelector: '.grid-item',
+                    percentPosition: true,
+                    columnWidth: '.grid-sizer'
+                });
+                // layout Isotope after each image loads
+                $grid.imagesLoaded().progress(function () {
+                    $grid.masonry();
+                });
+            });
+            var clicked = false
+            $('#sendMailTo').click(function (e) {
+                $("#sendMailTo").prop('disabled', true);
+                var dados = [$("#name"), $("#email"), $("#phone"), $("#message")];
+                var aux = [];
+                for (let i = 0; i < dados.length; i++) {
+                    if(dados[i].val() == null || dados[i].val() == ""){
+                        aux.push(dados[i].attr("data-text"));
+                    }
+                }
+                /*if(aux.length > 0){
+                    document.getElementById('sendMailTo').removeAttribute('disabled');
+                    for (let j = 0; j < aux.length; j++) {
+                        alertify.error("O campo de "+ aux[j] +" está vazio 😕");
+                    }
+                }*/
+                //else{
+                    $.post('/send',
+                        $('#formularioContato').serialize()).done(function(data) {
+                            console.log(data);
+                            if(data == 1){
+                                alertify.success("Seu email foi enviado 🥳"); 
+                            }
+                            else{
+                                document.getElementById('sendMailTo').removeAttribute('disabled');
+                                alertify.error(data);
+                            }
+                    });
+                //}
+            });
+            $("#phone").mask("(99) 9999-9999?9")
+                            .focusout(function (event) {  
+                                var target, phone, element;  
+                                target = (event.currentTarget) ? event.currentTarget : event.srcElement;  
+                                phone = target.value.replace(/\D/g, '');
+                                element = $(target);  
+                                element.unmask();  
+                                if(phone.length > 10) {  
+                                    element.mask("(99) 99999-999?9");  
+                                } else {  
+                                    element.mask("(99) 9999-9999?9");  
+                                }  
+                            });
+
+            function goTo(url) {
+                location.href = url;
+            }
+        </script>
+        <!-- End demo purposes only -->
+
+        <!-- Main JS (Do not remove) -->
+        <script src="js/site/main.js"></script>
+
+    </body>
+</html>

@@ -14,7 +14,8 @@ module.exports = {
         return res.render('questionnaries/questionnaries',{
             layout: 'default',
             style: ['styles/style.css'],
-            css: ['dataTables.bootstrap4.min.css'],
+            css: ['dataTables.bootstrap4.min.css',
+                    'responsive.dataTables.min.css'],
             jquery: ['jquery.min.js'],
             src: ['plugins/highcharts-6.0.7/code/highcharts.js',
                 'plugins/highcharts-6.0.7/code/highcharts-more.js'],
@@ -22,128 +23,232 @@ module.exports = {
                 'popper.min.js',
                 'jquery.datatable.min.js',
                 'dataTables.bootstrap4.min.js',
-                'select2.min.js'],
+                'dataTables.responsive.min.js'],
             vendors: ['scripts/script.js'],
             questionnaries: questionnaries
         });
     },
     async add(req, res, next){
-        var groups = await knex('sbr_groups');
-        for(let i = 0; i<groups.length; i++){
-            groups[i].subgroups = await findSubGroup(groups[i].id);
+        try {
+            var groups = await knex('sbr_groups').where('deleted_at', null);
+            for (let i = 0; i < groups.length; i++) {
+                var subgroup = await findSubGroup(groups[i].id);
+                if(subgroup != ''){
+                    groups[i].subgroups = subgroup;
+                }
+            }
+            var dados = [];
+            groups.forEach(gp => {
+                try {
+                    if(gp.subgroups.length > 0){
+                        dados.push(gp);
+                    }
+                } 
+                catch (error) {
+                }
+            });
+            return res.render('questionnaries/add',{
+                layout: 'default',
+                style: ['styles/style.css'],
+                css: ['dataTables.bootstrap4.min.css', 'responsive.dataTables.min.css'],
+                jquery: ['jquery.min.js'],
+                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
+                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
+                js: ['bootstrap.js',
+                    'popper.min.js',
+                    'jquery.datatable.min.js',
+                    'dataTables.bootstrap4.min.js',
+                    'dataTables.responsive.min.js'],
+                vendors: ['scripts/script.js'],
+                groups: dados
+            });
+        } catch (error) {
+            console.log(error);
+            // req.flash('error', 'Erro interno no servidor');
+            // res.redirect('/questionnaries');
         }
-        return res.render('questionnaries/add',{
-            layout: 'default',
-            style: ['styles/style.css'],
-            css: ['dataTables.bootstrap4.min.css', 'bootstrap.min.css'],
-            jquery: ['jquery.min.js'],
-            src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-            js: ['bootstrap.js',
-                'popper.min.js',
-                'jquery.datatable.min.js',
-                'dataTables.bootstrap4.min.js',
-                'select2.min.js'],
-            vendors: ['scripts/script.js'],
-            groups: groups
-        });
+        
     },
     async create(req, res, next){
         var errors = [];
         var error_msg = '';
-        if( !req.body.name || typeof req.body.name == undefined || req.body.name  == null){
-            errors.push('Invalid Name');
-        }
-        if(await findQuestionnaries(req.body.name, 1) == false){
-            req.flash('error_msg', 'The Questionnaries already exist');
-            res.redirect(req.header('Referer') || '/');
-        }
-        if(!req.body.subgroupCheck || req.body.subgroupCheck  == null || req.body.subgroupCheck.length <= 0){
-            req.flash('error_msg', 'Error');
-            res.redirect(req.header('Referer') || '/');
-        }
-        var subgroups = await knex.select('id').from('sbr_groups_sub').whereIn('id', req.body.subgroupCheck);
-        if(errors.length > 0){
-            errors.forEach(e => {
-                error_msg += e + ', ';
+        try {
+            if( !req.body.name || typeof req.body.name == undefined || req.body.name  == null){
+                errors.push('Nome Inválido');
+            }
+            if(await findQuestionnaries(req.body.name, req.user.id) == false){
+                req.flash('error_msg', 'Este questionário já existe');
+                return res.redirect('/questionnaries');
+            }
+            if(!req.body.subgroupCheck || req.body.subgroupCheck  == null || req.body.subgroupCheck.length <= 0){
+                req.flash('error_msg', 'Error');
+                return res.redirect('/questionnaries');
+            }
+            req.body.subgroupCheck.forEach(async sub => {
+                var check = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', sub);
+                var sub = await knex('sbr_groups_sub').where('id', sub).first();
+                if(check.length <= 0){
+                    req.flash('error_msg', 'O SubGrupo: '+sub.name+' está vazio !!');
+                    return res.redirect('/questionnaries');
+                }
             });
-            req.flash('error_msg', error_msg);
-            res.redirect(req.header('Referer') || '/');
-        }
-        else{
-            try{
-                if(await findQuestionnaries(req.body.name, 1)){
-                    var insertQnr = await knex('sbr_qnr').insert({
-                        name: req.body.name,
-                        id_sbr_users: 1
-                    });
-                    subgroups.forEach(async sub => {
-                        insertQnrQn = await knex('sbr_groups_sub_qn_qnr').insert({
-                            id_sbr_groups_sub: sub.id,
-                            id_sbr_qnr: insertQnr
+            var subgroups = await knex.select('id').from('sbr_groups_sub').whereIn('id', req.body.subgroupCheck).where('deleted_at', null);
+            if(errors.length > 0){
+                errors.forEach(e => {
+                    error_msg += e + ', ';
+                });
+                req.flash('error_msg', error_msg);
+                return res.redirect('/questionnaries');
+            }
+            else{
+                try{
+                    if(await findQuestionnaries(req.body.name, req.user.id)){
+                        var insertQnr = await knex('sbr_qnr').insert({
+                            name: req.body.name,
+                            id_sbr_users: req.user.id
                         });
-                    });
-                    if(insertQnrQn){
-                        req.flash('success_msg', 'Added Questionnarie');
-                        res.redirect('/questionnaries');
+                        try {
+                            subgroups.forEach(async sub => {
+                                insertQnrQn = await knex('sbr_groups_sub_qn_qnr').insert({
+                                    id_sbr_groups_sub: sub.id,
+                                    id_sbr_qnr: insertQnr
+                                });
+                            });
+                            req.flash('success_msg', 'Questionário adicionado com sucesso');
+                            return res.redirect('/questionnaries');
+                        } catch (error) {
+                            req.flash('error_msg', 'Erro ao criar questionário');
+                            return res.redirect('/questionnaries');
+                        }
+                    }
+                    else{
+                        req.flash('error', 'Erro ao criar questionário');
+                        return res.redirect('/questionnaries');
                     }
                 }
-                else{
-                    req.flash('error', 'Error when adding');
-                    res.redirect(req.header('Referer') || '/');
+                catch(error){
+                    next(error);
                 }
             }
-            catch(error){
-                next(error);
-            }
+        } 
+        catch (error) {
+            req.flash('error', 'Erro interno no servidor');
+            res.redirect('/questionnaries');
         }
     },
     async reply(req,res,next){
         var id = cryptr.decrypt(req.params.id);
         var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id);
-        var questions = [];
-        var group = [];
-        for (let i = 0; i < qnr.length; i++) {
-            subgroup = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id', qnr[i].id_sbr_groups_sub);
-            try{
-                group = await knex('sbr_groups').where('id', subgroup[0].id_sbr_groups).first();
-                group.subgroups = subgroup;
-                group.subgroups.forEach(async sub => {
-                    sub.questions = await knex.select('id', 'id_sbr_groups_sub', 'question', 'type', 'model')
-                                                                .from('sbr_groups_sub_qn')
-                                                                .where('id_sbr_groups_sub', sub.id)
-                                                                .where('deleted_at', null);
-                    sub.questions.forEach(async q => {
-                        q.model = await knex.select('id', 'model', 'value', 'agroup').from('sbr_groups_sub_qn_models').where('agroup', q.model);
-                        answer = await knex('sbr_groups_sub_qn_answers')
-                                        .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
-                                        .where('id_sbr_groups_sub_qn', q.id)
-                                        .first();
-
-                        (answer != undefined) ? q.answer = answer.id_sbr_groups_sub_qn_models : q.answer = null;
-                    });
-                });
-                questions.push(group);
-            }
-            catch(error){
-            }
+        var checkQnr = await checkQuestionnarie(id);
+        if(checkQnr){
+            await knex('sbr_qnr').where('id', id).update({
+                status: 3
+            })
+            req.flash('error', 'Questionário Inválido');
+            res.redirect('/questionnaries');
         }
-       //res.send(questions);
-        return res.render('questionnaries/reply',{
-            layout: 'default',
-            style: ['styles/style.css'],
-            css: ['dataTables.bootstrap4.min.css', 'bootstrap.min.css'],
-            jquery: ['jquery.min.js'],
-            src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-            js: ['bootstrap.js',
-                'popper.min.js',
-                'jquery.datatable.min.js',
-                'dataTables.bootstrap4.min.js'],
-            vendors: ['scripts/script.js'],
-            groups: questions,
-            reference: id
-        });
+        else{
+            var questions = [];
+            var group = [];
+            for (let i = 0; i < qnr.length; i++) {
+                subgroup = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id', qnr[i].id_sbr_groups_sub);
+                try{
+                    group = await knex('sbr_groups').where('id', subgroup[0].id_sbr_groups).first();
+                    group.subgroups = subgroup;
+                    group.subgroups.forEach(async sub => {
+                        sub.questions = await knex.select('id', 'id_sbr_groups_sub', 'question', 'type', 'model')
+                                                                    .from('sbr_groups_sub_qn')
+                                                                    .where('id_sbr_groups_sub', sub.id)
+                                                                    .where('deleted_at', null);
+                        sub.questions.forEach(async q => {
+                            q.model = await knex.select('id', 'model', 'value', 'agroup')
+                                                .from('sbr_groups_sub_qn_models')
+                                                .where('agroup', q.model);
+                            answer = await knex('sbr_groups_sub_qn_answers')
+                                            .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
+                                            .where('id_sbr_groups_sub_qn', q.id)
+                                            .first();
+
+                            (answer != undefined) ? q.answer = answer.id_sbr_groups_sub_qn_models : q.answer = null;
+                        });
+                    });
+                    questions.push(group);
+                }
+                catch(error){
+                }
+            }
+            return res.render('questionnaries/reply',{
+                layout: 'default',
+                style: ['styles/style.css'],
+                css: ['bootstrap.min.css'],
+                jquery: ['jquery.min.js'],
+                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
+                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
+                js: ['bootstrap.js',
+                    'popper.min.js'],
+                vendors: ['scripts/script.js'],
+                groups: questions,
+                reference: id
+            });
+        }
+        
+    },
+    async review(req,res,next){
+        var id = cryptr.decrypt(req.params.id);
+        var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id);
+        var checkQnr = await checkQuestionnarie(id);
+        if(checkQnr){
+            await knex('sbr_qnr').where('id', id).update({
+                status: 3
+            })
+            req.flash('error', 'Questionário Inválido');
+            res.redirect('/questionnaries');
+        }
+        else{
+            var questions = [];
+            var group = [];
+            for (let i = 0; i < qnr.length; i++) {
+                subgroup = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id', qnr[i].id_sbr_groups_sub);
+                try{
+                    group = await knex('sbr_groups').where('id', subgroup[0].id_sbr_groups).first();
+                    group.subgroups = subgroup;
+                    group.subgroups.forEach(async sub => {
+                        sub.questions = await knex.select('id', 'id_sbr_groups_sub', 'question', 'type', 'model')
+                                                                    .from('sbr_groups_sub_qn')
+                                                                    .where('id_sbr_groups_sub', sub.id)
+                                                                    .where('deleted_at', null);
+                        sub.questions.forEach(async q => {
+                            q.model = await knex.select('id', 'model', 'value', 'agroup')
+                                                .from('sbr_groups_sub_qn_models')
+                                                .where('agroup', q.model);
+                            answer = await knex('sbr_groups_sub_qn_answers')
+                                            .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
+                                            .where('id_sbr_groups_sub_qn', q.id)
+                                            .first();
+
+                            (answer != undefined) ? q.answer = answer.id_sbr_groups_sub_qn_models : q.answer = null;
+                        });
+                    });
+                    questions.push(group);
+                }
+                catch(error){
+                }
+            }
+            return res.render('questionnaries/review',{
+                layout: 'default',
+                style: ['styles/style.css'],
+                css: ['bootstrap.min.css'],
+                jquery: ['jquery.min.js'],
+                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
+                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
+                js: ['bootstrap.js',
+                    'popper.min.js'],
+                vendors: ['scripts/script.js'],
+                groups: questions,
+                reference: id
+            });
+        }
+        
     },
     async saveQuestionnaries(req,res,next){
         if( !req.body.qnr || typeof req.body.qnr == undefined || req.body.qnr  == null){
@@ -184,26 +289,22 @@ module.exports = {
         }
     }
 }
-async function getQuestions(id){
-    var qnr = knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id);
-    var questions = [];
-    for (let i = 0; i < qnr.length; i++) {
-        var group = await knex('sbr_groups').where('id', qnr[i].id_sbr_groups).first();
-        var subgroups = await knex('sbr_groups_sub').where('id_sbr_groups', qnr[i].id_sbr_groups);
-        questions.push({'group': group,
-                        'subgroups': subgroups})
-        
+async function checkQuestionnarie(id){
+    var qnr = await knex('sbr_groups_sub_qn_qnr')
+                    .where('id_sbr_qnr', id)
+                    .where('deleted_at', null)
+                    .pluck('id_sbr_groups_sub');
+    if(qnr.length > 0){
+        var subgroup = await knex('sbr_groups_sub')
+                            .whereIn('id', qnr)
+                            .whereNot('deleted_at', null).pluck('id_sbr_groups');
+        var group = await knex('sbr_groups_sub')
+                            .whereIn('id', subgroup)
+                            .whereNot('deleted_at', null);
+        if(subgroup.length > 0 || group.length > 0){return true;}
+        else{return false;}
     }
-    /*var all = await knex.raw(`SELECT gp.id as id_group, gp.name as name_group,
-                                    sub.id as id_sub, sub.name as name_sub,
-                                    q.id as id_question, q.question as question_name
-                                FROM sbr_groups_sub_qn q, sbr_groups_sub sub, sbr_groups gp
-                                WHERE q.id_sbr_groups_sub = sub.id
-                                AND gp.id = sub.id_sbr_groups
-                                AND gp.id in(${groups});`);
-    //var allSplitGroup = all.id_sbr_groups.split(',');*/
-    //const subgroups = await knex.select('id', 'name').from('sbr_groups_sub').whereIn('id_sbr_groups', allSplitGroup).where('deleted_at', null);
-    return qnr;
+    else{true}
 }
 async function findUser(id){
     try{
@@ -235,8 +336,15 @@ async function findQuestionnaries(name, id){
 }
 async function findSubGroup(id){
     var subgroups = await knex('sbr_groups_sub').where('id_sbr_groups', id);
+    var auxSubgroups = [];
     for (let i = 0; i < subgroups.length; i++) {
-        subgroups[i].questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', subgroups[i].id);;
+        var quest = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', subgroups[i].id);
+        if(quest.length > 0){
+            subgroups[i].questions = quest;
+        }
+        else{
+            subgroups.splice(i);
+        }
     }
     return subgroups;
 }

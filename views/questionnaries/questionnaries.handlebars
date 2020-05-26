@@ -1,16 +1,16 @@
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col mt-5">
-            <a class="btn btn-info float-right" href="/questionnaries/add"><i class="fa fa-plus mr-2"></i>ADD QUESTIONNARIE</a>
+            <a class="btn btn-info float-right" href="/questionnaries/add"><i class="fa fa-plus mr-2"></i>ADD QUESTIONÁRIO</a>
             <div class="table-responsive mt-5">
-                <table id="questionnaries" class="table table-bordered questionnaries text-center" style="width: 100%;">
+                <table id="questionnaries" class="table table-bordered questionnaries text-center display nowrap" style="width: 100%;">
                     <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Create By</th>
-                        <th>Added In</th>
+                        <th>Nome</th>
+                        <th>Criado Por</th>
+                        <th>Adicionado Em</th>
                         <th>Status</th>
-                        <th>Options</th>
+                        <th>Opções</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -20,17 +20,19 @@
                                 <td>{{id_sbr_users}}</td>
                                 <td>{{created_at}}</td>
                                 {{#compare status '==' 1}}
-                                    <td class="text-primary">Open</td>
+                                    <td class="text-primary">ABERTO</td>
                                 {{else compare status '==' 2}}
-                                    <td class="text-warning">Pending</td>
+                                    <td class="text-warning">PENDENTE</td>
                                 {{else compare status '==' 3}}
-                                    <td class="text-success">Finished</td>
+                                    <td class="text-success">FINALIZADO</td>
                                 {{else}}
-                                    <td class="text-danger">Invalid</td>
+                                    <td class="text-danger">INVÁLIDO</td>
                                 {{/compare}}
                                 <td>
                                 {{#compare status '!=' 3}}
                                     <a class="btn btn-success" title="Reply" href="/questionnaries/reply/{{id}}">Reply</a>
+                                {{else}}
+                                    <a class="btn btn-primary" title="Review" href="/questionnaries/review/{{id}}">Review</a>
                                 {{/compare}}
                                     <button class="btn btn-danger del" data-id="{{id}}" title="Delete"><i class="fa fa-trash"></i></button>
                                 </td>
@@ -44,6 +46,7 @@
 </div>
 <script>
     var table = $('#questionnaries').DataTable({
+        "responsive": true,
         "scrollY": "500px",
         "scrollCollapse": true
     });

@@ -18,7 +18,7 @@
 <div class="pd-20 bg-white border-radius-4 box-shadow mb-30">
     <form method="POST" action="/questionnaries">
         <div class="form-group">
-            <label for="inputAddress">Name:</label>
+            <label for="inputAddress">Nome:</label>
             <input type="text" class="form-control" name="name" id="name" placeholder="Ex: Example">
         </div>
         <div class="form-group">
@@ -38,7 +38,7 @@
                 {{#each subgroups}}
                   <div class="panel panel-light sub">
                     <div class="panel-heading panel-collapsed">
-                      <div class="row pd-10 align-items-center">
+                      <div class="row ml-4 pd-10 align-items-center">
                         <div class="clickable">
                           <span onclick="clickSubGroup({{id}})" id="subgroup{{id}}" class="pull-right mr-4"><i class="fa fa-minus"></i></span>
                         </div>

@@ -1,18 +1,27 @@
-<div class="container">
+<div class="col-md-6 col-sm-12">
+    <nav aria-label="breadcrumb" role="navigation">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="/groups">Grupos</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" onclick="window.history.back();">{{gp_name}}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{sub_name}}</li>
+        </ol>
+    </nav>
+</div>
+<div class="container-fluid">
     <div class="row">
         <div class="col mt-5">
-            <button class="btn btn-info float-right" data-toggle="modal" data-target="#addQuestion"><i class="fa fa-plus mr-2"></i>ADD QUESTION</button>
+            <button class="btn btn-info float-right" data-toggle="modal" data-target="#addQuestion"><i class="fa fa-plus mr-2"></i>ADD QUESTÃO</button>
             <div class="table-responsive mt-5">
-                <table id="questions" class="table table-bordered questions text-center" style="width: 100%;">
+                <table id="questions" class="table table-bordered questions text-center display nowrap" style="width: 100%;">
                     <thead>
                     <tr>
                         <th>N°</th>
-                        <th>Question</th>
-                        <th>Type</th>
-                        <th>Model</th>
-                        <th>Value</th>
-                        <th>Added In</th>
-                        <th>Options</th>
+                        <th>Questão</th>
+                        <th>Tipo</th>
+                        <th>Modelo</th>
+                        <th>Adicionado Em</th>
+                        <th>Opções</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -22,7 +31,6 @@
                                 <td>{{question}}</td>
                                 <td>{{type}}</td>
                                 <td>{{model}}</td>
-                                <td>{{value}}</td>
                                 <td>{{created_at}}</td>
                                 <td>
                                     <button class="btn btn-danger del" data-id="{{id}}" title="Delete"><i class="fa fa-trash"></i></button>
@@ -39,7 +47,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"> ADD QUESTION </h5>
+                <h5 class="modal-title"> ADD QUESTÃO </h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>X</span>
                 </button>
@@ -48,22 +56,22 @@
                 <form method="POST" action="/groups/sub/questions" id="createQuestion">
                     <input hidden name="reference" value="{{reference}}">
                     <div class="form-group">
-                        <label>Question:</label>
+                        <label>Questão:</label>
                         <textarea name="question" id="question" class="form-control"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Type Question:</label>
+                        <label>Tipo de Questão:</label>
                         <select name="type" id="type" class="form-control">
-                            <option selected disabled>Select the type question</option>
-                            <option value="1">Open Question</option>
-                            <option value="2">Closed Question</option>
+                            <option selected disabled>Selecione o tipo de questão</option>
+                            <option value="1">Questão Aberta</option>
+                            <option value="2">Questão Fechada</option>
                         </select>
                     </div>
                     <div id="divModel" class="form-group">
                         <div id="type1" hidden>
-                            <label for="model" class="col-form-label">Question Model</label>
+                            <label for="model" class="col-form-label">Modelo da questão</label>
                             <select disabled name="model" id="model" class="form-control">
-                                <option selected disabled>Select the Model</option>
+                                <option selected disabled>Selecione o modelo</option>
                                 {{#each models}}
                                     <option value="{{agroup}}">{{model}}</option>
                                 {{/each}}
@@ -96,6 +104,7 @@
 </div>
 <script>
     $('#questions').DataTable({
+        "responsive": true,
         "scrollY": "1000px",
         "scrollCollapse": true
     });

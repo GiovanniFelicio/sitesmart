@@ -35,10 +35,10 @@
                                                 {{#compare type '==' 2}}
                                                     {{#each model as |m keymodel|}}
                                                         <div class="custom-control custom-radio">
-                                                            {{#compare quest.answer '==' m.value}}
+                                                            {{#compare quest.answer '==' m.id}}
                                                                 <input checked type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.value}}">
                                                             {{else}}
-                                                                <input onchange="save({{quest.id}},{{m.value}})" type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.value}}">
+                                                                <input onchange="save({{quest.id}},{{m.id}})" type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.value}}">
                                                             {{/compare}}
                                                             <label class="custom-control-label mb-2" for="answer{{quest.id}}{{m.id}}">{{m.model}}</label>
                                                         </div>
@@ -64,7 +64,7 @@
         </div>
     {{/each}}
     <div class="row align-items-center ml-1">
-        <button type="button" id="saveAll" class="btn btn-success mb-4 mr-4">Save All</button>
+        <button type="button" id="saveAll" class="btn btn-success mb-4 mr-4">Enviar</button>
         <div id="divButtonSave">
         </div>
     </div>
@@ -83,7 +83,6 @@
             url: "/questionnaries/save",
             data: {qnr: qnr},
             success: function(data){
-                console.log(data);
                 if(data == 1){
                     window.location.href = "/questionnaries"; 
                 }
@@ -91,11 +90,10 @@
                     $('#divButtonSave').html(' ');
                     $('#divButtonSave').html('<i class="fa fa-ban text-danger mr-2"></i>');
                 }
-                //desactive(this);
             }
         });
     });
-    function save(idQuestion, answer){console.log(answer);
+    function save(idQuestion, answer){
         if(typeof answer != undefined){
             var qnr = {{reference}};
             $.ajax({
