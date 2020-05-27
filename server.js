@@ -9,8 +9,6 @@ const questionnariesRoutes = require('./routes/questionnaries');
 const usersRoutes = require('./routes/users');
 
 const app = express();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
 const expressHandle = require('express-handlebars');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -18,7 +16,6 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const cookie = require('cookie-parser');
 const passport = require('passport');
-//const io = require('socket.io')(s)
 require('./config/auth')(passport);
 app.use(cookie());
 app.use(session({
@@ -82,9 +79,6 @@ app.use((error, req, res, next)=>{
     }
 });
 
-http.listen(3000, ()=>{
+app.listen(8000, ()=>{
     console.log('Server is running');
 });
-// app.listen(8000, ()=>{
-//     console.log('Server is running');
-// });

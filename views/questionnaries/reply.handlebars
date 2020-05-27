@@ -1,4 +1,4 @@
- <br><br>
+ <br><br>  
  {{#if groups }}
     {{#each groups }}
         <div class="row">
@@ -12,7 +12,7 @@
     <div class="col-12">
         <div class="card bg-light mb-3" style="max-width: 100%;">
             <div class="card-header">
-                {{key}}) {{quest.question}}
+                {{math key '+' 1}}) {{quest.question}}
                 <div class="float-right row align-items-center mr-1">
                     <div id="divButtonSave{{quest.id}}">
                         {{#compare quest.answer '!=' null}}

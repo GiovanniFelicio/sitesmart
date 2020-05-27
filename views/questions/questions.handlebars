@@ -69,41 +69,15 @@
                         <label>Questão:</label>
                         <textarea name="question" id="question" class="form-control"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label>Tipo de Questão:</label>
-                        <select name="type" id="type" class="form-control">
-                            <option selected disabled>Selecione o tipo de questão</option>
-                            <option value="1">Questão Aberta</option>
-                            <option value="2">Questão Fechada</option>
-                        </select>
-                    </div>
                     <div id="divModel" class="form-group">
-                        <div id="type1" hidden>
-                            <label for="model" class="col-form-label">Modelo da questão</label>
-                            <select disabled name="model" id="model" class="form-control">
-                                <option selected disabled>Selecione o modelo</option>
-                                {{#each models}}
-                                    <option value="{{agroup}}">{{model}}</option>
-                                {{/each}}
-                                {{!-- <option value="0">Another Model</option> --}}
-                            </select>
-                        </div>
+                        <label for="model" class="col-form-label">Modelo da questão</label>
+                        {{#each models}}
+                            <div class="custom-control custom-checkbox ml-4">
+                                <input name="modelsCheck[]" type="checkbox" class="custom-control-input" id="modelsCheck{{id}}" value="{{id}}" onchange="this.value =  this.checked ? {{id}} : 0">
+                                <label class="custom-control-label" for="modelsCheck{{id}}">{{model}}</label>
+                            </div>
+                        {{/each}}
                     </div>
-                    {{!-- <div id="divModelAnother" class="form-group" hidden>
-                        <label for="anotherModel" class="col-form-label">Question Model</label>
-                        <div class="input-group">
-                            <select multiple name="anotherModel[]" id="anotherModel" style="width: 100%" disabled></select>
-                        </div>
-                        <label for="modelValue" class="col-form-label">Model Value</label>
-                        <div class="input-group">
-                            <select multiple name="value[]" id="modelValue" style="width: 100%" disabled></select>
-                        </div>
-                        <br>
-                        <div class="custom-control custom-checkbox">
-                            <input disabled name="checkToSave" type="checkbox" class="custom-control-input" id="checkToSave" onchange="this.value = this.checked ? 1 : 0;">
-                            <label class="custom-control-label" for="checkToSave">Save model</label>
-                        </div>
-                    </div> --}}
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary">ADD</button>
                     </div>
@@ -137,33 +111,6 @@
         "scrollY": "1000px",
         "scrollCollapse": true
     });
-    $('#anotherModel').select2({
-        tags: true,
-        tokenSeparators: ['#'],
-        placeholder: "Add model here",
-        selectOnClose: true,
-        closeOnSelect: false
-    });
-    $('#modelValue').select2({
-        tags: true,
-        tokenSeparators: ['#'],
-        placeholder: "Add values here",
-        selectOnClose: true,
-        closeOnSelect: false
-    });
-    $('#type').on('change', function(){
-        let value = $('#type').val();
-        if(value == 1){
-            $('#type1').prop('hidden', true);$("#model").prop('disabled', true);
-            $('#divModelAnother').prop('hidden', true);$('#anotherModel').prop('disabled', true);
-            $('#checkToSave').prop('disabled', true);$('#modelValue').prop('disabled', true);
-        }
-        else if(value == 2){
-            $('#type1').prop('hidden', false);$("#model").prop('disabled', false);
-            $('#divModelAnother').prop('hidden', true);$('#anotherModel').prop('disabled', true);
-            $('#checkToSave').prop('disabled', true);$('#modelValue').prop('disabled', true);
-        }
-    });
     let idEncrypt;
     $('.del').click(function () {
         idEncrypt = $(this).attr('data-id');
@@ -175,7 +122,7 @@
             type: 'DELETE',
             success: function(result) {
                 if(result == 1){
-                    window.location.replace('/groups/sub/questions/'+idEncrypt);
+                    window.location.reload();
                 }
                 else{
                     $('#delQuestion').modal('hide');

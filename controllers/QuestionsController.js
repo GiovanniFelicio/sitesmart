@@ -19,11 +19,7 @@ module.exports = {
                 e.id = cryptr.encrypt(e.id);
                 e.created_at = Moment(e.created_at).format('DD-MM-Y  H:m:ss');
             });
-            var models = [];
-            var modelsAgroup = await knex.select('agroup').from('sbr_groups_sub_qn_models').groupBy('agroup');
-            for (let i = 0; i < modelsAgroup.length; i++) {
-               models.push({'agroup': modelsAgroup[i].agroup, 'model': await findModels(modelsAgroup[i].agroup)});
-            }
+            var models = await knex('sbr_groups_sub_qn_models');
             return res.render('questions/questions',{
                 layout: 'default',
                 style: ['styles/style.css'],
@@ -54,6 +50,7 @@ module.exports = {
     async create(req, res, next){
         var errors = [];
         var error_msg = '';
+        res.send(req.body);
         try {
             if( !req.body.question || typeof req.body.question  == undefined || req.body.question  == null){
                 errors.push('Questão Inválida');
@@ -71,17 +68,8 @@ module.exports = {
             if( !req.body.reference || typeof req.body.reference  == undefined || req.body.reference  == null){
                 errors.push('Erro de referência');
             }
-            if( !req.body.type || typeof req.body.type  == undefined || req.body.type  == null){
-                errors.push('Tipo inválido');
-            }
-            var {reference, question, type} = req.body;
-            if(type == 2){
-                if( !req.body.model || typeof req.body.model  == undefined || req.body.model  == null){
-                    errors.push('Modelo Inválido');
-                }
-                else{
-                    var model = req.body.model;
-                }
+            if( !req.body.modelsCheck || typeof req.body.modelsCheck  == undefined || req.body.modelsCheck  == null){
+                errors.push('Modelos inválidos');
             }
             
             if(errors.length > 0){

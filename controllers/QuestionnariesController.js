@@ -19,7 +19,7 @@ module.exports = {
             jquery: ['jquery.min.js'],
             src: ['plugins/highcharts-6.0.7/code/highcharts.js',
                 'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-            js: ['bootstrap.js',
+            js: [
                 'popper.min.js',
                 'jquery.datatable.min.js',
                 'dataTables.bootstrap4.min.js',
@@ -339,9 +339,9 @@ async function findQuestionnaries(name, id){
     }
 }
 async function findSubGroup(id){
-    var subgroups = await knex('sbr_groups_sub').where('id_sbr_groups', id);
+    var subgroups = await knex('sbr_groups_sub').where('id_sbr_groups', id).where('deleted_at', null);
     for (let i = 0; i < subgroups.length; i++) {
-        var quest = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', subgroups[i].id);
+        var quest = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', subgroups[i].id).where('deleted_at', null);
         if(quest.length > 0){
             subgroups[i].questions = quest;
         }
@@ -350,4 +350,6 @@ async function findSubGroup(id){
         }
     }
     return subgroups;
+    
 }
+ 
