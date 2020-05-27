@@ -4,8 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 </head>
 <body>
-    ola
+    <div id="app">
+        {{ msg }}
+        <input type="text" v-model="msg">
+        <ul>
+            <li v-for="fruit in fruits">{{fruit.name}}</li>
+        </ul>
+    </div>
+    <script>
+    var app = new Vue({
+    el: '#app',
+    data: {
+        fruits:[
+            {name: 'teste'},
+            {name: 'teste1'},
+            {name: 'teste2'}
+        ]
+    }
+    })
+    </script>
 </body>
 </html>

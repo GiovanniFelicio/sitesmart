@@ -11,7 +11,7 @@ module.exports = {
             var subgroups = await knex('sbr_groups_sub').where('id_sbr_groups', id);
             subgroups.forEach(e => {
                 e.id = cryptr.encrypt(e.id);
-                e.created_at = Moment(e.created_at).format('DD-MM-Y  H:m:ss');
+                e.created_at = Moment(e.created_at).format('DD-MM-Y  HH:mm:ss');
             });
             return res.render('subgroups/subgroups',{
                 layout: 'default',
@@ -44,7 +44,7 @@ module.exports = {
                 errors.push('Nome Inválido');
             }
             if( !req.body.reference || typeof req.body.reference  == undefined || req.body.reference  == null){
-                errors.push('Referência Invalida');
+                errors.push('Referência Inválida');
             }
             if(errors.length > 0){
                 errors.forEach(e => {
@@ -73,21 +73,29 @@ module.exports = {
     },
     async delete(req,res,next){
         var idEncrypt = req.params.id;
-        var date = new Date();
-        var currentDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
         try{
             var idDecrypt = cryptr.decrypt(idEncrypt);
-            const course = await knex('courses')
-                .where({id: idDecrypt})
-                .update({
-                    deleted_at: currentDate
-                });
-            req.flash('success_msg', 'Deleted Course');
-            res.redirect('/courses');
+            var date = new Date();
+            var currentDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+            try{
+                var subGroupUp = await knex('sbr_groups_sub')
+                                            .whereRaw('sbr_groups_sub.id = '+idDecrypt)
+                                            .update({
+                                                'sbr_groups_sub.deleted_at': currentDate,
+                                            });
+                if(subGroupUp){
+                    return res.send('1');
+                }
+                else{
+                    return res.send('0');
+                }
+            }
+            catch(error){
+               return res.send('0')
+            }
         }
         catch(e){
-            req.flash('error_msg', 'Error when deleting the Course');
-            res.redirect('/courses');
+            return res.send('0');
         }
     }
 }

@@ -64,21 +64,18 @@ module.exports = {
         var currentDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
         try{
             var idDecrypt = cryptr.decrypt(idEncrypt);
-            const groupsDel = await knex.raw(`
-                UPDATE sbr_groups gp, sbr_groups_sub sub, sbr_groups_sub_qn qn
-                SET 
-                gp.deleted_at = current_timestamp(),
-                sub.deleted_at = current_timestamp(),
-                qn.deleted_at = current_timestamp()
-                WHERE gp.id = ${idDecrypt}
-                AND sub.id_sbr_groups = ${idDecrypt}
-                AND qn.id_sbr_groups = ${idDecrypt};`);
-            
-            if(groupsDel){
+            var subGroupUp = await knex('sbr_groups')
+                                        .whereRaw('sbr_groups.id = '+idDecrypt)
+                                        .update({
+                                            'sbr_groups.deleted_at': currentDate
+                                        });
+                                        
+            if(subGroupUp){
                 return res.send('1');
             }
-            throw 'Error';
-            
+            else{
+                return res.send('0');
+            }
         }
         catch(e){
             return res.send('0');

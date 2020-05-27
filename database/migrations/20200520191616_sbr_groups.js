@@ -3,7 +3,7 @@ exports.up = function(knex) {
         table.increments('id', 11);
         table.string('name').notNullable();
         table.timestamps(true, true);
-        table.timestamp('deleted_at');
+        table.timestamp('deleted_at').nullable();
         table.engine('innodb');
     });
 };

@@ -178,17 +178,21 @@ module.exports = {
         var currentDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
         try{
             var idDecrypt = cryptr.decrypt(idEncrypt);
-            const course = await knex('courses')
-                .where({id: idDecrypt})
-                .update({
-                    deleted_at: currentDate
-                });
-            req.flash('success_msg', 'Deleted Course');
-            res.redirect('/courses');
+            var questionUp = await knex('sbr_groups_sub_qn')
+                                        .where('id',idDecrypt)
+                                        .update({
+                                            'sbr_groups_sub_qn.deleted_at': currentDate
+                                        });
+                                        
+            if(questionUp){
+                return res.send('1');
+            }
+            else{
+                return res.send('0');
+            }
         }
         catch(e){
-            req.flash('error_msg', 'Error when deleting the Course');
-            res.redirect('/courses');
+            return res.send('0');
         }
     }
 }

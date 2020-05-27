@@ -1,4 +1,4 @@
-<div class="col-md-6 col-sm-12">
+<div class="col-md-12 col-sm-12">
     <nav aria-label="breadcrumb" role="navigation">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Home</a></li>
@@ -68,7 +68,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"> DELETE </h5>
+                <h5 class="modal-title"> DELETAR </h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>X</span>
                 </button>
@@ -94,7 +94,7 @@
         idEncrypt = $(this).attr('data-id');
         $('#delGroup').modal('show');
     });
-    $('.yes').on('click', function () {
+    $('.yes').click(function () {
         $.ajax({
             url: '/groups/'+idEncrypt,
             type: 'DELETE',
@@ -103,7 +103,7 @@
                     window.location.replace('/groups');
                 }
                 else{
-                    $('#deleteSubgroup').hide();
+                    $('#delGroup').modal('hide');
                     alert("Error when deleting");
                 }
             }
