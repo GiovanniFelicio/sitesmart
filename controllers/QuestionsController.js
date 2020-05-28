@@ -70,6 +70,9 @@ module.exports = {
             if( !req.body.modelsCheck || typeof req.body.modelsCheck  == undefined || req.body.modelsCheck  == null || req.body.modelsCheck.length <= 0){
                 errors.push('Modelos inválidos');
             }
+            if( !req.body.value || typeof req.body.value == undefined || req.body.value == null || req.body.value.length <= 0){
+                errors.push('Valores inválidos');
+            }
             if(errors.length > 0){
                 errors.forEach(e => {
                     error_msg += e + ', ';
@@ -79,7 +82,10 @@ module.exports = {
             }
             else{
                 try{
-                    var {question, reference, modelsCheck} = req.body;
+                    var {question, reference, modelsCheck, value} = req.body;
+                    if(modelsCheck.length != value.length){
+                        throw "Quantidade de models diferente da quantia de valor";
+                    }
                     var idSub = cryptr.decrypt(reference);
                     var subgroup = await knex('sbr_groups_sub').where('id', idSub).first();
                     var insertQuest = await knex('sbr_groups_sub_qn').insert({
@@ -87,10 +93,11 @@ module.exports = {
                         id_sbr_groups_sub: idSub,
                         question: question
                     });
-                    modelsCheck.forEach(async id => {
+                    modelsCheck.forEach(async (id, i) => {
                         await knex('sbr_groups_sub_qn_models_aux').insert({
                             id_sbr_groups_sub_qn: insertQuest,
-                            id_sbr_groups_sub_qn_models: id
+                            id_sbr_groups_sub_qn_models: id,
+                            value: value[i] || 0
                         });
                     });
                     req.flash('success_msg', 'Questão adicionada');
@@ -103,7 +110,7 @@ module.exports = {
             }
         } 
         catch (error) {
-            req.flash('error_msg', 'Erro Interno do servidor');
+            req.flash('error_msg', error);
             return res.redirect(req.header('Referer') || '/');
         }
     },

@@ -8,7 +8,7 @@ module.exports= (passport)=>{
                 if(!user){
                     return done(null, false, {message: 'This account does not exist'});
                 }
-                if (!password == user.password) {
+                if (password != user.password) {
                     return done(null, false, {message: 'Incorrect Password'});
                 } else {
                     return done(null, user);
