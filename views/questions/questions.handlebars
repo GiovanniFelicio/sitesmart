@@ -18,8 +18,6 @@
                     <tr>
                         <th>N°</th>
                         <th>Questão</th>
-                        <th>Tipo</th>
-                        <th>Modelo</th>
                         <th>Adicionado Em</th>
                         <th>Opções</th>
                     </tr>
@@ -29,14 +27,6 @@
                             <tr {{#compare deleted_at '!=' null}} class="alert-danger"{{/compare}}>
                                 <td>{{number}}</td>
                                 <td>{{question}}</td>
-                                <td>
-                                    {{#compare type '==' 1}}
-                                        Questão Aberta
-                                    {{else compare type '==' 2}}
-                                        Questão Fechada
-                                    {{/compare}}
-                                </td>
-                                <td>{{model}}</td>
                                 <td>{{created_at}}</td>
                                 <td>
                                     {{#compare deleted_at '!=' null}}
@@ -70,7 +60,7 @@
                         <textarea name="question" id="question" class="form-control"></textarea>
                     </div>
                     <div id="divModel" class="form-group">
-                        <label for="model" class="col-form-label">Modelo da questão</label>
+                        <label for="model" class="col-form-label">Modelos para resposta: </label>
                         {{#each models}}
                             <div class="custom-control custom-checkbox ml-4">
                                 <input name="modelsCheck[]" type="checkbox" class="custom-control-input" id="modelsCheck{{id}}" value="{{id}}" onchange="this.value =  this.checked ? {{id}} : 0">

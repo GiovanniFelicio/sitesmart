@@ -5,16 +5,11 @@ exports.seed = function(knex) {
     .then(function () {
       // Inserts seed entries
       return knex('sbr_groups_sub_qn_models').insert([
-        {type: '2', model: 'Sim, em sistema integrado', value: '5'},
-        {type: '2', model: 'Sim, independente', value: '3'},
-        {type: '2', model: 'Sim, manual', value: '1'},
-        {type: '2', model: 'Não', value: '0'},
-        {type: '2', model: 'Nao se aplica', value: '0'},
-        {type: '2', model: 'Sim, em sistema integrado', value: '5'},
-        {type: '2', model: 'Sim, independente', value: '3'},
-        {type: '2', model: 'Sim, manual', value: '1'},
-        {type: '2', model: 'Não', value: '0'},
-        {type: '2', model: 'Nao se aplica', value: '0'},
+        {model: 'Sim, em sistema integrado', value: '5'},
+        {model: 'Sim, independente', value: '3'},
+        {model: 'Sim, manual', value: '1'},
+        {model: 'Não', value: '0'},
+        {model: 'Nao se aplica', value: '0'}
       ]);
     });
 };

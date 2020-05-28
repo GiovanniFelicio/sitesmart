@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="card bg-light mb-3" style="max-width: 100%;">
-                    <div class="card-header">{{name}}</div>
+                    <div class="card-header text-center bg-info text-white"><h2><b>{{name}}</b></h2></div>
                     <div class="card-body">
                         <div class="card-text">
 {{#each questions as |quest key|}}
@@ -25,18 +25,16 @@
             </div>
             <div class="card-body">
                 <div class="card-text">
-                    {{#compare type '==' 2}}
-                        {{#each model as |m keymodel|}}
-                            <div class="custom-control custom-radio">
-                                {{#compare quest.answer '==' m.id}}
-                                    <input checked type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.value}}">
-                                {{else}}
-                                    <input onchange="save({{quest.id}},{{m.id}})" type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.value}}">
-                                {{/compare}}
-                                <label class="custom-control-label mb-2" for="answer{{quest.id}}{{m.id}}">{{m.model}}</label>
-                            </div>
-                        {{/each}}
-                    {{/compare}}
+                    {{#each model as |m keymodel|}}
+                        <div class="custom-control custom-radio">
+                            {{#compare quest.answer '==' m.id}}
+                                <input checked type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}">
+                            {{else}}
+                                <input onchange="save({{quest.id}},{{m.id}})" type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.id}}">
+                            {{/compare}}
+                            <label class="custom-control-label mb-2" for="answer{{quest.id}}{{m.id}}">{{m.model}}</label>
+                        </div>
+                    {{/each}}
                     <br>
                 </div>
             </div>

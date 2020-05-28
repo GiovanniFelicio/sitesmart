@@ -136,123 +136,118 @@ module.exports = {
         }
     },
     async reply(req, res, next){
-        var id = cryptr.decrypt(req.params.id);
-        var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id);
-        var checkQnr = await checkQuestionnarie(id);
-        if(checkQnr){
-            await knex('sbr_qnr').where('id', id).update({
-                status: 3
-            })
-            req.flash('error', 'Questionário Inválido');
-            res.redirect('/questionnaries');
-        }
-        else{
-            var questions = [];
-            var group = [];
-            for (let i = 0; i < qnr.length; i++) {
-                subgroup = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id', qnr[i].id_sbr_groups_sub);
-                try{
-                    group = await knex('sbr_groups').where('id', subgroup[0].id_sbr_groups).first();
-                    group.questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups', group.id).where('deleted_at', null);
-                    group.questions.forEach(async q => {
-                        q.model = await knex.select('id', 'model', 'value', 'agroup')
-                                    .from('sbr_groups_sub_qn_models')
-                                    .where('agroup', q.model);
-                        answer = await knex('sbr_groups_sub_qn_answers')
-                                    .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
-                                    .where('id_sbr_groups_sub_qn', q.id)
-                                    .first();
-                        (answer != undefined) ? q.answer = answer.id_sbr_groups_sub_qn_models : q.answer = null;
-                    });
-                    //res.send(group);
-                    //group.subgroups = subgroup;
-                    /*group.subgroups.forEach(async sub => {
-                        sub.questions = await knex.select('id', 'id_sbr_groups_sub', 'question', 'type', 'model')
-                                                                    .from('sbr_groups_sub_qn')
-                                                                    .where('id_sbr_groups_sub', sub.id)
-                                                                    .where('deleted_at', null);
-                        sub.questions.forEach(async q => {
-                            q.model = await knex.select('id', 'model', 'value', 'agroup')
-                                                .from('sbr_groups_sub_qn_models')
-                                                .where('agroup', q.model);
+        try {
+            var id = cryptr.decrypt(req.params.id);
+            var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id);
+            var checkQnr = await checkQuestionnarie(id);
+            if(checkQnr){
+                await knex('sbr_qnr').where('id', id).update({
+                    status: 3
+                })
+                req.flash('error', 'Questionário Inválido');
+                res.redirect('/questionnaries');
+            }
+            else{
+                var questions = [];
+                var group = [];
+                for (let i = 0; i < qnr.length; i++) {
+                    subgroup = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id', qnr[i].id_sbr_groups_sub).first();
+                    try{
+                        group = await knex('sbr_groups').where('id', subgroup.id_sbr_groups).first();
+                        group.questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups', group.id).where('deleted_at', null);
+                        for (let j = 0; j < group.questions.length; j++) {
+                            group.questions[j].model = await knex.select('m.id', 'm.model')
+                                                                    .from('sbr_groups_sub_qn_models as m')
+                                                                    .join('sbr_groups_sub_qn_models_aux as aux')
+                                                                    .whereRaw(`aux.id_sbr_groups_sub_qn = ${group.questions[j].id}`)
+                                                                    .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
                             answer = await knex('sbr_groups_sub_qn_answers')
                                             .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
-                                            .where('id_sbr_groups_sub_qn', q.id)
+                                            .where('id_sbr_groups_sub_qn', group.questions[j].id)
                                             .first();
-
-                            (answer != undefined) ? q.answer = answer.id_sbr_groups_sub_qn_models : q.answer = null;
-                        });
-                    });*/
-                    questions.push(group);
+                            (answer != undefined) ? group.questions[j].answer = answer.id_sbr_groups_sub_qn_models : group.questions[j].answer = null;                                                            
+                        }
+                        questions.push(group);
+                    }
+                    catch(error){
+                    }
                 }
-                catch(error){
-                }
+                return res.render('questionnaries/reply',{
+                    layout: 'default',
+                    style: ['styles/style.css'],
+                    css: ['bootstrap.min.css'],
+                    jquery: ['jquery.min.js'],
+                    src: ['plugins/highcharts-6.0.7/code/highcharts.js',
+                        'plugins/highcharts-6.0.7/code/highcharts-more.js'],
+                    js: ['bootstrap.js',
+                        'popper.min.js'],
+                    vendors: ['scripts/script.js'],
+                    groups: questions,
+                    reference: id
+                });
             }
-            return res.render('questionnaries/reply',{
-                layout: 'default',
-                style: ['styles/style.css'],
-                css: ['bootstrap.min.css'],
-                jquery: ['jquery.min.js'],
-                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-                js: ['bootstrap.js',
-                    'popper.min.js'],
-                vendors: ['scripts/script.js'],
-                groups: questions,
-                reference: id
-            });
+        } catch (error) {
+            req.flash('error', 'Questionário Inválido');
+            res.redirect('/questionnaries');
         }
         
     },
     async review(req,res,next){
-        var id = cryptr.decrypt(req.params.id);
-        var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id);
-        var checkQnr = await checkQuestionnarie(id);
-        if(checkQnr){
-            await knex('sbr_qnr').where('id', id).update({
-                status: 3
-            })
+        try {
+            var id = cryptr.decrypt(req.params.id);
+            var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id);
+            var checkQnr = await checkQuestionnarie(id);
+            if(checkQnr){
+                await knex('sbr_qnr').where('id', id).update({
+                    status: 3
+                })
+                req.flash('error', 'Questionário Inválido');
+                res.redirect('/questionnaries');
+            }
+            else{
+                var questions = [];
+                var group = [];
+                for (let i = 0; i < qnr.length; i++) {
+                    subgroup = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id', qnr[i].id_sbr_groups_sub).first();
+                    try{
+                        group = await knex('sbr_groups').where('id', subgroup.id_sbr_groups).first();
+                        group.questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups', group.id).where('deleted_at', null);
+                        for (let j = 0; j < group.questions.length; j++) {
+                            group.questions[j].model = await knex.select('m.id', 'm.model')
+                                                                    .from('sbr_groups_sub_qn_models as m')
+                                                                    .join('sbr_groups_sub_qn_models_aux as aux')
+                                                                    .whereRaw(`aux.id_sbr_groups_sub_qn = ${group.questions[j].id}`)
+                                                                    .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
+                            answer = await knex('sbr_groups_sub_qn_answers')
+                                            .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
+                                            .where('id_sbr_groups_sub_qn', group.questions[j].id)
+                                            .first();
+                            (answer != undefined) ? group.questions[j].answer = answer.id_sbr_groups_sub_qn_models : group.questions[j].answer = null;                                                            
+                        }
+                        questions.push(group);
+                    }
+                    catch(error){
+                    }
+                }
+                return res.render('questionnaries/review',{
+                    layout: 'default',
+                    style: ['styles/style.css'],
+                    css: ['bootstrap.min.css'],
+                    jquery: ['jquery.min.js'],
+                    src: ['plugins/highcharts-6.0.7/code/highcharts.js',
+                        'plugins/highcharts-6.0.7/code/highcharts-more.js'],
+                    js: ['bootstrap.js',
+                        'popper.min.js'],
+                    vendors: ['scripts/script.js'],
+                    groups: questions,
+                    reference: id
+                });
+            }
+        }
+        catch (error){
             req.flash('error', 'Questionário Inválido');
             res.redirect('/questionnaries');
         }
-        else{
-            var questions = [];
-            var group = [];
-            for (let i = 0; i < qnr.length; i++) {
-                subgroup = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id', qnr[i].id_sbr_groups_sub);
-                try{
-                    group = await knex('sbr_groups').where('id', subgroup[0].id_sbr_groups).first();
-                    group.questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups', group.id).where('deleted_at', null);
-                    group.questions.forEach(async q => {
-                        q.model = await knex.select('id', 'model', 'value', 'agroup')
-                                    .from('sbr_groups_sub_qn_models')
-                                    .where('agroup', q.model);
-                        answer = await knex('sbr_groups_sub_qn_answers')
-                                    .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
-                                    .where('id_sbr_groups_sub_qn', q.id)
-                                    .first();
-                        (answer != undefined) ? q.answer = answer.id_sbr_groups_sub_qn_models : q.answer = null;
-                    });
-                    questions.push(group);
-                }
-                catch(error){
-                }
-            }
-            return res.render('questionnaries/review',{
-                layout: 'default',
-                style: ['styles/style.css'],
-                css: ['bootstrap.min.css'],
-                jquery: ['jquery.min.js'],
-                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-                js: ['bootstrap.js',
-                    'popper.min.js'],
-                vendors: ['scripts/script.js'],
-                groups: questions,
-                reference: id
-            });
-        }
-        
     },
     async saveQuestionnaries(req,res,next){
         if( !req.body.qnr || typeof req.body.qnr == undefined || req.body.qnr  == null){

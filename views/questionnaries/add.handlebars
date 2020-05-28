@@ -26,7 +26,7 @@
             <div class="panel panel-light">
               <div class="panel-heading ">
                 <div class="row pd-10 align-items-center">
-                  <span onclick="clickGroup({{id}})" id="group{{id}}" class="pull-right clickable mr-4"><i class="fa fa-plus"></i></span>
+                  <span onclick="clickGroup({{id}})" id="group{{id}}" class="pull-right clickable p-3"><i class="fa fa-plus"></i></span>
                   <div class="custom-control custom-checkbox">
                       <input type="checkbox" class="custom-control-input" id="groupCheck{{id}}" onchange="checkAll({{id}})">
                       <label class="custom-control-label" for="groupCheck{{id}}"></label>
@@ -40,7 +40,7 @@
                     <div class="panel-heading panel-collapsed">
                       <div class="row ml-4 pd-10 align-items-center">
                         <div class="clickable">
-                          <span onclick="clickSubGroup({{id}})" id="subgroup{{id}}" class="pull-right mr-4"><i class="fa fa-minus"></i></span>
+                          <span onclick="clickSubGroup({{id}})" id="subgroup{{id}}" class="pull-right p-2"><i class="fa fa-minus"></i></span>
                         </div>
                         <div class="custom-control custom-checkbox">
                             <input name="subgroupCheck[]" type="checkbox" class="custom-control-input subgroupCheck{{../id}}" id="subgroupCheck{{id}}" value="" onchange="this.value =  this.checked ? {{id}} : 0" onclick="uncheck({{../id}})" data-id="{{id}}">
@@ -50,10 +50,10 @@
                       </div>
                     </div>
                     <div class="panel-body ml-4">
-                      <div class="row ml-4 ">
+                      <div class="ml-4 ">
                         {{#each questions}}
                           <div class="custom-control custom-checkbox mb-4">
-                              {{@index}}) {{question}}
+                              {{math @key '+' 1}}) {{question}}
                           </div>
                         {{/each}}
                       </div>

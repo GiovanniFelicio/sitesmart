@@ -4,8 +4,6 @@ exports.up = function(knex) {
         table.integer('id_sbr_groups', 11).unsigned().notNullable();
         table.integer('id_sbr_groups_sub', 11).unsigned().notNullable();
         table.text('question').notNullable();
-        table.string('type').notNullable();
-        table.string('model').notNullable();
         table.timestamps(true, true);
         table.timestamp('deleted_at').nullable();
         table.engine('innodb');

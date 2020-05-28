@@ -50,7 +50,6 @@ module.exports = {
     async create(req, res, next){
         var errors = [];
         var error_msg = '';
-        res.send(req.body);
         try {
             if( !req.body.question || typeof req.body.question  == undefined || req.body.question  == null){
                 errors.push('Questão Inválida');
@@ -68,10 +67,9 @@ module.exports = {
             if( !req.body.reference || typeof req.body.reference  == undefined || req.body.reference  == null){
                 errors.push('Erro de referência');
             }
-            if( !req.body.modelsCheck || typeof req.body.modelsCheck  == undefined || req.body.modelsCheck  == null){
+            if( !req.body.modelsCheck || typeof req.body.modelsCheck  == undefined || req.body.modelsCheck  == null || req.body.modelsCheck.length <= 0){
                 errors.push('Modelos inválidos');
             }
-            
             if(errors.length > 0){
                 errors.forEach(e => {
                     error_msg += e + ', ';
@@ -81,30 +79,30 @@ module.exports = {
             }
             else{
                 try{
+                    var {question, reference, modelsCheck} = req.body;
                     var idSub = cryptr.decrypt(reference);
                     var subgroup = await knex('sbr_groups_sub').where('id', idSub).first();
-                    var insert = await knex('sbr_groups_sub_qn').insert({
+                    var insertQuest = await knex('sbr_groups_sub_qn').insert({
                         id_sbr_groups: subgroup.id_sbr_groups,
                         id_sbr_groups_sub: idSub,
-                        question: question,
-                        type: type,
-                        model: model || null
+                        question: question
                     });
-                    if(insert){
-                        req.flash('success_msg', 'Questão adicionada');
-                        return res.redirect(req.header('Referer') || '/');
-                    }
-                    else{
-                        req.flash('error_msg', 'Erro ao adicionar questão');
-                        return res.redirect(req.header('Referer') || '/');
-                    }
+                    modelsCheck.forEach(async id => {
+                        await knex('sbr_groups_sub_qn_models_aux').insert({
+                            id_sbr_groups_sub_qn: insertQuest,
+                            id_sbr_groups_sub_qn_models: id
+                        });
+                    });
+                    req.flash('success_msg', 'Questão adicionada');
+                    return res.redirect(req.header('Referer') || '/');
                 }
                 catch(error){
-                    next(error);
+                    req.flash('error_msg', 'Erro ao adicionar questão');
+                    return res.redirect(req.header('Referer') || '/');
                 }
-                
             }
-        } catch (error) {
+        } 
+        catch (error) {
             req.flash('error_msg', 'Erro Interno do servidor');
             return res.redirect(req.header('Referer') || '/');
         }
