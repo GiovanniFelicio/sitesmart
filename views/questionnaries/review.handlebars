@@ -27,7 +27,7 @@
                 </div>
                 <div class="card-body">
                     <div class="card-text">
-                        {{#each model as |m keymodel|}}
+                        {{#each models as |m keymodel|}}
                             <div class="custom-control custom-radio">
                                 {{#compare quest.answer '==' m.id}}
                                     <input checked type="radio" class="custom-control-input">

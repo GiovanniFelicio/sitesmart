@@ -21,7 +21,7 @@
                                 <td>{{created_at}}</td>
                                 <td >
                                     <div class="bar" >
-                                        <div data-id="{{id}}" class="progress-bar myBar" style="width:0%">
+                                        <div data-id="{{id}}" data-progress="{{progress}}" class="progress-bar myBar" style="width:0%">
                                         <div data-id="{{id}}" class="demo">0%</div>
                                         </div>
                                     </div>
@@ -48,36 +48,38 @@
         "scrollCollapse": true
     });
 
-    var bar = document.getElementsByClassName("bar");
-    for(let i = 0; i < bar.length; i++){
-        bar[i].style.background = '#ceeeef';
-        bar[i].style.display = 'flex';
-        bar[i].style.flexDirection = 'row';
-        bar[i].style.justifyContent = 'center';
-        bar[i].style.alignItems = 'center';
-        bar[i].style.width = '100%';
-        bar[i].style.height = '44px';
-    }
-    var my = $('.myBar');
-    for(let i = 0; i < my.length; i++){
-        console.log('ola')
-        var text = $(".demo")[i];
-        var elem = $(".myBar")[i];   
-        var width = 0;
-        var id = setInterval(frame, 30);
-        function frame() {
-            if (width >= 11) {
-                clearInterval(id);
-            } else {
-                width++;
-                elem.style.height = '40px';
-                elem.style.background =  '-webkit-linear-gradient(left,#75d3ff, #54e5ea)';
-                elem.style.width = width + '%';
-                elem.style.textAlign = 'center';
-                text.style.lineHeight = '40px'
-                text.style.color = '#fff';
-                text.innerHTML = width * 1  + '%';
-            }
-        } 
-    }
+    $(document).ready(function(){
+        var bar = document.getElementsByClassName("bar");
+        for(let i = 0; i < bar.length; i++){
+            bar[i].style.background = '#ceeeef';
+            bar[i].style.display = 'flex';
+            bar[i].style.flexDirection = 'row';
+            bar[i].style.justifyContent = 'center';
+            bar[i].style.alignItems = 'center';
+            bar[i].style.width = '100%';
+            bar[i].style.height = '44px';
+        }
+        var my = $('.myBar');
+        for(let i = 0; i < my.length; i++){
+            var text = $(".demo")[i];
+            var elem = $(".myBar")[i];
+            var width = 0;
+            var id = setInterval(frame, 30);
+            function frame() {
+                if (width >= elem.getAttribute('data-progress')) {
+                    clearInterval(id);
+                } else {
+                    width++;
+                    elem.style.height = '40px';
+                    elem.style.background =  '-webkit-linear-gradient(left,#75d3ff, #54e5ea)';
+                    elem.style.width = width + '%';
+                    elem.style.textAlign = 'center';
+                    text.style.lineHeight = '40px'
+                    text.style.color = '#fff';
+                    text.innerHTML = width * 1  + '%';
+                }
+            } 
+        }
+    });
+    
 </script>

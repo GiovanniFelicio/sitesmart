@@ -5,13 +5,13 @@ const Moment = require('moment');
 
 module.exports = {
     async index(req, res, next){
-        var questionnaries = await knex('sbr_qnr');
-        questionnaries.forEach(async e => {
-            e.reference = cryptr.encrypt(e.id);
-            e.id_sbr_users = await findUser(e.id_sbr_users);
-            e.created_at = Moment(e.created_at).format('DD-MM-Y  HH:mm:ss');
-            //e.progress = progressQuestionnarie(e.id);
-        });
+        var qnrs = await knex('sbr_qnr');
+        for (let i = 0; i < qnrs.length; i++) {
+            qnrs[i].reference = cryptr.encrypt(qnrs[i].id);
+            qnrs[i].id_sbr_users = await findUser(qnrs[i].id_sbr_users);
+            qnrs[i].created_at = Moment(qnrs[i].created_at).format('DD-MM-Y  HH:mm:ss');
+            qnrs[i].progress = await progressQuestionnarie(qnrs[i].id);
+        }
         return res.render('questionnaries/questionnaries',{
             layout: 'default',
             style: ['styles/style.css'],
@@ -24,7 +24,7 @@ module.exports = {
                 'dataTables.bootstrap4.min.js',
                 'dataTables.responsive.min.js'],
             vendors: ['scripts/script.js'],
-            questionnaries: questionnaries
+            questionnaries: qnrs
         });
     },
     async add(req, res, next){
@@ -142,7 +142,7 @@ module.exports = {
     async reply(req, res, next){
         try {
             var id = cryptr.decrypt(req.params.id);
-            var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id);
+            var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
             var checkQnr = await checkQuestionnarie(id);
             if(checkQnr){
                 await knex('sbr_qnr').where('id', id).update('status', 3);
@@ -152,42 +152,29 @@ module.exports = {
             else{
                 var idsSub = [];
                 for (let i = 0; i < qnr.length; i++) {
-                    aux = await knex.select('id_sbr_groups_sub').from('sbr_groups_sub_qn').where('id', qnr[i].id_sbr_groups_sub_qn).first();
+                    aux = await knex.select('id_sbr_groups_sub').from('sbr_groups_sub_qn').where('id', qnr[i]).first();
                     idsSub[i] = aux.id_sbr_groups_sub;
                 }
                 var subgroups = await knex('sbr_groups_sub').whereIn('id', idsSub);
-                var questions = [];
-                for (let i = 0; i < qnr.length; i++) {
-                    quest = await knex('sbr_groups_sub_qn').where('id', qnr[i].id_sbr_groups_sub_qn).first()
-                    for (let j = 0; j < subgroups.length; j++){
-                        if(quest.id_groups_sub == subgroups[j].id){
-                            subgroups[j].questions = quest;
-                        }
-                    }
-                }
-                console.log(subgroups);
-                //console.log(subgroups);
-                res.send(subgroups);
-                /*var questions = [];
-                for (let i = 0; i < qnr.length; i++) {
-                    subgroup = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id', qnr[i].id_sbr_groups_sub).first();
-                    try{
-                        subgroup.questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', subgroup.id).where('deleted_at', null);
-                        for (let j = 0; j < subgroup.questions.length; j++) {
-                            subgroup.questions[j].model = await knex.select('m.id', 'm.model')
-                                                                    .from('sbr_groups_sub_qn_models as m')
-                                                                    .join('sbr_groups_sub_qn_models_aux as aux')
-                                                                    .whereRaw(`aux.id_sbr_groups_sub_qn = ${subgroup.questions[j].id}`)
-                                                                    .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
+                for (let i = 0; i < subgroups.length; i++) {
+                    quest = await knex('sbr_groups_sub_qn').whereIn('id', qnr);
+                    subgroups[i].questions = [];
+                    for (let j = 0; j < quest.length; j++) {
+                        if(quest[j].id_sbr_groups_sub == subgroups[i].id){
+                            quest[j].models = await knex.select('m.id', 'm.model')
+                                                        .from('sbr_groups_sub_qn_models as m')
+                                                        .join('sbr_groups_sub_qn_models_aux as aux')
+                                                        .whereRaw(`aux.id_sbr_groups_sub_qn = ${quest[j].id}`)
+                                                        .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
+                            
                             answer = await knex('sbr_groups_sub_qn_answers')
-                                            .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
-                                            .where('id_sbr_groups_sub_qn', subgroup.questions[j].id)
+                                            .where('id_sbr_qnr', id)
+                                            .where('id_sbr_groups_sub_qn', quest[j].id)
                                             .first();
-                            (answer != undefined) ? subgroup.questions[j].answer = answer.id_sbr_groups_sub_qn_models : subgroup.questions[j].answer = null;                                                            
+                            (answer != undefined) ? quest[j].answer = answer.id_sbr_groups_sub_qn_models : quest[j].answer = null;
+                            console.log(quest[j]);
+                            subgroups[i].questions[j] = quest[j];
                         }
-                        questions.push(subgroup);
-                    }
-                    catch(error){
                     }
                 }
                 return res.render('questionnaries/reply',{
@@ -200,9 +187,9 @@ module.exports = {
                     js: ['bootstrap.js',
                         'popper.min.js'],
                     vendors: ['scripts/script.js'],
-                    groups: questions,
+                    groups: subgroups,
                     reference: id
-                });*/
+                });
             }
         } catch (error) {
             req.flash('error', 'Questionário Inválido');
@@ -213,7 +200,7 @@ module.exports = {
     async review(req,res,next){
         try {
             var id = cryptr.decrypt(req.params.id);
-            var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id);
+            var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
             var checkQnr = await checkQuestionnarie(id);
             if(checkQnr){
                 await knex('sbr_qnr').where('id', id).update({
@@ -223,26 +210,31 @@ module.exports = {
                 res.redirect('/questionnaries');
             }
             else{
-                var questions = [];
+                var idsSub = [];
                 for (let i = 0; i < qnr.length; i++) {
-                    subgroup = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id', qnr[i].id_sbr_groups_sub).first();
-                    try{
-                        subgroup.questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', subgroup.id).where('deleted_at', null);
-                        for (let j = 0; j < subgroup.questions.length; j++) {
-                            subgroup.questions[j].model = await knex.select('m.id', 'm.model')
-                                                                    .from('sbr_groups_sub_qn_models as m')
-                                                                    .join('sbr_groups_sub_qn_models_aux as aux')
-                                                                    .whereRaw(`aux.id_sbr_groups_sub_qn = ${subgroup.questions[j].id}`)
-                                                                    .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
+                    aux = await knex.select('id_sbr_groups_sub').from('sbr_groups_sub_qn').where('id', qnr[i]).first();
+                    idsSub[i] = aux.id_sbr_groups_sub;
+                }
+                var subgroups = await knex('sbr_groups_sub').whereIn('id', idsSub);
+                for (let i = 0; i < subgroups.length; i++) {
+                    quest = await knex('sbr_groups_sub_qn').whereIn('id', qnr);
+                    subgroups[i].questions = [];
+                    for (let j = 0; j < quest.length; j++) {
+                        if(quest[j].id_sbr_groups_sub == subgroups[i].id){
+                            quest[j].models = await knex.select('m.id', 'm.model')
+                                                        .from('sbr_groups_sub_qn_models as m')
+                                                        .join('sbr_groups_sub_qn_models_aux as aux')
+                                                        .whereRaw(`aux.id_sbr_groups_sub_qn = ${quest[j].id}`)
+                                                        .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
+                            
                             answer = await knex('sbr_groups_sub_qn_answers')
-                                            .where('id_sbr_qnr', qnr[i].id_sbr_qnr)
-                                            .where('id_sbr_groups_sub_qn', subgroup.questions[j].id)
+                                            .where('id_sbr_qnr', id)
+                                            .where('id_sbr_groups_sub_qn', quest[j].id)
                                             .first();
-                            (answer != undefined) ? subgroup.questions[j].answer = answer.id_sbr_groups_sub_qn_models : subgroup.questions[j].answer = null;                                                            
+                            (answer != undefined) ? quest[j].answer = answer.id_sbr_groups_sub_qn_models : quest[j].answer = null;
+                            console.log(quest[j]);
+                            subgroups[i].questions[j] = quest[j];
                         }
-                        questions.push(subgroup);
-                    }
-                    catch(error){
                     }
                 }
                 return res.render('questionnaries/review',{
@@ -255,7 +247,7 @@ module.exports = {
                     js: ['bootstrap.js',
                         'popper.min.js'],
                     vendors: ['scripts/script.js'],
-                    groups: questions,
+                    groups: subgroups,
                     reference: id
                 });
             }
@@ -363,12 +355,12 @@ async function findSubGroup(id){
     return aux;
 }
 async function progressQuestionnarie(id){
-    var qnrQn;
-    var questions;
     try {
-        qnrQn = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub');
-        questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', qnrQn).pluck('id');
+        qnrQn = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
+        answered = await knex('sbr_groups_sub_qn_answers').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
+        return parseFloat(answered.length/qnrQn.length)*100;
     } catch (error) {
+        //console.log(error);
         return null;
     }
 
