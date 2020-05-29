@@ -8,7 +8,8 @@
                     <tr>
                         <th>Nome</th>
                         <th>Criado Por</th>
-                        <th>Adicionado Em</th>
+                        <th>Criado Em</th>
+                        <th>Questões</th>
                         <th>Progresso</th>
                         <th>Opções</th>
                     </tr>
@@ -19,7 +20,8 @@
                                 <td>{{name}}</td>
                                 <td>{{id_sbr_users}}</td>
                                 <td>{{created_at}}</td>
-                                <td >
+                                <td>{{qtde}}</td>
+                                <td>
                                     <div class="bar" >
                                         <div data-id="{{id}}" data-progress="{{progress}}" class="progress-bar myBar" style="width:0%">
                                         <div data-id="{{id}}" class="demo">0%</div>
@@ -28,9 +30,10 @@
                                 </td>
                                 <td>
                                 {{#compare status '!=' 3}}
-                                    <a class="btn btn-success" title="Reply" href="/questionnaries/reply/{{reference}}">Reply</a>
+                                    <a class="btn btn-success" title="Reply" href="/questionnaries/reply/{{reference}}">Responder</a>
                                 {{else}}
-                                    <a class="btn btn-primary" title="Review" href="/questionnaries/review/{{reference}}">Review</a>
+                                    <a href="/questionnaries/details/{{reference}}" class="btn btn-success" title="Detalhes"><i class="fa fa-eye"></i></a>
+                                    <a class="btn btn-primary" title="Revisar" href="/questionnaries/review/{{reference}}">Revisar</a>
                                 {{/compare}}
                                 </td>
                             </tr>

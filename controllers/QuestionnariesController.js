@@ -9,8 +9,9 @@ module.exports = {
         for (let i = 0; i < qnrs.length; i++) {
             qnrs[i].reference = cryptr.encrypt(qnrs[i].id);
             qnrs[i].id_sbr_users = await findUser(qnrs[i].id_sbr_users);
-            qnrs[i].created_at = Moment(qnrs[i].created_at).format('DD-MM-Y  HH:mm:ss');
+            qnrs[i].created_at = Moment(qnrs[i].created_at).format('DD-MM-Y');
             qnrs[i].progress = await progressQuestionnarie(qnrs[i].id);
+            qnrs[i].qtde = await qtdeQuestions(qnrs[i].id);
         }
         return res.render('questionnaries/questionnaries',{
             layout: 'default',
@@ -146,36 +147,11 @@ module.exports = {
             var checkQnr = await checkQuestionnarie(id);
             if(checkQnr){
                 await knex('sbr_qnr').where('id', id).update('status', 3);
-                req.flash('error', 'Questionário Inválido');
+                req.flash('error', 'Questionnário finalizado');
                 res.redirect('/questionnaries');
             }
             else{
-                var idsSub = [];
-                for (let i = 0; i < qnr.length; i++) {
-                    aux = await knex.select('id_sbr_groups_sub').from('sbr_groups_sub_qn').where('id', qnr[i]).first();
-                    idsSub[i] = aux.id_sbr_groups_sub;
-                }
-                var subgroups = await knex('sbr_groups_sub').whereIn('id', idsSub);
-                for (let i = 0; i < subgroups.length; i++) {
-                    quest = await knex('sbr_groups_sub_qn').whereIn('id', qnr);
-                    subgroups[i].questions = [];
-                    for (let j = 0; j < quest.length; j++) {
-                        if(quest[j].id_sbr_groups_sub == subgroups[i].id){
-                            quest[j].models = await knex.select('m.id', 'm.model')
-                                                        .from('sbr_groups_sub_qn_models as m')
-                                                        .join('sbr_groups_sub_qn_models_aux as aux')
-                                                        .whereRaw(`aux.id_sbr_groups_sub_qn = ${quest[j].id}`)
-                                                        .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
-                            
-                            answer = await knex('sbr_groups_sub_qn_answers')
-                                            .where('id_sbr_qnr', id)
-                                            .where('id_sbr_groups_sub_qn', quest[j].id)
-                                            .first();
-                            (answer != undefined) ? quest[j].answer = answer.id_sbr_groups_sub_qn_models : quest[j].answer = null;
-                            subgroups[i].questions[j] = quest[j];
-                        }
-                    }
-                }
+                var subgroups = await getQuestions(qnr, id);
                 return res.render('questionnaries/reply',{
                     layout: 'default',
                     style: ['styles/style.css'],
@@ -205,51 +181,75 @@ module.exports = {
                 await knex('sbr_qnr').where('id', id).update({
                     status: 3
                 })
-                req.flash('error', 'Questionário Inválido');
-                res.redirect('/questionnaries');
             }
-            else{
-                var idsSub = [];
-                for (let i = 0; i < qnr.length; i++) {
-                    aux = await knex.select('id_sbr_groups_sub').from('sbr_groups_sub_qn').where('id', qnr[i]).first();
-                    idsSub[i] = aux.id_sbr_groups_sub;
-                }
-                var subgroups = await knex('sbr_groups_sub').whereIn('id', idsSub);
-                for (let i = 0; i < subgroups.length; i++) {
-                    quest = await knex('sbr_groups_sub_qn').whereIn('id', qnr);
-                    subgroups[i].questions = [];
-                    for (let j = 0; j < quest.length; j++) {
-                        if(quest[j].id_sbr_groups_sub == subgroups[i].id){
-                            quest[j].models = await knex.select('m.id', 'm.model')
-                                                        .from('sbr_groups_sub_qn_models as m')
-                                                        .join('sbr_groups_sub_qn_models_aux as aux')
-                                                        .whereRaw(`aux.id_sbr_groups_sub_qn = ${quest[j].id}`)
-                                                        .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
-                            
-                            answer = await knex('sbr_groups_sub_qn_answers')
-                                            .where('id_sbr_qnr', id)
-                                            .where('id_sbr_groups_sub_qn', quest[j].id)
-                                            .first();
-                            (answer != undefined) ? quest[j].answer = answer.id_sbr_groups_sub_qn_models : quest[j].answer = null;
-                            console.log(quest[j]);
-                            subgroups[i].questions[j] = quest[j];
-                        }
+            var subgroups = await getQuestions(qnr ,id);
+            return res.render('questionnaries/review',{
+                layout: 'default',
+                style: ['styles/style.css'],
+                css: ['bootstrap.min.css'],
+                jquery: ['jquery.min.js'],
+                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
+                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
+                js: ['bootstrap.js',
+                    'popper.min.js'],
+                vendors: ['scripts/script.js'],
+                groups: subgroups,
+                reference: id
+            });
+        }
+        catch (error){
+            req.flash('error', 'Questionário Inválido');
+            res.redirect('/questionnaries');
+        }
+    },
+    async details(req, res, next){
+        try {
+            var id = cryptr.decrypt(req.params.id);
+            var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
+            var idsSub = [];
+            for (let i = 0; i < qnr.length; i++) {
+                aux = await knex.select('id_sbr_groups_sub').from('sbr_groups_sub_qn').where('id', qnr[i]).first();
+                idsSub[i] = aux.id_sbr_groups_sub;
+            }
+            var subgroups = await knex.select('id', 'name').from('sbr_groups_sub').whereIn('id', idsSub);
+            for (let i = 0; i < subgroups.length; i++) {
+                quest = await knex.select('id', 'id_sbr_groups_sub', 'question').from('sbr_groups_sub_qn').whereIn('id', qnr);
+                subgroups[i].questions = [];
+                var soma = 0;
+                var qtde = 0;
+                for (let j = 0; j < quest.length; j++) {
+                    if(quest[j].id_sbr_groups_sub == subgroups[i].id){
+                        model = await knex('sbr_groups_sub_qn_answers')
+                                        .where('id_sbr_qnr', id)
+                                        .where('id_sbr_groups_sub_qn', quest[j].id).first();
+                        answer = await knex('sbr_groups_sub_qn_models_aux')
+                                        .where('id_sbr_groups_sub_qn', quest[j].id)
+                                        .where('id_sbr_groups_sub_qn_models', model.id_sbr_groups_sub_qn_models).first();
+                        expectedAux = await knex('sbr_groups_sub_qn_models_aux')
+                                                .max('value as value')
+                                                .where('id_sbr_groups_sub_qn', quest[j].id).first();
+                        quest[j].score = proportion(expectedAux.value, answer.value);
+                        soma += parseFloat(quest[j].score);
+                        qtde++;
+                        subgroups[i].questions[j] = quest[j];
                     }
                 }
-                return res.render('questionnaries/review',{
-                    layout: 'default',
-                    style: ['styles/style.css'],
-                    css: ['bootstrap.min.css'],
-                    jquery: ['jquery.min.js'],
-                    src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                        'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-                    js: ['bootstrap.js',
-                        'popper.min.js'],
-                    vendors: ['scripts/script.js'],
-                    groups: subgroups,
-                    reference: id
-                });
+                subgroups[i].score = (soma/qtde);
             }
+            res.send(subgroups)
+            /*return res.render('questionnaries/review',{
+                layout: 'default',
+                style: ['styles/style.css'],
+                css: ['bootstrap.min.css'],
+                jquery: ['jquery.min.js'],
+                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
+                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
+                js: ['bootstrap.js',
+                    'popper.min.js'],
+                vendors: ['scripts/script.js'],
+                groups: subgroups,
+                reference: id
+            });*/
         }
         catch (error){
             req.flash('error', 'Questionário Inválido');
@@ -273,25 +273,6 @@ module.exports = {
         }
         catch(e){
             res.send('0');
-        }
-    },
-    async delete(req,res,next){
-        var idEncrypt = req.params.id;
-        var date = new Date();
-        var currentDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
-        try{
-            var idDecrypt = cryptr.decrypt(idEncrypt);
-            const course = await knex('courses')
-                .where({id: idDecrypt})
-                .update({
-                    deleted_at: currentDate
-                });
-            req.flash('success_msg', 'Deleted Course');
-            res.redirect('/courses');
-        }
-        catch(e){
-            req.flash('error_msg', 'Error when deleting the Course');
-            res.redirect('/courses');
         }
     }
 }
@@ -359,9 +340,56 @@ async function progressQuestionnarie(id){
         answered = await knex('sbr_groups_sub_qn_answers').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
         return parseFloat(answered.length/qnrQn.length)*100;
     } catch (error) {
-        //console.log(error);
         return null;
     }
-
 }
- 
+async function qtdeQuestions(id){
+    try {
+        qtde = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
+        return qtde.length;
+    } catch (error) {
+        return null;
+    }
+}
+async function getQuestions(qnr, id){
+    try {
+        var idsSub = [];
+        for (let i = 0; i < qnr.length; i++) {
+            aux = await knex.select('id_sbr_groups_sub').from('sbr_groups_sub_qn').where('id', qnr[i]).first();
+            idsSub[i] = aux.id_sbr_groups_sub;
+        }
+        var subgroups = await knex('sbr_groups_sub').whereIn('id', idsSub);
+        for (let i = 0; i < subgroups.length; i++) {
+            quest = await knex('sbr_groups_sub_qn').whereIn('id', qnr);
+            subgroups[i].questions = [];
+            for (let j = 0; j < quest.length; j++) {
+                if(quest[j].id_sbr_groups_sub == subgroups[i].id){
+                    quest[j].models = await knex.select('m.id', 'm.model')
+                                                .from('sbr_groups_sub_qn_models as m')
+                                                .join('sbr_groups_sub_qn_models_aux as aux')
+                                                .whereRaw(`aux.id_sbr_groups_sub_qn = ${quest[j].id}`)
+                                                .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
+                    
+                    answer = await knex('sbr_groups_sub_qn_answers')
+                                    .where('id_sbr_qnr', id)
+                                    .where('id_sbr_groups_sub_qn', quest[j].id)
+                                    .first();
+                    (answer != undefined) ? quest[j].answer = answer.id_sbr_groups_sub_qn_models : quest[j].answer = null;
+                    subgroups[i].questions[j] = quest[j];
+                }
+            }
+        }
+        return subgroups;    
+    }
+    catch (error) {
+        return null;
+    }
+}
+function proportion(vMax, value){
+    try {
+        aux = ((value*10/vMax));
+        return aux;
+    } catch (error) {
+        return 0;
+    }
+}
