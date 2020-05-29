@@ -9,7 +9,8 @@ module.exports = {
         questionnaries.forEach(async e => {
             e.reference = cryptr.encrypt(e.id);
             e.id_sbr_users = await findUser(e.id_sbr_users);
-            e.created_at = Moment(e.created_at).format('DD-MM-Y  H:m:ss');
+            e.created_at = Moment(e.created_at).format('DD-MM-Y  HH:mm:ss');
+            //e.progress = progressQuestionnarie(e.id);
         });
         return res.render('questionnaries/questionnaries',{
             layout: 'default',
@@ -19,9 +20,7 @@ module.exports = {
             jquery: ['jquery.min.js'],
             src: ['plugins/highcharts-6.0.7/code/highcharts.js',
                 'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-            js: [
-                'popper.min.js',
-                'jquery.datatable.min.js',
+            js: ['jquery.datatable.min.js',
                 'dataTables.bootstrap4.min.js',
                 'dataTables.responsive.min.js'],
             vendors: ['scripts/script.js'],
@@ -109,10 +108,14 @@ module.exports = {
                         });
                         try {
                             subgroups.forEach(async sub => {
-                                insertQnrQn = await knex('sbr_groups_sub_qn_qnr').insert({
-                                    id_sbr_groups_sub: sub.id,
-                                    id_sbr_qnr: insertQnr
+                                questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', sub.id)
+                                questions.forEach(async quest => {
+                                    insertQnQnr = await knex('sbr_groups_sub_qn_qnr').insert({
+                                        id_sbr_groups_sub_qn: quest.id,
+                                        id_sbr_qnr: insertQnr
+                                    });
                                 });
+                                
                             });
                             req.flash('success_msg', 'Questionário adicionado com sucesso');
                             return res.redirect('/questionnaries');
@@ -147,7 +150,25 @@ module.exports = {
                 res.redirect('/questionnaries');
             }
             else{
+                var idsSub = [];
+                for (let i = 0; i < qnr.length; i++) {
+                    aux = await knex.select('id_sbr_groups_sub').from('sbr_groups_sub_qn').where('id', qnr[i].id_sbr_groups_sub_qn).first();
+                    idsSub[i] = aux.id_sbr_groups_sub;
+                }
+                var subgroups = await knex('sbr_groups_sub').whereIn('id', idsSub);
                 var questions = [];
+                for (let i = 0; i < qnr.length; i++) {
+                    quest = await knex('sbr_groups_sub_qn').where('id', qnr[i].id_sbr_groups_sub_qn).first()
+                    for (let j = 0; j < subgroups.length; j++){
+                        if(quest.id_groups_sub == subgroups[j].id){
+                            subgroups[j].questions = quest;
+                        }
+                    }
+                }
+                console.log(subgroups);
+                //console.log(subgroups);
+                res.send(subgroups);
+                /*var questions = [];
                 for (let i = 0; i < qnr.length; i++) {
                     subgroup = await knex.select('id', 'id_sbr_groups', 'name').from('sbr_groups_sub').where('id', qnr[i].id_sbr_groups_sub).first();
                     try{
@@ -181,7 +202,7 @@ module.exports = {
                     vendors: ['scripts/script.js'],
                     groups: questions,
                     reference: id
-                });
+                });*/
             }
         } catch (error) {
             req.flash('error', 'Questionário Inválido');
@@ -287,10 +308,10 @@ async function checkQuestionnarie(id){
     var qnr = await knex('sbr_groups_sub_qn_qnr')
                     .where('id_sbr_qnr', id)
                     .where('deleted_at', null)
-                    .pluck('id_sbr_groups_sub');
+                    .pluck('id_sbr_groups_sub_qn');
     if(qnr.length > 0){
         try{
-            var questions = await knex('sbr_groups_sub_qn').whereIn('id_sbr_groups_sub', qnr).where('deleted_at', null);
+            var questions = await knex('sbr_groups_sub_qn').whereIn('id', qnr).where('deleted_at', null);
             if(questions.length > 0){return false;}
             else{return true;}
         }
@@ -340,5 +361,16 @@ async function findSubGroup(id){
         }
     }
     return aux;
+}
+async function progressQuestionnarie(id){
+    var qnrQn;
+    var questions;
+    try {
+        qnrQn = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub');
+        questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', qnrQn).pluck('id');
+    } catch (error) {
+        return null;
+    }
+
 }
  
