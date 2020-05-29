@@ -60,11 +60,11 @@
             bar[i].style.height = '44px';
         }
         var my = $('.myBar');
-        for(let i = 0; i < my.length; i++){
+        function progress(i){
             var text = $(".demo")[i];
             var elem = $(".myBar")[i];
             var width = 0;
-            var id = setInterval(frame, 30);
+            var id = setInterval(frame, 20);
             function frame() {
                 if (width >= elem.getAttribute('data-progress')) {
                     clearInterval(id);
@@ -79,6 +79,9 @@
                     text.innerHTML = width * 1  + '%';
                 }
             } 
+        }
+        for(let i = 0; i < my.length; i++){
+            progress(i);
         }
     });
     

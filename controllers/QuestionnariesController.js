@@ -172,7 +172,6 @@ module.exports = {
                                             .where('id_sbr_groups_sub_qn', quest[j].id)
                                             .first();
                             (answer != undefined) ? quest[j].answer = answer.id_sbr_groups_sub_qn_models : quest[j].answer = null;
-                            console.log(quest[j]);
                             subgroups[i].questions[j] = quest[j];
                         }
                     }
