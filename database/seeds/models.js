@@ -6,10 +6,16 @@ exports.seed = function(knex) {
       // Inserts seed entries
       return knex('sbr_groups_sub_qn_models').insert([
         {model: 'Sim, em sistema integrado'},
+        {model: 'Sim, eletrônico manual'},
+        {model: 'Sim, de forma eficaz'},
+        {model: 'Sim, razoavelmente'},
         {model: 'Sim, independente'},
+        {model: 'Sim, em papel'},
         {model: 'Sim, manual'},
+        {model: 'Sim'},
         {model: 'Não'},
-        {model: 'Nao se aplica'}
+        {model: 'Não se aplica'},
+        {model: 'Não, mas preciso'},
       ]);
     });
 };

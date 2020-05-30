@@ -11,3 +11,11 @@ exports.up = function(knex) {
 exports.down = function(knex) {
     return knex.schema.dropTable('sbr_groups');
 };
+const ON_UPDATE_DELETED_AT = `DELIMITER //
+CREATE TRIGGER siteUpAfterUpDeletedAtGroups AFTER UPDATE ON sbr_groups
+    FOR EACH ROW
+    BEGIN
+        IF NEW.deleted_at <> OLD.deleted_at THEN  
+            UPDATE sbr_groups_sub SET deleted_at = CURRENT_TIME() WHERE id_sbr_groups = NEW.id;
+        END IF;
+    END;//`
