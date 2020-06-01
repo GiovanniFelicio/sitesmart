@@ -2,6 +2,7 @@ const knex = require('../database');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr('myTotalySecretKey');
 const Moment = require('moment');
+const NodeTable = require('nodetable');
 
 module.exports = {
     async index(req, res, next){
@@ -187,6 +188,26 @@ module.exports = {
         catch(e){
             return res.send('0');
         }
+    },
+    async getmodel(req,res,next){
+        var id = req.params.id;
+        try{
+            var models = await knex.select('m.id', 'm.model', 'aux.value')
+                                            .from('sbr_groups_sub_qn_models as m')
+                                            .join('sbr_groups_sub_qn_models_aux as aux')
+                                            .whereRaw(`aux.id_sbr_groups_sub_qn = ${id}`)
+                                            .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');                      
+            if(models){
+                return res.send(models);
+            }
+            else{
+                return res.send('0');
+            }
+        }
+        catch(e){
+            console.log(e)
+            return res.send('0');
+        }
     }
 }
 function removeDups(array) {
@@ -197,10 +218,6 @@ function removeDups(array) {
       }
     });
     return Object.keys(unique);
-  }
-async function findModels(agroup){
-    var model = await knex('sbr_groups_sub_qn_models').where('agroup', agroup).pluck('model');
-    return model.join(' - ');
 }
 async function findQuestion(question){
     try{
@@ -215,31 +232,6 @@ async function findQuestion(question){
     catch(error){
         return true;
     }
-}
-async function findModel(type, model){
-    try{
-        model.forEach(async e => {
-            var model = await knex('sbr_groups_sub_qn_models').where('type', type).where('model', model);
-        });
-        if(model > 0){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-    catch(error){
-        return true;
-    }
-}
-async function insertModel(type, model, value){
-    final.forEach(async e => {
-        var model = await knex('sbr_groups_sub_qn_models').insert({
-            type: type,
-            model: model,
-            value, value
-        });
-    });
 }
 function compare(arr1,arr2){
   

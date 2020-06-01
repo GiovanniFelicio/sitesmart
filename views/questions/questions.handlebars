@@ -114,11 +114,37 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="upQuestion" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> MODELOS </h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>X</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="/groups/sub/questions" id="createQuestion">
+                    <input id="reference" hidden name="reference" value="">
+                    <div class="form-group">
+                        <label>Modelos:</label>
+                        <div id="modeloUp" class="row">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Atualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
-    $('#questions').DataTable({
+    var table = $('#questions').DataTable({
         "responsive": true,
         "scrollY": "1000px",
-        "scrollCollapse": true
+        "scrollCollapse": true,
+        "pageLength": 50
     });
     let idEncrypt;
     $('.del').click(function(){
@@ -163,6 +189,41 @@
             $('#value'+id).prop('hidden', true);
             $('#inputValue'+id).prop('disabled', true);
         }
+    });
+    $('#questions tbody').on('dblclick', 'tr', function () {
+        let dato = table.row( this ).data();
+        //$('#modeloUp').html('');
+        $.ajax({
+            url: '/question/model/'+dato[0],
+            type: 'GET',
+            success: function(result) {
+                if(result != 0){
+                    for(let i = 0; i<result.length; i++){
+                        $('#modeloUp').append(`
+                                <div class="col-6">
+                                    <div class="custom-control custom-checkbox ml-3">
+                                        <label for="modelsCheck${result[i].id}">${result[i].model}</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-row" id="value${result[i].id}">
+                                        <div class="col-sm-7 col-lg-5">
+                                            <div class="input-group">
+                                                <input name="value[]" type="text" class="form-control" id="inputValue${result[i].id}" placeholder="0" value="${result[i].value}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`);
+                    }
+                }
+                else{
+                    $('#delQuestion').modal('hide');
+                    alert("Error when deleting");
+                }
+            }
+        });
+        $('#nameFunc').val();
+        $('#upQuestion').modal('show');
     });
 
 </script>

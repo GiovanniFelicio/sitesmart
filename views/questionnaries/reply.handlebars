@@ -60,11 +60,6 @@
 <script>
     $('#saveAll').click(function(){
         var qnr = {{reference}};
-        /*var inputs = $('input:checked');
-        var questions = [];
-        for(let i = 0; i<inputs.length; i++){
-            questions.push({'idQuestion': inputs[i].getAttribute('data-idquestion'), 'answer':inputs[i].getAttribute('data-value'), 'qnr': qnr});
-        }*/
         $.ajax({
             type: "POST",
             url: "/questionnaries/save",
@@ -103,7 +98,6 @@
         else{
 
         }
-        /**/
     };
 
 </script>

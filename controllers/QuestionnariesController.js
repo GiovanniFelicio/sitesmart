@@ -238,8 +238,10 @@ module.exports = {
                         subgroups[i].questions[j] = quest[j];
                     }
                 }
+                
                 subgroups[i].score = (somaScoreQuest/qtdeQn);
                 somaScoreSub += parseFloat(subgroups[i].score);
+                subgroups[i].questions = filter_array(subgroups[i].questions);
             }
             scoreQnr = (somaScoreSub/subgroups.length);
             //res.send(subgroups);
@@ -254,7 +256,8 @@ module.exports = {
                     'popper.min.js'],
                 vendors: ['scripts/script.js'],
                 groups: subgroups,
-                reference: id
+                reference: id,
+                scoreQnr: scoreQnr
             });
         }
         catch (error){
@@ -330,4 +333,20 @@ module.exports = {
             return res.send('0');
         }
     }
+}
+function filter_array(test_array) {
+    var index = -1,
+        arr_length = test_array ? test_array.length : 0,
+        resIndex = -1,
+        result = [];
+
+    while (++index < arr_length) {
+        var value = test_array[index];
+
+        if (value) {
+            result[++resIndex] = value;
+        }
+    }
+
+    return result;
 }

@@ -1,7 +1,7 @@
 module.exports = {
 
     isAuth: function(req, res, next){
-        if(req.isAuthenticated()){
+        if(!req.isAuthenticated()){
             return next();
         }
         req.flash('error_msg', "You aren't authenticated");
