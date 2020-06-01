@@ -242,8 +242,8 @@ module.exports = {
                 somaScoreSub += parseFloat(subgroups[i].score);
             }
             scoreQnr = (somaScoreSub/subgroups.length);
-            res.send(subgroups);
-            /*return res.render('questionnaries/details',{
+            //res.send(subgroups);
+            return res.render('questionnaries/details',{
                 layout: 'default',
                 style: ['styles/style.css'],
                 css: ['bootstrap.min.css'],
@@ -255,12 +255,12 @@ module.exports = {
                 vendors: ['scripts/script.js'],
                 groups: subgroups,
                 reference: id
-            });*/
+            });
         }
         catch (error){
-            console.log(error);
-            //req.flash('error', 'Questionário Inválido');
-            //res.redirect('/questionnaries');
+            //console.log(error);
+            req.flash('error', 'Questionário Inválido');
+            res.redirect('/questionnaries');
         }
     },
     async saveQuestionnaries(req,res,next){

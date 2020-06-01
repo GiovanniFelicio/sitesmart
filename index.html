@@ -1,30 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-</head>
-<body>
-    <div id="app">
-        {{ msg }}
-        <input type="text" v-model="msg">
-        <ul>
-            <li v-for="fruit in fruits">{{fruit.name}}</li>
-        </ul>
-    </div>
-    <script>
-    var app = new Vue({
-    el: '#app',
-    data: {
-        fruits:[
-            {name: 'teste'},
-            {name: 'teste1'},
-            {name: 'teste2'}
-        ]
-    }
-    })
-    </script>
-</body>
-</html>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<!-- <script type="text/javascript" src="/Graphic/script.js"></script> -->
+<script type="text/javascript">
+    google.charts.load("current", {packages:['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+        ["Element", "Density", { role: "style" } ],
+        ["1ª Questão", 10, 'stroke-color: #0077b6; stroke-opacity: 0.8; stroke-width: 4; fill-color: #0077b6; fill-opacity: 0.5'],
+        ["2ª Questão", 12, 'stroke-color: #00b4d8; stroke-opacity: 0.8; stroke-width: 4; fill-color: #00b4d8; fill-opacity: 0.5'],
+        ["3ª Questão", 16, 'stroke-color: #90e0ef; stroke-opacity: 0.8; stroke-width: 4; fill-color: #90e0ef; fill-opacity: 0.5'],
+        ["4ª Questão", 12, 'stroke-color: #75d3ff; stroke-opacity: 0.8; stroke-width: 4; fill-color: #75d3ff; fill-opacity: 0.5'],
+        ["5ª Questão", 15, 'stroke-color: #5bbbca; stroke-opacity: 0.8; stroke-width: 4; fill-color: #5bbbca; fill-opacity: 0.5']
+      ]);
+
+      var view = new google.visualization.DataView(data);
+      view.setColumns([0, 1,
+                       { calc: "stringify",
+                         sourceColumn: 1,
+                         type: "string",
+                         role: "annotation" },
+                       2]);
+
+      var options = {
+        title: "Perguntas - Número de acertos",
+        width: 500,
+        height: 400,
+        bar: {groupWidth: "95%"},
+        legend: { position: "none" },
+      };
+      var chart = new google.visualization.ColumnChart(document.getElementById("chart_div"));
+      chart.draw(view, options);
+  }
+</script>
