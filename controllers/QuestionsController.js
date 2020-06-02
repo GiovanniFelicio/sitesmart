@@ -193,15 +193,63 @@ module.exports = {
         var id = req.params.id;
         try{
             var models = await knex.select('m.id', 'm.model', 'aux.value')
-                                            .from('sbr_groups_sub_qn_models as m')
-                                            .join('sbr_groups_sub_qn_models_aux as aux')
-                                            .whereRaw(`aux.id_sbr_groups_sub_qn = ${id}`)
-                                            .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');                      
+                                    .from('sbr_groups_sub_qn_models as m')
+                                    .join('sbr_groups_sub_qn_models_aux as aux')
+                                    .whereRaw(`aux.id_sbr_groups_sub_qn = ${id}`)
+                                    .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');                      
             if(models){
                 return res.send(models);
             }
             else{
                 return res.send('0');
+            }
+        }
+        catch(e){
+            console.log(e)
+            return res.send('0');
+        }
+    },
+    async updateModel(req,res,next){
+        var errors = [];
+        var error_msg = '';
+        try{
+            if( !req.body.reference || typeof req.body.reference == undefined || req.body.reference == null){
+                errors.push('Referência inválida');
+            }
+            else if( !req.body.value|| typeof req.body.value == undefined || req.body.value == null || req.body.value.length <= 0){
+                errors.push('Valores inválidos');
+            }
+            else if( !req.body.model|| typeof req.body.model == undefined || req.body.model == null || req.body.value.length <= 0){
+                errors.push('Modelos inválidos');
+            }
+            else if(req.body.value.length != req.body.model.length){
+                errors.push('Valores e modelos incompatíveis');
+            }
+            if(errors.length > 0){
+                errors.forEach(e => {
+                    error_msg += e + ', ';
+                });
+                req.flash('error_msg', error_msg);
+                res.redirect(req.header('Referer') || '/groups');
+            }
+            else{
+                try {
+                    var {value, model, reference} = req.body;
+                    model.forEach(async (m, i) => {
+                        await knex('sbr_groups_sub_qn_models_aux')
+                                .where('id_sbr_groups_sub_qn', req.body.reference)
+                                .where('id_sbr_groups_sub_qn_models', m)
+                                .update({
+                                    value: value[i]
+                                });
+                    });
+                    req.flash('success_msg', 'Atualizado com sucesso !!');
+                    return res.redirect(req.header('Referer') || '/groups');
+                } catch (error) {
+                    req.flash('error_msg', 'Error durante a atualização !!');
+                    res.redirect(req.header('Referer') || '/groups');
+                }
+                
             }
         }
         catch(e){

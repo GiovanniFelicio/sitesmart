@@ -101,7 +101,7 @@
             type: 'DELETE',
             success: function(result) {
                 if(result == 1){
-                    window.location.replace('/groups/sub/'+idEncrypt);
+                    window.location.reload();
                 }
                 else{
                     $('#delSubgroup').modal('hide');

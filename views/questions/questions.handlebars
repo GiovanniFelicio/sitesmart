@@ -124,11 +124,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="/groups/sub/questions" id="createQuestion">
-                    <input id="reference" hidden name="reference" value="">
+                <form method="POST" action="/question/model" id="createQuestion">
                     <div class="form-group">
                         <label>Modelos:</label>
-                        <div id="modeloUp" class="row">
+                        <div id="modelUp" class="row">
                         </div>
                     </div>
                     <div class="text-center">
@@ -192,28 +191,30 @@
     });
     $('#questions tbody').on('dblclick', 'tr', function () {
         let dato = table.row( this ).data();
-        //$('#modeloUp').html('');
+        $('#modelUp').html('');
         $.ajax({
             url: '/question/model/'+dato[0],
             type: 'GET',
             success: function(result) {
                 if(result != 0){
+                    $('#modelUp').html(`<input hidden value="${dato[0]}" name="reference"/>`);
                     for(let i = 0; i<result.length; i++){
-                        $('#modeloUp').append(`
-                                <div class="col-6">
-                                    <div class="custom-control custom-checkbox ml-3">
-                                        <label for="modelsCheck${result[i].id}">${result[i].model}</label>
-                                    </div>
+                        $('#modelUp').append(`
+                            <div class="col-6">
+                                <div class="custom-control custom-checkbox ml-3">
+                                    <label for="modelsCheck${result[i].id}">${result[i].model}</label>
                                 </div>
-                                <div class="col-6">
-                                    <div class="form-row" id="value${result[i].id}">
-                                        <div class="col-sm-7 col-lg-5">
-                                            <div class="input-group">
-                                                <input name="value[]" type="text" class="form-control" id="inputValue${result[i].id}" placeholder="0" value="${result[i].value}">
-                                            </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-row" id="value${result[i].id}">
+                                    <div class="col-sm-7 col-lg-5">
+                                        <div class="input-group">
+                                            <input name="value[]" type="text" class="form-control" id="inputValue${result[i].id}" placeholder="0" value="${result[i].value}">
+                                            <input name="model[]" hidden placeholder="0" value="${result[i].id}">
                                         </div>
                                     </div>
-                                </div>`);
+                                </div>
+                            </div>`);
                     }
                 }
                 else{
