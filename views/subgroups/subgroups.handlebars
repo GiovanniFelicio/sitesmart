@@ -1,7 +1,7 @@
 <div class="col-md-12 col-sm-12">
     <nav aria-label="breadcrumb" role="navigation">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
             <li class="breadcrumb-item active" aria-current="page"><a href="/groups">Grupos</a></li>
             <li class="breadcrumb-item active" aria-current="page">{{name}}</li>
         </ol>
@@ -16,6 +16,7 @@
                     <thead>
                     <tr>
                         <th>Nome</th>
+                        <th>Questões</th>
                         <th>Adicionado Em</th>
                         <th>Opções</th>
                     </tr>
@@ -24,6 +25,7 @@
                         {{#each subgroups}}
                             <tr {{#compare deleted_at '!=' null}}class="alert-danger"{{/compare}}>
                                 <td>{{name}}</td>
+                                <td>{{qtde}}</td>
                                 <td>{{created_at}}</td>
                                 <td>
                                     {{#compare deleted_at '!=' null}}

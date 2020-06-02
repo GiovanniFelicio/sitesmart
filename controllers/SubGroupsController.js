@@ -9,10 +9,13 @@ module.exports = {
             var id = cryptr.decrypt(req.params.id);
             var nameGroup = await knex('sbr_groups').where('id', id).pluck('name');
             var subgroups = await knex('sbr_groups_sub').where('id_sbr_groups', id);
-            subgroups.forEach(e => {
+            subgroups.forEach(async e => {
+                questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', e.id);
                 e.id = cryptr.encrypt(e.id);
+                e.qtde = questions.length;
                 e.created_at = Moment(e.created_at).format('DD-MM-Y  HH:mm:ss');
             });
+            
             return res.render('subgroups/subgroups',{
                 layout: 'default',
                 style: ['styles/style.css'],

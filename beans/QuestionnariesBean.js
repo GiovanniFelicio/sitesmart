@@ -102,19 +102,37 @@ module.exports = {
                         subgroups[i].questions[j] = quest[j];
                     }
                 }
+                subgroups[i].questions = filter_array(subgroups[i].questions);
             }
             return subgroups;    
         }
         catch (error) {
+            console.log(error)
             return null;
         }
     },
     proportion(vMax, value){
         try {
-            aux = ((value*10/vMax));
+            aux = ((value/vMax)*100);
             return aux;
         } catch (error) {
             return 0;
         }
     }
+}
+function filter_array(test_array) {
+    var index = -1,
+        arr_length = test_array ? test_array.length : 0,
+        resIndex = -1,
+        result = [];
+
+    while (++index < arr_length) {
+        var value = test_array[index];
+
+        if (value) {
+            result[++resIndex] = value;
+        }
+    }
+
+    return result;
 }
