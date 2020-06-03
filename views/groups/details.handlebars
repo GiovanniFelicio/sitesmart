@@ -53,13 +53,13 @@
               }
             }
         };
-        var vAxisNumber = new google.visualization.NumberFormat({pattern:'##,##%'});
-        vAxisNumber.format(data, 1);
         var chart = new google.visualization.ColumnChart(document.getElementById("chart_div"));
         chart.draw(view, options);
-        google.visualization.events.addListener(chart, 'select', selectHandler);
 
+        google.visualization.events.addListener(chart, 'select', selectHandler);
+        //selectHandler();
         function selectHandler() {
+          console.log('ola')
           var selection = chart.getSelection();
           for (var i = 0; i < selection.length; i++) {
             var item = selection[i];

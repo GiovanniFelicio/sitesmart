@@ -77,8 +77,6 @@
               }
             }
         };
-        var vAxisNumber = new google.visualization.NumberFormat({pattern:'##,##%'});
-        vAxisNumber.format(data, 1);
         var chart = new google.visualization.ColumnChart(document.getElementById("chart_div"));
         chart.draw(view, options);
         function results(){

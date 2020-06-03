@@ -1,0 +1,80 @@
+<div class="container-fluid">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <div class="chart-sm">
+                    <div class="radio_chart" id="radioChartContent"></div>
+                    <div class="cap"></div>
+                    {{!-- foreach --}} 
+                    <div class="value">
+                        0%
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="chart-sm">
+                    <div class="radio_chart" id="radioChartContent"></div>
+                    <div class="cap"></div>
+                    {{!-- foreach --}}
+                    <div class="value">
+                        0%
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="chart">
+                <div class="radio_chart" id="radioChartContent"></div>
+                <div class="cap"></div>
+                {{!-- foreach --}}
+                <div class="value" id="percentValue">
+                    0%
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+
+    function goTo(frame) {
+        reset();
+
+        setTimeout(function () {
+
+            var chart = document.getElementById("radioChartContent"), pVal = document.getElementById("percentValue");
+
+            chart.classList.add("animate");
+
+            var currentPercent = 0;
+            var currTimeout = setInterval(function () {
+
+                if (currentPercent == frame || currentPercent > 100) {
+
+                    clearInterval(currTimeout);
+
+                    chart.style.animationPlayState = "paused";
+                    chart.style.webkitAnimationPlayState = "paused";
+
+                    return false;
+                } else {
+                    //Sum percentage    
+                    currentPercent++;
+                    //show new percentage    
+                    pVal.innerHTML = currentPercent + "%";
+                }
+            }, 10);
+        }, 100);
+    }
+
+    function reset() {
+        var chart = document.getElementById("radioChartContent"), pVal = document.getElementById("percentValue");
+
+        chart.classList.remove("animate");
+        pVal.innerHTML = "0%";
+        chart.style.animationPlayState = "initial";
+        chart.style.webkitAnimationPlayState = "initial";
+    }    
+        goTo(80);
+</script>

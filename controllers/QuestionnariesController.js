@@ -168,7 +168,6 @@ module.exports = {
             req.flash('error', 'Questionário Inválido');
             res.redirect('/questionnaries');
         }
-        
     },
     async review(req,res,next){
         try {
@@ -202,34 +201,12 @@ module.exports = {
     },
     async details(req, res, next){
         try {
-            //res.send(totalQn);
-            return res.render('questionnaries/details',{
-                layout: 'default',
-                style: ['styles/style.css'],
-                css: ['bootstrap.min.css'],
-                jquery: ['jquery.min.js'],
-                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-                js: ['bootstrap.js',
-                    'popper.min.js'],
-                vendors: ['scripts/script.js'],
-                reference: req.params.id
-            });
-        }
-        catch (error){
-            //console.log(error);
-            req.flash('error', 'Questionário Inválido');
-            res.redirect('/questionnaries');
-        }
-    },
-    async details(req, res, next){
-        try {
             let idqnr = req.params.idqnr;
             let idgroup = req.params.idgroup;
             return res.render('questionnaries/details',{
                 layout: 'default',
                 style: ['styles/style.css'],
-                css: ['bootstrap.min.css'],
+                css: ['bootstrap.min.css', 'myCss.css'],
                 jquery: ['jquery.min.js'],
                 src: ['plugins/highcharts-6.0.7/code/highcharts.js',
                     'plugins/highcharts-6.0.7/code/highcharts-more.js'],
