@@ -1,5 +1,5 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-{{!-- <script type="text/javascript" src="/Graphic/script.js"></script> --}}
+ {{!--<script type="text/javascript" src="/Graphic/script.js"></script>--}}
 <div id="chart_div"></div>
 <script type="text/javascript">
     $.getJSON("/questionnaries/getresult/{{reference}}", (dato)=>{
@@ -25,6 +25,25 @@
         };
         var chart = new google.visualization.ColumnChart(document.getElementById("chart_div"));
         chart.draw(view, options);
+        google.visualization.events.addListener(chart, 'select', selectHandler);
+
+        function selectHandler() {
+          var selection = chart.getSelection();
+          var message = '';
+          for (var i = 0; i < selection.length; i++) {
+            var item = selection[i];
+            if (item.row != null && item.column != null) {
+              ///////
+              var str = data.getFormattedValue(item.row, item.column);
+              //console.log(str);
+              var category = data
+              .getValue(chart.getSelection()[0].row, 0)
+              //console.log(category);
+              message = category;
+            } 
+          }
+          alert(message)
+        }
       }
       function results(){
         var aux = [["Element", "Density", { role: "style" } ]];
@@ -36,3 +55,50 @@
         }
     });
 </script>
+{{!--<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<div id="chart_div"></div>
+<script>
+  google.load("visualization", "1.1", {packages:["bar"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Year', 'Sales', 'Expenses', 'Profit'],
+          ['2014', 1000, 400, 200],
+          ['2015', 1170, 460, 250],
+          ['2016', 660, 1120, 300],
+          ['2017', 1030, 540, 350]
+        ]);
+
+        var options = {
+          chart: {
+            title: 'Company Performance',
+            subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+          },
+          bars: 'horizontal' // Required for Material Bar Charts.
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+          
+        google.visualization.events.addListener(chart, 'select', selectHandler);
+
+        function selectHandler() {
+          var selection = chart.getSelection();
+          var message = '';
+          for (var i = 0; i < selection.length; i++) {
+            var item = selection[i];
+            if (item.row != null && item.column != null) {
+              ///////
+              var str = data.getFormattedValue(item.row, item.column);
+              //console.log(str);
+              var category = data
+              .getValue(chart.getSelection()[0].row, 0)
+              //console.log(category);
+              message = category;
+            } 
+          }
+          alert(message)
+        }
+}
+</script>--}}
