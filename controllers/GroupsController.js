@@ -2,6 +2,7 @@ const knex = require('../database');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr('myTotalySecretKey');
 const Moment = require('moment');
+const BeansGroup = require('../beans/GroupsBeans');
 module.exports = {
     async index(req, res, next){
         var groups = await knex('sbr_groups');
@@ -87,7 +88,7 @@ module.exports = {
             let idgroup = req.params.idgroup;
             //res.send(totalQn);
             return res.render('groups/details',{
-                layout: 'detailsLayout',
+                layout: 'default',
                 style: ['styles/style.css'],
                 css: ['bootstrap.min.css'],
                 jquery: ['jquery.min.js'],
@@ -104,6 +105,17 @@ module.exports = {
             //console.log(error);
             req.flash('error', 'Questionário Inválido');
             res.redirect('/questionnaries');
+        }
+    },
+    async getdetails(req,res,next){
+        try {
+            var idqnr = cryptr.decrypt(req.params.idqnr);
+            var idgroup = req.params.idgroup;
+            let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
+            var subgroups = await BeansGroup.totalSubgroups(qnr, idgroup, idqnr);
+            return res.send(subgroups);
+        } catch (error) {
+            console.log(error);
         }
     }
 }

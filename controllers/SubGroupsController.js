@@ -2,6 +2,7 @@ const knex = require('../database');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr('myTotalySecretKey');
 const Moment = require('moment');
+const BeansSub = require('../beans/SubgroupsBean');
 
 module.exports = {
     async index(req, res, next){
@@ -99,6 +100,41 @@ module.exports = {
         }
         catch(e){
             return res.send('0');
+        }
+    },
+    async details(req,res,next){
+        try {
+            let idqnr = req.params.idqnr;
+            let idsub = req.params.idsub;
+            return res.render('subgroups/details',{
+                layout: 'detailsLayout',
+                style: ['styles/style.css'],
+                css: ['bootstrap.min.css'],
+                jquery: ['jquery.min.js'],
+                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
+                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
+                js: ['bootstrap.js',
+                    'popper.min.js'],
+                vendors: ['scripts/script.js'],
+                idqnr: idqnr,
+                idsub: idsub
+            });
+        }
+        catch (error){
+            //console.log(error);
+            req.flash('error', 'Questionário Inválido');
+            res.redirect('/questionnaries');
+        }
+    },
+    async getdetails(req,res,next){
+        try {
+            var idqnr = cryptr.decrypt(req.params.idqnr);
+            var idsub = req.params.idsub;
+            let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
+            var subgroups = await BeansSub.totalQuestions(qnr, idsub, idqnr);
+            return res.send(subgroups);
+        } catch (error) {
+            console.log(error);
         }
     }
 }

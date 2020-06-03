@@ -1,56 +1,33 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <style>
-  .fadedTest{
-        margin-top: 25px;
-        font-size: 21px;
-        text-align: center;
-        animation: fadein 2s;
-        -moz-animation: fadein 2s;
-        -webkit-animation: fadein 2s;
-        -o-animation: fadein 2s;
-    }
-    @keyframes fadein {
-        from {
-            opacity:0;
-        }
-        to {
-            opacity:1;
-        }
-    }
-    @-moz-keyframes fadein { /* Firefox */
-        from {
-            opacity:0;
-        }
-        to {
-            opacity:1;
-        }
-    }
-    @-webkit-keyframes fadein { /* Safari and Chrome */
-        from {
-            opacity:0;
-        }
-        to {
-            opacity:1;
-        }
-    }
-    @-o-keyframes fadein { /* Opera */
-        from {
-            opacity:0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
+  .importGraph {
+    -webkit-box-shadow: 1px 2px 10px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 1px 2px 10px 0px rgba(0,0,0,0.75);
+    box-shadow: 1px 2px 10px 0px rgba(0,0,0,0.75);
+    border-radius: 5px;
+  }
 </style>
-<div class="row fadedTest">
-  <div class="col-12">
-    <div id="chart_div"></div>
+<div class="container-fluid">
+  <div class="row mb-5">
+    <div class="col-lg-6 col-md-12">
+      <div id="chart_div"></div>
+    </div>
+  </div>
+  <div class="row mb-5">
+    <div class="col-lg-6 col-md-12 importGraph ">
+      <div class="embed-responsive embed-responsive-4by3" id="myFrame0">
+      </div>
+    </div>
+    <div class="col-lg-6 col-md-12 importGraph">
+      <div class="embed-responsive embed-responsive-4by3" id="myFrame1">
+      </div>
+    </div>
   </div>
 </div>
+<!--Grid row-->
 <script type="text/javascript">
     var ids = [];
-    $.getJSON("/questions/{{idqnr}}/{{idgroup}}", (dato)=>{
-      console.log(dato)
+    $.getJSON("/questionnaries/groups/getdetails/{{idqnr}}/{{idgroup}}", (dato)=>{
       let datos = dato;
       google.charts.load("current", {packages:['corechart']});
       google.charts.setOnLoadCallback(drawChart);
@@ -67,11 +44,9 @@
         var options = {
           title: "Perguntas - Número de acertos",
           width: '100%',
-          height: 300,
-          bar: {groupWidth: "60%"},
+          height: 500,
           legend: { position: "none" },
-          vAxis: { 
-              title: "Sub Grupos", 
+          vAxis: {
               viewWindow:{
                 max:100,
                 min:0
@@ -82,15 +57,35 @@
         vAxisNumber.format(data, 1);
         var chart = new google.visualization.ColumnChart(document.getElementById("chart_div"));
         chart.draw(view, options);
-        function results(){
-          console.log(datos)
-            var aux = [["Element", "Density", { role: "style" } ]];
-            for(let i = 0; i < datos.length; i++){
-              ids.push(datos[i].id);
-              aux.push([datos[i].name, datos[i].percentage,'strstrokeoke-color: #0077b6; stroke-opacity: 0.8; stroke-width: 4; fill-color: #0077b6; fill-opacity: 0.5']);
-            }
-            return aux;
+        google.visualization.events.addListener(chart, 'select', selectHandler);
+
+        function selectHandler() {
+          var selection = chart.getSelection();
+          for (var i = 0; i < selection.length; i++) {
+            var item = selection[i];
+            if (item.row != null && item.column != null) {
+              var str = data.getFormattedValue(item.row, item.column);
+              var category = data.getValue(chart.getSelection()[0].row, 0)
+              var id = ids[chart.getSelection()[0].row];
+              reqDetails(id)
+            } 
+          }
         }
       }
+      function results(){
+        var aux = [["Element", "Density", { role: "style" } ]];
+        for(let i = 0; i < datos.length; i++){
+          ids.push(datos[i].id);
+          aux.push([datos[i].name, datos[i].percentage,'strstrokeoke-color: #0077b6; stroke-opacity: 0.8; stroke-width: 4; fill-color: #0077b6; fill-opacity: 0.5']);
+        }
+        return aux;
+      }
     });
+    let cont = 0;
+    function reqDetails(id){
+      $("#myFrame"+cont).html('');
+      $("#myFrame"+cont).html('<iframe scrolling="no" class="embed-responsive-item" src="/questionnaries/subgroups/details/{{idqnr}}/'+id+'" style="height: 100%" allowfullscreen></iframe>'); 
+      cont++;
+      if(cont >= 2){cont = 0};
+    }
 </script>

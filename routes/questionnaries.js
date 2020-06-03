@@ -10,6 +10,7 @@ routes.get('/questionnaries/add', isAuth, QuestionnariesController.add);
 routes.get('/questionnaries/reply/:id', isAuth, QuestionnariesController.reply);
 routes.get('/questionnaries/review/:id', isAuth, QuestionnariesController.review);
 routes.get('/questionnaries/details/:id', isAuth, QuestionnariesController.details);
+routes.get('/questionnaries/getdetails/:id', isAuth, QuestionnariesController.getdetails);
 routes.get('/questionnaries/getscores/:id', isAuth, QuestionnariesController.getScores);
 routes.get('/questionnaries/getresult/:id', isAuth, QuestionnariesController.results);
 routes.post('/questionnaries/save', isAuth, QuestionnariesController.saveQuestionnaries);
