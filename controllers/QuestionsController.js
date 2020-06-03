@@ -2,7 +2,7 @@ const knex = require('../database');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr('myTotalySecretKey');
 const Moment = require('moment');
-const NodeTable = require('nodetable');
+const Beans = require('../beans/QuestionsBean');
 
 module.exports = {
     async index(req, res, next){
@@ -33,8 +33,7 @@ module.exports = {
                     'popper.min.js',
                     'jquery.datatable.min.js',
                     'dataTables.bootstrap4.min.js',
-                    'dataTables.responsive.min.js',
-                    'select2.min.js'],
+                    'dataTables.responsive.min.js'],
                 vendors: ['scripts/script.js'],
                 questions: questions,
                 reference: req.params.id,
@@ -255,6 +254,17 @@ module.exports = {
         catch(e){
             console.log(e)
             return res.send('0');
+        }
+    },
+    async details(req,res,next){
+        try {
+            var idqnr = cryptr.decrypt(req.params.idqnr);
+            var idgroup = req.params.idsubgroup;
+            let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
+            var subgroups = await Beans.totalSubgroups(qnr, idgroup, idqnr);
+            return res.send(subgroups);
+        } catch (error) {
+            console.log(error);
         }
     }
 }

@@ -1,0 +1,96 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<style>
+  .fadedTest{
+        margin-top: 25px;
+        font-size: 21px;
+        text-align: center;
+        animation: fadein 2s;
+        -moz-animation: fadein 2s;
+        -webkit-animation: fadein 2s;
+        -o-animation: fadein 2s;
+    }
+    @keyframes fadein {
+        from {
+            opacity:0;
+        }
+        to {
+            opacity:1;
+        }
+    }
+    @-moz-keyframes fadein { /* Firefox */
+        from {
+            opacity:0;
+        }
+        to {
+            opacity:1;
+        }
+    }
+    @-webkit-keyframes fadein { /* Safari and Chrome */
+        from {
+            opacity:0;
+        }
+        to {
+            opacity:1;
+        }
+    }
+    @-o-keyframes fadein { /* Opera */
+        from {
+            opacity:0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+<div class="row fadedTest">
+  <div class="col-12">
+    <div id="chart_div"></div>
+  </div>
+</div>
+<script type="text/javascript">
+    var ids = [];
+    $.getJSON("/questions/{{idqnr}}/{{idgroup}}", (dato)=>{
+      console.log(dato)
+      let datos = dato;
+      google.charts.load("current", {packages:['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable(results());
+        var view = new google.visualization.DataView(data);
+        view.setColumns([0, 1,
+                        { calc: "stringify",
+                          sourceColumn: 1,
+                          type: "string",
+                          role: "annotation" },
+                        2]);
+
+        var options = {
+          title: "Perguntas - Número de acertos",
+          width: '100%',
+          height: 300,
+          bar: {groupWidth: "60%"},
+          legend: { position: "none" },
+          vAxis: { 
+              title: "Sub Grupos", 
+              viewWindow:{
+                max:100,
+                min:0
+              }
+            }
+        };
+        var vAxisNumber = new google.visualization.NumberFormat({pattern:'##,##%'});
+        vAxisNumber.format(data, 1);
+        var chart = new google.visualization.ColumnChart(document.getElementById("chart_div"));
+        chart.draw(view, options);
+        function results(){
+          console.log(datos)
+            var aux = [["Element", "Density", { role: "style" } ]];
+            for(let i = 0; i < datos.length; i++){
+              ids.push(datos[i].id);
+              aux.push([datos[i].name, datos[i].percentage,'strstrokeoke-color: #0077b6; stroke-opacity: 0.8; stroke-width: 4; fill-color: #0077b6; fill-opacity: 0.5']);
+            }
+            return aux;
+        }
+      }
+    });
+</script>

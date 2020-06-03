@@ -214,8 +214,7 @@ module.exports = {
                 src: ['plugins/highcharts-6.0.7/code/highcharts.js',
                     'plugins/highcharts-6.0.7/code/highcharts-more.js'],
                 js: ['bootstrap.js',
-                    'popper.min.js',
-                    'canvasjs.min.js'],
+                    'popper.min.js'],
                 vendors: ['scripts/script.js'],
                 reference: req.params.id,
                 groups: totalQn
