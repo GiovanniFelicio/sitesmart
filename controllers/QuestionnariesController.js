@@ -298,43 +298,8 @@ module.exports = {
         try {
             let id = cryptr.decrypt(req.params.id);
             let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
-            let idsSub = [];
-            for (let i = 0; i < qnr.length; i++) {
-                aux = await knex.select('id_sbr_groups_sub').from('sbr_groups_sub_qn').where('id', qnr[i]).first();
-                idsSub[i] = aux.id_sbr_groups_sub;
-            }
-            var subgroups = await knex.select('id', 'name').from('sbr_groups_sub').whereIn('id', idsSub);
-            let somaScoreSub = 0;
-            for (let i = 0; i < subgroups.length; i++) {
-                quest = await knex.select('id', 'id_sbr_groups_sub', 'question').from('sbr_groups_sub_qn').whereIn('id', qnr);
-                let somaScoreQuest = 0;
-                let qtdeQn = 0;
-                for (let j = 0; j < quest.length; j++) {
-                    if(quest[j].id_sbr_groups_sub == subgroups[i].id){
-                        model = await knex('sbr_groups_sub_qn_answers')
-                                        .where('id_sbr_qnr', id)
-                                        .where('id_sbr_groups_sub_qn', quest[j].id).first();
-                        try{
-                            answer = await knex('sbr_groups_sub_qn_models_aux')
-                                            .where('id_sbr_groups_sub_qn', quest[j].id)
-                                            .where('id_sbr_groups_sub_qn_models', model.id_sbr_groups_sub_qn_models).first();
-                        }
-                        catch(err){
-                            answer = 0;
-                        }
-                        expectedAux = await knex('sbr_groups_sub_qn_models_aux')
-                                                .max('value as value')
-                                                .where('id_sbr_groups_sub_qn', quest[j].id).first();
-                        quest[j].score = Beans.proportion(expectedAux.value, answer.value) || 0;
-                        somaScoreQuest += parseFloat(quest[j].score);
-                        qtdeQn++;
-                    }
-                }
-                subgroups[i].score = (somaScoreQuest/qtdeQn);
-                somaScoreSub += parseFloat(subgroups[i].score);
-            }
-            scoreQnr = (somaScoreSub/subgroups.length);
-            return res.send(subgroups)
+            var result = await Beans.totalQuestions(qnr,id);
+            return res.send(result)
         } catch (error) {
             console.log(error)
             return null;

@@ -143,7 +143,7 @@ module.exports = {
                 groups[i].subgroups = filter_array(groups[i].subgroups);
                 groups[i].maxValue = maxGroups;
                 groups[i].currentValue = totalGroup;
-                groups[i].percentage = proportion(maxGroups, totalGroup);
+                groups[i].percentage = round(proportion(maxGroups, totalGroup), 2);
             }
             return groups;
         } catch (error) {
@@ -200,7 +200,7 @@ async function totalSubgroups(id, idQnr){
                         answer = 0;
                     }                    
                     quest[j].currentValue = answer.value; 
-                    quest[j].percentage = proportion(quest[j].maxValue, quest[j].currentValue);
+                    quest[j].percentage = Math.round(proportion(quest[j].maxValue, quest[j].currentValue), 2);
                     subgroups[i].questions[j] = quest[j];
                     maxSub += quest[j].maxValue;
                     totalSub += quest[j].currentValue;
@@ -209,7 +209,7 @@ async function totalSubgroups(id, idQnr){
             subgroups[i].questions = filter_array(subgroups[i].questions);
             subgroups[i].maxValue = maxSub;
             subgroups[i].currentValue = totalSub;
-            subgroups[i].percentage = proportion(maxSub, totalSub);
+            subgroups[i].percentage = round(proportion(maxSub, totalSub), 2);
         }
         return subgroups;
     } catch (error) {
@@ -223,4 +223,17 @@ function proportion(vMax, value){
     } catch (error) {
         return 0;
     }
+}
+const round = (num, places) => {
+	if (!("" + num).includes("e")) {
+		return +(Math.round(num + "e+" + places)  + "e-" + places);
+	} else {
+		let arr = ("" + num).split("e");
+		let sig = ""
+		if (+arr[1] + places > 0) {
+			sig = "+";
+		}
+
+		return +(Math.round(+arr[0] + "e" + sig + (+arr[1] + places)) + "e-" + places);
+	}
 }
