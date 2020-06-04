@@ -1,10 +1,10 @@
 <div class="col-md-12 col-sm-12">
     <nav aria-label="breadcrumb" role="navigation">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><a href="/groups">Grupos</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><a class="text-primary" onclick="window.history.back();">{{gp_name}}</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{sub_name}}</li>
+            <li class="breadcrumb-item"><a class="text-secondary" href="/home">Home</a></li>
+            <li class="breadcrumb-item" aria-current="page"><a class="text-secondary" href="/groups">Grupos</a></li>
+            <li class="breadcrumb-item" aria-current="page"><a class="text-secondary" href="">{{gp_name}}</a></li>
+            <li class="breadcrumb-item text-primary" aria-current="page">{{sub_name}}</li>
         </ol>
     </nav>
 </div>
@@ -227,7 +227,7 @@
                                 <div class="form-row">
                                     <div class="col-sm-7 col-lg-5">
                                         <div class="input-group">
-                                            <div id="statusButton${result[i].id}" data-del="${result[i].canDel}" class="statusButton">
+                                            <div ${notDel} id="statusButton${result[i].id}" data-del="${result[i].canDel}" class="statusButton">
                                                 <a style="cursor: pointer"  onclick="statusModel(${result[i].id}, ${status[1]})">${status[2]}</a>
                                             </div>
                                         </div>

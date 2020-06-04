@@ -8,10 +8,7 @@ module.exports = {
   async index(req, res, next) {
     try {
       var id = cryptr.decrypt(req.params.id);
-      var questions = await knex("sbr_groups_sub_qn").where(
-        "id_sbr_groups_sub",
-        id
-      );
+      var questions = await knex("sbr_groups_sub_qn").where("id_sbr_groups_sub", id);
       var subgroups = await knex.raw(`select gp.name as gp_name, sub.name as sub_name 
                                         from sbr_groups_sub sub, sbr_groups gp 
                                         where sub.id = ${id}
@@ -402,7 +399,6 @@ function compare(arr1,arr2){
    
 }
 async function checkIfUseModel(id) {
-    console.log(id);
     try {
         var ansAux = await knex("sbr_groups_sub_qn_answers").pluck("id_sbr_groups_sub_qn_models");
         var checkIfUseModel = await knex.select('aux.id')
