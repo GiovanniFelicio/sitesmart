@@ -31,8 +31,8 @@
     height: 150px;
 }
 .chart-lg{
-    width: 400px;
-    height: 400px;
+    width: 300px;
+    height: 300px;
 }
 .chart .radio_chart{
     width: 100%;
@@ -83,7 +83,7 @@
     height: 100%;
     text-align: center;
     font-size: 150%;
-    top: 37.5%;
+    top: 50%;
     position: absolute;
     text-shadow: -2px -2px 5px #54E5EA, 2px 2px 5px #75D3FF, 0 0 50px #75D3FF;
 }

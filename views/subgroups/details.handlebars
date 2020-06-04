@@ -1,7 +1,6 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <style>
   .fadedTest{
-        margin-top: 25px;
         font-size: 21px;
         text-align: center;
         animation: fadein 2s;
@@ -42,16 +41,17 @@
         }
     }
 </style>
-<div class="row fadedTest">
-  <div class="col-12">
-    <div id="chart_div"></div>
+<div class="container-fluid">
+      <div id="chart_div" class="chart"></div>
+  <div class="row fadedTest">
+    <div class="col-lg-12">
+    </div>
   </div>
 </div>
 <script type="text/javascript">
     $.getJSON("/questionnaries/subgroups/getdetails/{{idqnr}}/{{idsub}}", (dato)=>{
-      console.log(dato)
       let datos = dato;
-      google.charts.load("current", {packages:['corechart']});
+      google.charts.load("visualization", "1", {packages:['corechart']});
       google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
         var data = google.visualization.arrayToDataTable(results());
@@ -66,7 +66,7 @@
         var options = {
           title: "Perguntas - Número de acertos",
           width: '100%',
-          height: 300,
+          height: 'auto',
           bar: {groupWidth: "60%"},
           legend: { position: "none" },
           vAxis: { 
@@ -74,7 +74,8 @@
               viewWindow:{
                 max:100,
                 min:0
-              }
+              },
+              minValue:0
             }
         };
         var chart = new google.visualization.ColumnChart(document.getElementById("chart_div"));
@@ -82,11 +83,13 @@
         function results(){
           var aux = [["Element", "Density", { role: "style" } ]];
           for(let i = 0; i < datos.length; i++){
-            //ids.push(datos[i].id);
             aux.push([datos[i].question, datos[i].percentage,'strstrokeoke-color: #0077b6; stroke-opacity: 0.8; stroke-width: 4; fill-color: #0077b6; fill-opacity: 0.5']);
           }
           return aux;
         }
       }
+      $(window).resize(function(){
+        drawChart();
+      });
     });
 </script>

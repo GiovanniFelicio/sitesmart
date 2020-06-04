@@ -204,6 +204,7 @@ module.exports = {
             try {
                 let id = cryptr.decrypt(req.params.id);
                 let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
+                let qnrDetails = await knex('sbr_qnr').where('id', id).first();
                 var result = await BeansQnr.totalQuestions(qnr,id);
                 return res.render('questionnaries/details',{
                     layout: 'default',
@@ -216,7 +217,8 @@ module.exports = {
                         'popper.min.js'],
                     vendors: ['scripts/script.js'],
                     groups: result,
-                    reference: req.params.id
+                    reference: req.params.id,
+                    qnr: qnrDetails
                 });
             } catch (error) {
                 console.log(error)

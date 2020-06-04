@@ -139,6 +139,7 @@
     </div>
 </div>
 <script>
+    
     var table = $('#questions').DataTable({
         "responsive": true,
         "scrollY": "1000px",
@@ -205,8 +206,18 @@
                                     <label for="modelsCheck${result[i].id}">${result[i].model}</label>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-3">
                                 <div class="form-row" id="value${result[i].id}">
+                                    <div class="col-sm-7 col-lg-5">
+                                        <div class="input-group">
+                                            <input name="value[]" type="text" class="form-control" id="inputValue${result[i].id}" placeholder="0" value="${result[i].value}" autocomplete="off">
+                                            <input name="model[]" hidden placeholder="0" value="${result[i].id}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-row">
                                     <div class="col-sm-7 col-lg-5">
                                         <div class="input-group">
                                             <input name="value[]" type="text" class="form-control" id="inputValue${result[i].id}" placeholder="0" value="${result[i].value}" autocomplete="off">

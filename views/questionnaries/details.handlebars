@@ -1,4 +1,16 @@
 <div class="container-fluid">
+    <div class="row h4">
+        <div class="col-lg-12">
+            <nav aria-label="breadcrumb" role="navigation">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a class="text-secondary" href="/home">Home</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a class="text-secondary" href="/questionnaries">Questionários</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary">{{qnr.name}}</a></li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <hr>
     <div class="row">
         <div class="col"></div>
         <div class="col">
@@ -32,10 +44,10 @@
                 </div>
             </div>
         {{/each}}
-
     </div>
 </div>
 <script>
+    $(document).scrollTop(130);
     function redirect(idgroup, idqnr){
         window.location.href = `/questionnaries/groups/details/${idqnr}/${idgroup}`;
     }
@@ -59,14 +71,12 @@
                     chart.style.webkitAnimationPlayState = "paused";
 
                     return false;
-                } else {
-                    //Sum percentage    
-                    currentPercent++;
-                    //show new percentage    
+                } else {  
+                    currentPercent++; 
                     pVal.innerHTML = currentPercent + "%";
                 }
             }, 10);
-        }, 100);
+        }, 300);
     }
 
     function reset(i) {

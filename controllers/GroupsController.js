@@ -85,8 +85,11 @@ module.exports = {
     async details(req,res,next){
         try {
             let idqnr = req.params.idqnr;
+            let id = cryptr.decrypt(idqnr);
+            let qnrDetails = await knex('sbr_qnr').where('id', id).first();
+            qnrDetails.id = cryptr.encrypt(qnrDetails.id);
             let idgroup = req.params.idgroup;
-            //res.send(totalQn);
+            let group = await knex('sbr_groups').where('id', idgroup).first();
             return res.render('groups/details',{
                 layout: 'default',
                 style: ['styles/style.css'],
@@ -98,7 +101,9 @@ module.exports = {
                     'popper.min.js'],
                 vendors: ['scripts/script.js'],
                 idqnr: idqnr,
-                idgroup: idgroup
+                idgroup: idgroup,
+                qnr: qnrDetails,
+                group: group
             });
         }
         catch (error){
