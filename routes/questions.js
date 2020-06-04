@@ -9,6 +9,7 @@ routes.delete('/groups/sub/questions/:id', isAuth, QuestionsController.delete);
 routes.post('/savequestion', isAuth, QuestionsController.save);
 routes.get('/question/model/:id', isAuth, QuestionsController.getmodel);
 routes.post('/question/model', isAuth, QuestionsController.updateModel);
+routes.delete('/question/model/:id/:type', isAuth, QuestionsController.deleteModel);
 routes.get('/questions/:idqnr/:idsubgroup', isAuth, QuestionsController.details);
 
 module.exports = routes;

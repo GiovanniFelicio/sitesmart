@@ -89,11 +89,11 @@ module.exports = {
                 for (let j = 0; j < quest.length; j++) {
                     if(quest[j].id_sbr_groups_sub == subgroups[i].id){
                         quest[j].models = await knex.select('m.id', 'm.model')
-                                                    .from('sbr_groups_sub_qn_models as m')
-                                                    .join('sbr_groups_sub_qn_models_aux as aux')
-                                                    .whereRaw(`aux.id_sbr_groups_sub_qn = ${quest[j].id}`)
-                                                    .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
-                        
+                                                        .from('sbr_groups_sub_qn_models as m')
+                                                        .join('sbr_groups_sub_qn_models_aux as aux')
+                                                        .where('aux.deleted_at', null)
+                                                        .whereRaw(`aux.id_sbr_groups_sub_qn = ${quest[j].id}`)
+                                                        .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
                         answer = await knex('sbr_groups_sub_qn_answers')
                                         .where('id_sbr_qnr', id)
                                         .where('id_sbr_groups_sub_qn', quest[j].id)
