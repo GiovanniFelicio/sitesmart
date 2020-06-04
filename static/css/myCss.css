@@ -22,39 +22,41 @@
 .chart {
     position: relative;
     border-radius: 50%;
-    background: -webkit-repeating-linear-gradient(#56c6ca, #56c6ca);
+    background: rgb(230, 220, 220);
     overflow: hidden;
-    
 }
-.chart-sm{
+
+.chart-sm {
     width: 150px;
     height: 150px;
 }
-.chart-lg{
+
+.chart-lg {
     width: 300px;
     height: 300px;
 }
-.chart .radio_chart{
+
+.chart .radio_chart {
     width: 100%;
     height: 100%;
     border-radius: 50%;
     position: absolute;
 }
 
-.chart .radio_chart.animate{
+.chart .radio_chart.animate {
     animation-name: circled;
-    animation-duration: 1s;
+    animation-duration: 6s;
     animation-timing-function: linear;
     -moz-animation-name: circled;
-    -moz-animation-duration: 1s;
+    -moz-animation-duration: 6s;
     -moz-animation-timing-function: linear;
     -webkit-animation-name: circled;
-    -webkit-animation-duration: 1s;
+    -webkit-animation-duration: 6s;
     -webkit-animation-timing-function: linear;
     background: -webkit-repeating-linear-gradient(#75d3ff, #a2eff1);
 }
 
-.chart .cap{
+.chart .cap {
     border-top: white 3px solid;
     border-left: white 2px solid;
     position: absolute;
@@ -67,7 +69,7 @@
     box-shadow: 2px 2px 10px rgba(0, 0, 0, .5);
 }
 
-.chart-lg .value{
+.chart-lg .value {
     color: #54B6B9;
     width: 100%;
     height: 100%;
@@ -77,7 +79,8 @@
     position: absolute;
     text-shadow: -2px -2px 5px #54E5EA, 2px 2px 5px #75D3FF, 0 0 50px #75D3FF;
 }
-.chart-sm .value{
+
+.chart-sm .value {
     color: #54B6B9;
     width: 100%;
     height: 100%;
@@ -95,17 +98,22 @@
 @keyframes circled {
     0% {
         clip-path: polygon(100% 0, 100% 0%, 100% 0%, 100% 0%, 100% 0%, 50% 50%);
+        background: rgb(246, 0, 0);
     }
     25% {
         clip-path: polygon(100% 0, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 50% 50%);
+        background: rgb(246, 0, 0);
     }
     50% {
         clip-path: polygon(100% 0, 100% 100%, 0% 100%, 0% 100%, 0 100%, 50% 50%);
+        background: rgb(217, 255, 0);
     }
     75% {
         clip-path: polygon(100% 0, 100% 100%, 0 100%, 0 0%, 0 0, 50% 50%);
+        background: rgb(217, 255, 0);
     }
     100% {
         clip-path: polygon(100% 0, 100% 100%, 0 100%, 0 0, 100% 0, 50% 50%);
+        background: rgb(30, 167, 5);
     }
 }

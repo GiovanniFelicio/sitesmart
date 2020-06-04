@@ -205,7 +205,12 @@ module.exports = {
                 let id = cryptr.decrypt(req.params.id);
                 let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
                 let qnrDetails = await knex('sbr_qnr').where('id', id).first();
-                var result = await BeansQnr.totalQuestions(qnr,id);
+                var result = await BeansQnr.totalQuestions(qnr, id);
+                let soma = 0;
+                result.forEach(r => {
+                    soma = soma + parseFloat(r.percentage);
+                });
+                var percentage = round((soma/result.length), 2);
                 return res.render('questionnaries/details',{
                     layout: 'default',
                     style: ['styles/style.css'],
@@ -218,7 +223,8 @@ module.exports = {
                     vendors: ['scripts/script.js'],
                     groups: result,
                     reference: req.params.id,
-                    qnr: qnrDetails
+                    qnr: qnrDetails,
+                    percentage: percentage
                 });
             } catch (error) {
                 console.log(error)
@@ -315,19 +321,20 @@ module.exports = {
         
     }
 }
-function filter_array(test_array) {
-    var index = -1,
-        arr_length = test_array ? test_array.length : 0,
-        resIndex = -1,
-        result = [];
-
-    while (++index < arr_length) {
-        var value = test_array[index];
-
-        if (value) {
-            result[++resIndex] = value;
-        }
+const round = (num, places) => {
+  if (!("" + num).includes("e")) {
+    return +(Math.round(num + "e+" + places) + "e-" + places);
+  } else {
+    let arr = ("" + num).split("e");
+    let sig = "";
+    if (+arr[1] + places > 0) {
+      sig = "+";
     }
 
-    return result;
-}
+    return +(
+      Math.round(+arr[0] + "e" + sig + (+arr[1] + places)) +
+      "e-" +
+      places
+    );
+  }
+};

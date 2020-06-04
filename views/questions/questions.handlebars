@@ -197,13 +197,16 @@
             url: '/question/model/'+dato[0],
             type: 'GET',
             success: function(result) {
+                console.log(result)
                 if(result != 0){
                     $('#modelUp').html(`<input hidden value="${dato[0]}" name="reference"/>`);
                     for(let i = 0; i < result.length; i++){
                         let status;
                         let type;
+                        let notDel = '';
                         if(result[i].deleted_at == null){status = ['text-success', 1, 'Deletar']}
-                        else{status = ['text-danger', 1, 'Ativar']}
+                        else{status = ['text-danger', 0, 'Ativar']}
+                        if(result[i].canDel == 0){notDel = 'hidden disabled'}
                         $('#modelUp').append(`
                             <div class="col-6">
                                 <div class="custom-control custom-checkbox ml-3">
@@ -224,7 +227,7 @@
                                 <div class="form-row">
                                     <div class="col-sm-7 col-lg-5">
                                         <div class="input-group">
-                                            <div id="statusButton${result[i].id}">
+                                            <div id="statusButton${result[i].id}" data-del="${result[i].canDel}" class="statusButton">
                                                 <a style="cursor: pointer"  onclick="statusModel(${result[i].id}, ${status[1]})">${status[2]}</a>
                                             </div>
                                         </div>
@@ -239,7 +242,6 @@
                 }
             }
         });
-        $('#nameFunc').val();
         $('#upQuestion').modal('show');
     });
     function statusModel(id, type){
@@ -259,6 +261,9 @@
                     $('#status' + id).addClass('text-success');
                     $('#statusButton' + id).html('');
                     $('#statusButton' + id).html('<a style="cursor: pointer" onclick="statusModel('+id+', 1)">Deletar</a>');
+                }
+                else{
+                    alert(data);
                 }
             }
         });

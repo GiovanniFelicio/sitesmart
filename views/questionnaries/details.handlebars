@@ -15,9 +15,9 @@
         <div class="col"></div>
         <div class="col">
             <div class="chart chart-lg">
-                <div class="radio_chart"></div>
+                <div class="radio_chart" id="radioChartQnr"></div>
                 <div class="cap"></div>
-                <div class="value" id="">
+                <div class="value" id="percentChartQnr">
                     0%
                 </div>
             </div>
@@ -31,7 +31,7 @@
                 <div class="row">
                     <div class="col"></div>
                     <div class="col">
-                        <div class="chart chart-sm" onclick="redirect({{id}}, '{{../reference}}')">
+                        <div style="cursor: pointer;" class="chart chart-sm" onclick="redirect({{id}}, '{{../reference}}')">
                             <div class="radio_chart radioChartContent"></div>
                             <div class="cap"></div>
                             <div class="value percentValue" data-progress="{{percentage}}">
@@ -47,7 +47,7 @@
     </div>
 </div>
 <script>
-    $(document).scrollTop(130);
+    $(window).scrollTop(150);
     function redirect(idgroup, idqnr){
         window.location.href = `/questionnaries/groups/details/${idqnr}/${idgroup}`;
     }
@@ -57,9 +57,7 @@
             var chart = $(".radioChartContent")[i];
             var pVal = $(".percentValue")[i];
             let frame = pVal.getAttribute('data-progress');
-
             chart.classList.add("animate");
-
             var currentPercent = 0;
             var currTimeout = setInterval(function () {
 
@@ -75,8 +73,8 @@
                     currentPercent++; 
                     pVal.innerHTML = currentPercent + "%";
                 }
-            }, 10);
-        }, 300);
+            }, 60);
+        }, 1000);
     }
 
     function reset(i) {
@@ -87,6 +85,41 @@
         chart.style.animationPlayState = "initial";
         chart.style.webkitAnimationPlayState = "initial";
     }
+    function goToQnr(frame) {
+        resetQnr();
+        setTimeout(function () {
+            var chartQnr = $("#radioChartQnr");
+            var pValQnr = $("#percentChartQnr");
+            chartQnr.addClass("animate");
+            var currentPercentQnr = 0;
+            var currTimeoutQnr = setInterval(function () {
+
+                if (currentPercentQnr >= frame || currentPercentQnr >= 100) {
+                    pValQnr.html(frame + '%');
+                    clearInterval(currTimeoutQnr);
+
+                    chartQnr.css('animationPlayState', "paused");
+                    chartQnr.css('webkitAnimationPlayState', "paused");
+
+                    return false;
+                } else {  
+                    currentPercentQnr++; 
+                    pValQnr.html(currentPercentQnr + "%");
+                }
+            }, 60);
+        }, 1000);
+    }
+
+    function resetQnr() {
+        var chartQnr = $("#radioChartQnr");
+        console.log(chartQnr)
+        var pValQnr = $("#percentChartQnr");
+        chartQnr.removeClass("animate");
+        pValQnr.innerHTML = "0%";
+        chartQnr.css("animationPlayState","initial");
+        chartQnr.css("webkitAnimationPlayState","initial");
+    }
+    goToQnr({{percentage}});
     var mypVal = $(".percentValue");
     for(let i = 0; i < mypVal.length; i++){
         goTo(i);

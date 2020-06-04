@@ -237,17 +237,25 @@ module.exports = {
   async getmodel(req, res, next) {
     var id = req.params.id;
     try {
-      var models = await knex
-        .select("m.id", "m.model", "aux.value", "aux.deleted_at")
-        .from("sbr_groups_sub_qn_models as m")
-        .join("sbr_groups_sub_qn_models_aux as aux")
-        .whereRaw(`aux.id_sbr_groups_sub_qn = ${id}`)
-        .whereRaw("m.id = aux.id_sbr_groups_sub_qn_models");
-      if (models) {
-        return res.send(models);
-      } else {
-        return res.send("0");
-      }
+        var models = await knex.select("aux.id", "m.model", "aux.value", "aux.deleted_at")
+                                    .from("sbr_groups_sub_qn_models as m")
+                                    .join("sbr_groups_sub_qn_models_aux as aux")
+                                    .whereRaw(`aux.id_sbr_groups_sub_qn = ${id}`)
+                                    .whereRaw("m.id = aux.id_sbr_groups_sub_qn_models");
+        for (let i = 0; i < models.length; i++) {
+            check = await checkIfUseModel(models[i].id);
+            if (check.length <= 0) {
+                models[i].canDel = 1;
+            }
+            else {
+                models[i].canDel = 0;
+            }
+        }
+        if (models) {
+            return res.send(models);
+        } else {
+            return res.send("0");
+        }
     } catch (e) {
       return res.send("0");
     }
@@ -256,40 +264,40 @@ module.exports = {
     var errors = [];
     var error_msg = "";
     try {
-      if (!req.body.reference || typeof req.body.reference == undefined || req.body.reference == null) {
-        errors.push("Referência inválida");
-      } else if ( !req.body.value || typeof req.body.value == undefined || req.body.value == null || req.body.value.length <= 0) {
-        errors.push("Valores inválidos");
-      } else if (!req.body.model || typeof req.body.model == undefined || req.body.model == null ||req.body.value.length <= 0) {
-        errors.push("Modelos inválidos");
-      } else if (req.body.value.length != req.body.model.length) {
-        errors.push("Valores e modelos incompatíveis");
-      }
-      if (errors.length > 0) {
-        errors.forEach((e) => {
-          error_msg += e + ", ";
-        });
-        req.flash("error_msg", error_msg);
-        res.redirect(req.header("Referer") || "/groups");
-      } else {
-        try {
-            var { value, model, reference } = req.body;
-            model.forEach(async (m, i) => {
-                (value[i] > 100) ? val = 100 : val = value[i];
-                await knex("sbr_groups_sub_qn_models_aux")
-                .where("id_sbr_groups_sub_qn", req.body.reference)
-                .where("id_sbr_groups_sub_qn_models", m)
-                .update({
-                    value: val,
-                });
-            });
-          req.flash("success_msg", "Atualizado com sucesso !!");
-          return res.redirect(req.header("Referer") || "/groups");
-        } catch (error) {
-          req.flash("error_msg", "Error durante a atualização !!");
-          res.redirect(req.header("Referer") || "/groups");
+        if (!req.body.reference || typeof req.body.reference == undefined || req.body.reference == null) {
+            errors.push("Referência inválida");
+        } else if ( !req.body.value || typeof req.body.value == undefined || req.body.value == null || req.body.value.length <= 0) {
+            errors.push("Valores inválidos");
+        } else if (!req.body.model || typeof req.body.model == undefined || req.body.model == null ||req.body.value.length <= 0) {
+            errors.push("Modelos inválidos");
+        } else if (req.body.value.length != req.body.model.length) {
+            errors.push("Valores e modelos incompatíveis");
         }
-      }
+        if (errors.length > 0) {
+            errors.forEach((e) => {
+            error_msg += e + ", ";
+            });
+            req.flash("error_msg", error_msg);
+            res.redirect(req.header("Referer") || "/groups");
+        } else {
+            try {
+                var { value, model, reference } = req.body;
+                model.forEach(async (m, i) => {
+                    (value[i] > 100) ? val = 100 : val = value[i];
+                    await knex("sbr_groups_sub_qn_models_aux")
+                    .where("id_sbr_groups_sub_qn", req.body.reference)
+                    .where("id_sbr_groups_sub_qn_models", m)
+                    .update({
+                        value: val,
+                    });
+                });
+            req.flash("success_msg", "Atualizado com sucesso !!");
+            return res.redirect(req.header("Referer") || "/groups");
+            } catch (error) {
+            req.flash("error_msg", "Error durante a atualização !!");
+            res.redirect(req.header("Referer") || "/groups");
+            }
+        }
     } catch (e) {
       return res.send("0");
     }
@@ -298,7 +306,8 @@ module.exports = {
     try {
         var id = req.params.id;
         var type = req.params.type;
-        if (type == 0){
+        console.log(type)
+        if (type == 0) {
             var delModel = await knex("sbr_groups_sub_qn_models_aux")
                                     .where("id", id)
                                     .update({
@@ -311,17 +320,26 @@ module.exports = {
         else if(type == 1){
             var date = new Date();
             var currentDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
-            var delModel = await knex("sbr_groups_sub_qn_models_aux")
+            var check = await checkIfUseModel(id);
+            
+            if (check.length <= 0) {
+                var delModel = await knex("sbr_groups_sub_qn_models_aux")
                                     .where("id", id)
                                     .update({
                                         deleted_at: currentDate,
                                     });
-            if (delModel) {
-                return res.send('1')
+                if (delModel) {
+                    return res.send('1')
+                }
             }
+            else {
+                return res.send('Não pode ser deletado')
+            }
+            
         }
         return res.send("0");
     } catch (error) {
+        console.log(error)
         return res.send('0');
     }
   },
@@ -382,4 +400,24 @@ function compare(arr1,arr2){
    
    return result
    
- }
+}
+async function checkIfUseModel(id) {
+    console.log(id);
+    try {
+        var ansAux = await knex("sbr_groups_sub_qn_answers").pluck("id_sbr_groups_sub_qn_models");
+        var checkIfUseModel = await knex.select('aux.id')
+            .from('sbr_groups_sub_qn_models_aux as aux')
+            .innerJoin('sbr_groups_sub_qn_models as m', function () {
+                this.on('m.id', '=', 'aux.id_sbr_groups_sub_qn_models')
+            })
+            .innerJoin('sbr_groups_sub_qn_answers as ans', function () {
+                this.on('ans.id_sbr_groups_sub_qn_models', '=', 'm.id')
+            })
+            .where('aux.id', id)
+            .whereIn('aux.id', ansAux);
+        return checkIfUseModel;
+    } catch (error) {
+        return [1];
+    }
+    
+}
