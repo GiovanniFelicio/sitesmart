@@ -1,57 +1,58 @@
 <div class="container-fluid">
-    <div class="row align-items-center">
+    <div class="row">
+        <div class="col"></div>
         <div class="col">
-            <div class="row">
-                <div class="col">
-                    <div class="chart-sm">
-                    <div class="radio_chart" id="radioChartContent"></div>
-                    <div class="cap"></div>
-                    {{!-- foreach --}} 
-                    <div class="value">
-                        0%
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="chart-sm">
-                    <div class="radio_chart" id="radioChartContent"></div>
-                    <div class="cap"></div>
-                    {{!-- foreach --}}
-                    <div class="value">
-                        0%
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="chart">
-                <div class="radio_chart" id="radioChartContent"></div>
+            <div class="chart chart-lg">
+                <div class="radio_chart"></div>
                 <div class="cap"></div>
-                {{!-- foreach --}}
-                <div class="value" id="percentValue">
+                <div class="value" id="">
                     0%
                 </div>
             </div>
         </div>
+        <div class="col"></div>
+    </div>
+    <br>
+    <div class="row">
+        {{#each groups}}
+            <div class="col text-center">
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col">
+                        <div class="chart chart-sm" onclick="redirect({{id}}, '{{../reference}}')">
+                            <div class="radio_chart radioChartContent"></div>
+                            <div class="cap"></div>
+                            <div class="value percentValue" data-progress="{{percentage}}">
+                                0%
+                            </div>
+                        </div>
+                        <label for="">{{name}}</label>
+                    </div>
+                    <div class="col"></div>
+                </div>
+            </div>
+        {{/each}}
+
     </div>
 </div>
 <script>
-
-
-    function goTo(frame) {
-        reset();
-
+    function redirect(idgroup, idqnr){
+        window.location.href = `/questionnaries/groups/details/${idqnr}/${idgroup}`;
+    }
+    function goTo(i) {
+        reset(i);
         setTimeout(function () {
-
-            var chart = document.getElementById("radioChartContent"), pVal = document.getElementById("percentValue");
+            var chart = $(".radioChartContent")[i];
+            var pVal = $(".percentValue")[i];
+            let frame = pVal.getAttribute('data-progress');
 
             chart.classList.add("animate");
 
             var currentPercent = 0;
             var currTimeout = setInterval(function () {
 
-                if (currentPercent == frame || currentPercent > 100) {
-
+                if (currentPercent >= frame || currentPercent >= 100) {
+                    pVal.innerHTML = frame + '%';
                     clearInterval(currTimeout);
 
                     chart.style.animationPlayState = "paused";
@@ -68,13 +69,16 @@
         }, 100);
     }
 
-    function reset() {
-        var chart = document.getElementById("radioChartContent"), pVal = document.getElementById("percentValue");
-
+    function reset(i) {
+        var chart = $(".radioChartContent")[i];
+        var pVal = $(".percentValue")[i];
         chart.classList.remove("animate");
         pVal.innerHTML = "0%";
         chart.style.animationPlayState = "initial";
         chart.style.webkitAnimationPlayState = "initial";
-    }    
-        goTo(80);
+    }
+    var mypVal = $(".percentValue");
+    for(let i = 0; i < mypVal.length; i++){
+        goTo(i);
+    }   
 </script>

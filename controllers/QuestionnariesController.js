@@ -2,17 +2,17 @@ const knex = require('../database');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr('myTotalySecretKey');
 const Moment = require('moment');
-const Beans = require('../beans/QuestionnariesBean');
+const BeansQnr = require('../beans/QuestionnariesBean');
 
 module.exports = {
     async index(req, res, next){
         var qnrs = await knex('sbr_qnr');
         for (let i = 0; i < qnrs.length; i++) {
             qnrs[i].reference = cryptr.encrypt(qnrs[i].id);
-            qnrs[i].id_sbr_users = await Beans.findUser(qnrs[i].id_sbr_users);
+            qnrs[i].id_sbr_users = await BeansQnr.findUser(qnrs[i].id_sbr_users);
             qnrs[i].created_at = Moment(qnrs[i].created_at).format('DD-MM-Y');
-            qnrs[i].progress = await Beans.progressQuestionnarie(qnrs[i].id);
-            qnrs[i].qtde = await Beans.qtdeQuestions(qnrs[i].id);
+            qnrs[i].progress = await BeansQnr.progressQuestionnarie(qnrs[i].id);
+            qnrs[i].qtde = await BeansQnr.qtdeQuestions(qnrs[i].id);
         }
         return res.render('questionnaries/questionnaries',{
             layout: 'default',
@@ -34,7 +34,7 @@ module.exports = {
             var groups = await knex('sbr_groups').where('deleted_at', null);
             var subgroup
             for (let i = 0; i < groups.length; i++) {
-                subgroup = await Beans.findSubGroup(groups[i].id);
+                subgroup = await BeansQnr.findSubGroup(groups[i].id);
                 if(subgroup != ''){
                     groups[i].subgroups = subgroup;
                 }
@@ -75,7 +75,7 @@ module.exports = {
             if( !req.body.name || typeof req.body.name == undefined || req.body.name  == null){
                 errors.push('Nome Inválido');
             }
-            if(await Beans.findQuestionnaries(req.body.name, 1) == false){
+            if(await BeansQnr.findQuestionnaries(req.body.name, 1) == false){
                 req.flash('error_msg', 'Este questionário já existe');
                 return res.redirect('/questionnaries');
             }
@@ -101,7 +101,7 @@ module.exports = {
             }
             else{
                 try{
-                    if(await Beans.findQuestionnaries(req.body.name, 1)){
+                    if(await BeansQnr.findQuestionnaries(req.body.name, 1)){
                         var insertQnr = await knex('sbr_qnr').insert({
                             name: req.body.name,
                             id_sbr_users: 1
@@ -142,14 +142,14 @@ module.exports = {
         try {
             var id = cryptr.decrypt(req.params.id);
             var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
-            var checkQnr = await Beans.checkQuestionnarie(id);
+            var checkQnr = await BeansQnr.checkQuestionnarie(id);
             if(checkQnr){
                 await knex('sbr_qnr').where('id', id).update('status', 3);
                 req.flash('error', 'Questionnário finalizado');
                 res.redirect('/questionnaries');
             }
             else{
-                var subgroups = await Beans.getQuestions(qnr, id);
+                var subgroups = await BeansQnr.getQuestions(qnr, id);
                 return res.render('questionnaries/reply',{
                     layout: 'default',
                     style: ['styles/style.css'],
@@ -173,13 +173,13 @@ module.exports = {
         try {
             var id = cryptr.decrypt(req.params.id);
             var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
-            var checkQnr = await Beans.checkQuestionnarie(id);
+            var checkQnr = await BeansQnr.checkQuestionnarie(id);
             if(checkQnr){
                 await knex('sbr_qnr').where('id', id).update({
                     status: 3
                 })
             }
-            var subgroups = await Beans.getQuestions(qnr ,id);
+            var subgroups = await BeansQnr.getQuestions(qnr ,id);
             return res.render('questionnaries/review',{
                 layout: 'default',
                 style: ['styles/style.css'],
@@ -201,21 +201,28 @@ module.exports = {
     },
     async details(req, res, next){
         try {
-            let idqnr = req.params.idqnr;
-            let idgroup = req.params.idgroup;
-            return res.render('questionnaries/details',{
-                layout: 'default',
-                style: ['styles/style.css'],
-                css: ['bootstrap.min.css', 'myCss.css'],
-                jquery: ['jquery.min.js'],
-                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-                js: ['bootstrap.js',
-                    'popper.min.js'],
-                vendors: ['scripts/script.js'],
-                idqnr: idqnr,
-                idgroup: idgroup
-            });
+            try {
+                let id = cryptr.decrypt(req.params.id);
+                let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
+                var result = await BeansQnr.totalQuestions(qnr,id);
+                return res.render('questionnaries/details',{
+                    layout: 'default',
+                    style: ['styles/style.css'],
+                    css: ['bootstrap.min.css', 'myCss.css'],
+                    jquery: ['jquery.min.js'],
+                    src: ['plugins/highcharts-6.0.7/code/highcharts.js',
+                        'plugins/highcharts-6.0.7/code/highcharts-more.js'],
+                    js: ['bootstrap.js',
+                        'popper.min.js'],
+                    vendors: ['scripts/script.js'],
+                    groups: result,
+                    reference: req.params.id
+                });
+            } catch (error) {
+                console.log(error)
+                req.flash('error', 'Questionário Inválido');
+                res.redirect('/questionnaries');
+            }
         }
         catch (error){
             //console.log(error);
@@ -277,7 +284,7 @@ module.exports = {
                         expectedAux = await knex('sbr_groups_sub_qn_models_aux')
                                                 .max('value as value')
                                                 .where('id_sbr_groups_sub_qn', quest[j].id).first();
-                        quest[j].score = Beans.proportion(expectedAux.value, answer.value) || 0;
+                        quest[j].score = BeansQnr.proportion(expectedAux.value, answer.value) || 0;
                         somaScoreQuest += parseFloat(quest[j].score);
                         qtdeQn++;
                         subgroups[i].questions[j] = quest[j];
@@ -297,7 +304,7 @@ module.exports = {
         try {
             let id = cryptr.decrypt(req.params.id);
             let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
-            var result = await Beans.totalQuestions(qnr,id);
+            var result = await BeansQnr.totalQuestions(qnr,id);
             return res.send(result)
         } catch (error) {
             console.log(error)
