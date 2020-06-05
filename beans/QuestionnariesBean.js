@@ -5,17 +5,22 @@ module.exports = {
                         .where('id_sbr_qnr', id)
                         .where('deleted_at', null)
                         .pluck('id_sbr_groups_sub_qn');
-        if(qnr.length > 0){
-            try{
-                var questions = await knex('sbr_groups_sub_qn').whereIn('id', qnr).where('deleted_at', null);
-                if(questions.length > 0){return false;}
-                else{return true;}
+        var statusQnr = await knex('sbr_qnr').where('id', id).whereNot('status', 3);                        
+        if (statusQnr.length <= 0) {
+            return false;
+        } else if (qnr.length > 0) {
+          try {
+            var questions = await knex("sbr_groups_sub_qn")
+              .whereIn("id", qnr)
+              .where("deleted_at", null);
+            if (questions.length > 0) {
+              return false;
             }
-            catch(error){
-                return true;
-            }
-        }
-        else{true}
+          } catch (error) {
+            return true;
+          }
+        } 
+        return true;
     },
     async findUser(id){
         try{
@@ -82,23 +87,28 @@ module.exports = {
                 aux = await knex.select('id_sbr_groups_sub').from('sbr_groups_sub_qn').where('id', qnr[i]).first();
                 idsSub[i] = aux.id_sbr_groups_sub;
             }
-            var subgroups = await knex('sbr_groups_sub').whereIn('id', idsSub);
+            var subgroups = await knex.select("id", "id_sbr_groups", "name")
+                                        .from("sbr_groups_sub")
+                                        .whereIn("id", idsSub);
             for (let i = 0; i < subgroups.length; i++) {
-                quest = await knex('sbr_groups_sub_qn').whereIn('id', qnr);
+                quest = await knex.select('id', 'id_sbr_groups', 'id_sbr_groups_sub', 'question')
+                                    .from('sbr_groups_sub_qn')
+                                    .whereIn('id', qnr);
                 subgroups[i].questions = [];
                 for (let j = 0; j < quest.length; j++) {
                     if(quest[j].id_sbr_groups_sub == subgroups[i].id){
-                        quest[j].models = await knex.select('m.id', 'm.model')
+                        quest[j].models = await knex.select('aux.id', 'm.model')
                                                         .from('sbr_groups_sub_qn_models as m')
                                                         .join('sbr_groups_sub_qn_models_aux as aux')
                                                         .where('aux.deleted_at', null)
                                                         .whereRaw(`aux.id_sbr_groups_sub_qn = ${quest[j].id}`)
                                                         .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
+                        
                         answer = await knex('sbr_groups_sub_qn_answers')
                                         .where('id_sbr_qnr', id)
                                         .where('id_sbr_groups_sub_qn', quest[j].id)
                                         .first();
-                        (answer != undefined) ? quest[j].answer = answer.id_sbr_groups_sub_qn_models : quest[j].answer = null;
+                        (answer != undefined) ? quest[j].answer = answer.id_sbr_groups_sub_qn_models_aux : quest[j].answer = null;
                         subgroups[i].questions[j] = quest[j];
                     }
                 }
@@ -186,7 +196,7 @@ module.exports = {
                         try{
                             answer = await knex('sbr_groups_sub_qn_models_aux')
                                             .where('id_sbr_groups_sub_qn', quest[j].id)
-                                            .where('id_sbr_groups_sub_qn_models', model.id_sbr_groups_sub_qn_models).first();
+                                            .where('id', model.id_sbr_groups_sub_qn_models_aux).first();
                         }
                         catch(err){
                             answer = 0;

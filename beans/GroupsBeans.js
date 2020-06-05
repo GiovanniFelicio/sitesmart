@@ -1,6 +1,6 @@
 const knex = require('../database');
 module.exports = {
-    async totalSubgroups(idQuests, idgroup, idQnr){
+    async totalSubgroups(idQuests, idgroup, idQnr) {
         try {
             let idsSub = [];
             for (let i = 0; i < idQuests.length; i++) {
@@ -30,7 +30,7 @@ module.exports = {
                         try{
                             answer = await knex('sbr_groups_sub_qn_models_aux')
                                             .where('id_sbr_groups_sub_qn', quest[j].id)
-                                            .where('id_sbr_groups_sub_qn_models', model.id_sbr_groups_sub_qn_models).first();
+                                            .where('id', model.id_sbr_groups_sub_qn_models_aux).first();
                         }
                         catch(err){
                             answer = 0;

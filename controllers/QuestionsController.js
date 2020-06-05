@@ -8,6 +8,7 @@ module.exports = {
   async index(req, res, next) {
     try {
       var id = cryptr.decrypt(req.params.id);
+      
       var questions = await knex("sbr_groups_sub_qn").where("id_sbr_groups_sub", id);
       var navData = await knex.select('gp.name as gp_name', 'sub.name as sub_name', 'gp.id as id_group')
                                   .from('sbr_groups_sub as sub')
@@ -134,13 +135,13 @@ module.exports = {
               .where("id_sbr_groups_sub_qn", idQuestion)
               .where("id_sbr_qnr", qnr)
               .update({
-                id_sbr_groups_sub_qn_models: answer,
+                id_sbr_groups_sub_qn_models_aux: answer,
               });
           } else {
             saveQuest = await knex("sbr_groups_sub_qn_answers").insert({
               id_sbr_groups_sub_qn: idQuestion,
               id_sbr_qnr: qnr,
-              id_sbr_groups_sub_qn_models: answer,
+              id_sbr_groups_sub_qn_models_aux: answer,
             });
           }
 
@@ -188,7 +189,7 @@ module.exports = {
                                   .whereRaw("m.id = aux.id_sbr_groups_sub_qn_models");
       for (let i = 0; i < models.length; i++) {
           check = await BeansQn.checkIfUseModel(models[i].id);
-          if (check.length <= 0) {
+          if (check == null) {
               models[i].canDel = 1;
           }
           else {
@@ -257,7 +258,6 @@ module.exports = {
     try {
         var id = req.params.id;
         var type = req.params.type;
-        console.log(type)
         if (type == 0) {
             var delModel = await knex("sbr_groups_sub_qn_models_aux")
                                     .where("id", id)
@@ -273,7 +273,7 @@ module.exports = {
             var currentDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
             var check = await BeansQn.checkIfUseModel(id);
             
-            if (check.length <= 0) {
+            if (check == null) {
                 var delModel = await knex("sbr_groups_sub_qn_models_aux")
                                     .where("id", id)
                                     .update({

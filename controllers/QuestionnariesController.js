@@ -115,6 +115,7 @@ module.exports = {
             }
         } 
         catch (error) {
+            console.log(error)
             req.flash('error', 'Erro interno no servidor');
             res.redirect('/questionnaries');
         }
@@ -124,6 +125,7 @@ module.exports = {
             var id = cryptr.decrypt(req.params.id);
             var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
             var checkQnr = await BeansQnr.checkQuestionnarie(id);
+            console.log(checkQnr)
             if(checkQnr){
                 await knex('sbr_qnr').where('id', id).update('status', 3);
                 req.flash('error', 'Questionnário finalizado');
@@ -138,6 +140,7 @@ module.exports = {
                 });
             }
         } catch (error) {
+            console.log(error)
             req.flash('error', 'Questionário Inválido');
             res.redirect('/questionnaries');
         }
@@ -238,7 +241,7 @@ module.exports = {
                         try{
                             answer = await knex('sbr_groups_sub_qn_models_aux')
                                             .where('id_sbr_groups_sub_qn', quest[j].id)
-                                            .where('id_sbr_groups_sub_qn_models', model.id_sbr_groups_sub_qn_models).first();
+                                            .where('id', model.id_sbr_groups_sub_qn_models_aux).first();
                         }
                         catch(err){
                             answer = 0;

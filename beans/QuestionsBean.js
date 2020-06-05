@@ -135,20 +135,14 @@ module.exports = {
     },
     async checkIfUseModel(id) {
         try {
-            var ansAux = await knex("sbr_groups_sub_qn_answers").pluck("id_sbr_groups_sub_qn_models");
-            var checkIfUseModel = await knex.select('aux.id')
-                .from('sbr_groups_sub_qn_models_aux as aux')
-                .innerJoin('sbr_groups_sub_qn_models as m', function () {
-                    this.on('m.id', '=', 'aux.id_sbr_groups_sub_qn_models')
-                })
-                .innerJoin('sbr_groups_sub_qn_answers as ans', function () {
-                    this.on('ans.id_sbr_groups_sub_qn_models', '=', 'm.id')
-                })
-                .where('aux.id', id)
-                .whereIn('aux.id', ansAux);
+            var checkIfUseModel = await knex('sbr_groups_sub_qn_answers')
+                                        .where('id_sbr_groups_sub_qn_models_aux', id)
+                                        .pluck('id')
+                                        .first();
             return checkIfUseModel;
         } catch (error) {
-            return [1];
+            console.log(error)
+            return null;
         }
         
     }
