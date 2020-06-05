@@ -2,19 +2,20 @@ const knex = require('../database');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr('myTotalySecretKey');
 const Moment = require('moment');
-const Beans = require('../beans/QuestionsBean');
+const BeansQn = require('../beans/QuestionsBean');
 
 module.exports = {
   async index(req, res, next) {
     try {
       var id = cryptr.decrypt(req.params.id);
       var questions = await knex("sbr_groups_sub_qn").where("id_sbr_groups_sub", id);
-      var subgroups = await knex.raw(`select gp.name as gp_name, sub.name as sub_name 
-                                        from sbr_groups_sub sub, sbr_groups gp 
-                                        where sub.id = ${id}
-                                        and gp.id = sub.id_sbr_groups; `);
+      var navData = await knex.select('gp.name as gp_name', 'sub.name as sub_name', 'gp.id as id_group')
+                                  .from('sbr_groups_sub as sub')
+                                  .join('sbr_groups as gp')
+                                  .where('sub.id', id)
+                                  .whereRaw(`gp.id = sub.id_sbr_groups`).first();
 
-      var { gp_name, sub_name } = subgroups[0][0];
+      var {gp_name, sub_name, id_group} = navData;
       questions.forEach((e) => {
         e.number = e.id;
         e.id = cryptr.encrypt(e.id);
@@ -23,26 +24,12 @@ module.exports = {
       var models = await knex("sbr_groups_sub_qn_models");
       return res.render("questions/questions", {
         layout: "default",
-        style: ["styles/style.css"],
-        css: ["dataTables.bootstrap4.min.css", "responsive.dataTables.min.css"],
-        jquery: ["jquery.min.js"],
-        src: [
-          "plugins/highcharts-6.0.7/code/highcharts.js",
-          "plugins/highcharts-6.0.7/code/highcharts-more.js",
-        ],
-        js: [
-          "bootstrap.js",
-          "popper.min.js",
-          "jquery.datatable.min.js",
-          "dataTables.bootstrap4.min.js",
-          "dataTables.responsive.min.js",
-        ],
-        vendors: ["scripts/script.js"],
         questions: questions,
         reference: req.params.id,
         models: models,
         gp_name: gp_name,
         sub_name: sub_name,
+        id_group: cryptr.encrypt(id_group)
       });
     } catch (error) {
       console.log(error);
@@ -54,15 +41,11 @@ module.exports = {
     var errors = [];
     var error_msg = "";
     try {
-      if (
-        !req.body.question ||
-        typeof req.body.question == undefined ||
-        req.body.question == null
-      ) {
+      if (!req.body.question || typeof req.body.question == undefined || req.body.question == null ) {
         errors.push("Questão Inválida");
       }
       try {
-        if ((await findQuestion(req.body.question)) == true) {
+        if ((await BeansQn.findQuestion(req.body.question)) == true) {
           req.flash("error_msg", "Esta questão já existe");
           res.redirect(req.header("Referer") || "/");
         }
@@ -70,27 +53,13 @@ module.exports = {
         req.flash("error_msg", "Error interno");
         res.redirect(req.header("Referer") || "/");
       }
-      if (
-        !req.body.reference ||
-        typeof req.body.reference == undefined ||
-        req.body.reference == null
-      ) {
+      if ( !req.body.reference || typeof req.body.reference == undefined || req.body.reference == null ) {
         errors.push("Erro de referência");
       }
-      if (
-        !req.body.modelsCheck ||
-        typeof req.body.modelsCheck == undefined ||
-        req.body.modelsCheck == null ||
-        req.body.modelsCheck.length <= 0
-      ) {
+      if ( !req.body.modelsCheck || typeof req.body.modelsCheck == undefined || req.body.modelsCheck == null || req.body.modelsCheck.length <= 0 ) {
         errors.push("Modelos inválidos");
       }
-      if (
-        !req.body.value ||
-        typeof req.body.value == undefined ||
-        req.body.value == null ||
-        req.body.value.length <= 0
-      ) {
+      if ( !req.body.value || typeof req.body.value == undefined || req.body.value == null || req.body.value.length <= 0 ) {
         errors.push("Valores inválidos");
       }
       if (errors.length > 0) {
@@ -135,35 +104,24 @@ module.exports = {
   },
   async save(req, res, next) {
     try {
-      if (
-        !req.body.idQuestion ||
-        typeof req.body.idQuestion == undefined ||
-        req.body.idQuestion == null
+      if ( !req.body.idQuestion || typeof req.body.idQuestion == undefined || req.body.idQuestion == null
       ) {
         return res.send("0");
-      } else if (
-        !req.body.answer ||
-        typeof req.body.answer == undefined ||
-        req.body.answer == null
-      ) {
+      } 
+      else if ( !req.body.answer || typeof req.body.answer == undefined || req.body.answer == null ) {
         return res.send("0");
-      } else if (
-        !req.body.qnr ||
-        typeof req.body.qnr == undefined ||
-        req.body.qnr == null
-      ) {
+      } 
+      else if ( !req.body.qnr || typeof req.body.qnr == undefined || req.body.qnr == null ) {
         return res.send("0");
-      } else {
+      } 
+      else {
         var { idQuestion, answer, qnr } = req.body;
         var savedQuests;
         try {
           savedQuests = await knex("sbr_groups_sub_qn_answers")
             .where("id_sbr_groups_sub_qn", idQuestion)
             .where("id_sbr_qnr", qnr);
-          getQnr = await knex("sbr_groups_sub_qn_answers").where(
-            "id_sbr_qnr",
-            qnr
-          );
+          getQnr = await knex("sbr_groups_sub_qn_answers").where( "id_sbr_qnr", qnr);
           if (getQnr.length <= 0) {
             updatedQnr = await knex("sbr_qnr")
               .where("id", req.body.qnr)
@@ -202,18 +160,7 @@ module.exports = {
   async delete(req, res, next) {
     var idEncrypt = req.params.id;
     var date = new Date();
-    var currentDate =
-      date.getFullYear() +
-      "-" +
-      date.getMonth() +
-      "-" +
-      date.getDate() +
-      " " +
-      date.getHours() +
-      ":" +
-      date.getMinutes() +
-      ":" +
-      date.getSeconds();
+    var currentDate = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() +  " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     try {
       var idDecrypt = cryptr.decrypt(idEncrypt);
       var questionUp = await knex("sbr_groups_sub_qn")
@@ -240,7 +187,7 @@ module.exports = {
                                     .whereRaw(`aux.id_sbr_groups_sub_qn = ${id}`)
                                     .whereRaw("m.id = aux.id_sbr_groups_sub_qn_models");
         for (let i = 0; i < models.length; i++) {
-            check = await checkIfUseModel(models[i].id);
+            check = await BeansQn.checkIfUseModel(models[i].id);
             if (check.length <= 0) {
                 models[i].canDel = 1;
             }
@@ -317,7 +264,7 @@ module.exports = {
         else if(type == 1){
             var date = new Date();
             var currentDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
-            var check = await checkIfUseModel(id);
+            var check = await BeansQn.checkIfUseModel(id);
             
             if (check.length <= 0) {
                 var delModel = await knex("sbr_groups_sub_qn_models_aux")
@@ -347,73 +294,11 @@ module.exports = {
       let qnr = await knex("sbr_groups_sub_qn_qnr")
         .where("id_sbr_qnr", idqnr)
         .pluck("id_sbr_groups_sub_qn");
-      var subgroups = await Beans.totalSubgroups(qnr, idgroup, idqnr);
+      var subgroups = await BeansQn.totalSubgroups(qnr, idgroup, idqnr);
       return res.send(subgroups);
     } catch (error) {
       console.log(error);
+      return res.send('0');
     }
   },
 };
-function removeDups(array) {
-    let unique = {};
-    array.forEach(function(i) {
-      if(!unique[i]) {
-        unique[i] = true;
-      }
-    });
-    return Object.keys(unique);
-}
-async function findQuestion(question){
-    try{
-        var findQuestion = await knex('sbr_groups_sub_qn').where('question', question);
-        if(findQuestion > 0){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-    catch(error){
-        return true;
-    }
-}
-function compare(arr1,arr2){
-  
-    if(!arr1  || !arr2) return
-   
-     let result;
-   
-   arr1.forEach((e1,i)=>arr2.forEach(e2=>{
-     
-          if(e1.length > 1 && e2.length){
-             result = compare(e1,e2);
-          }else if(e1 !== e2 ){
-             result = false
-          }else{
-             result = true
-          }
-     })
-   )
-   
-   return result
-   
-}
-async function checkIfUseModel(id) {
-    try {
-        var ansAux = await knex("sbr_groups_sub_qn_answers").pluck("id_sbr_groups_sub_qn_models");
-        var checkIfUseModel = await knex.select('aux.id')
-            .from('sbr_groups_sub_qn_models_aux as aux')
-            .innerJoin('sbr_groups_sub_qn_models as m', function () {
-                this.on('m.id', '=', 'aux.id_sbr_groups_sub_qn_models')
-            })
-            .innerJoin('sbr_groups_sub_qn_answers as ans', function () {
-                this.on('ans.id_sbr_groups_sub_qn_models', '=', 'm.id')
-            })
-            .where('aux.id', id)
-            .whereIn('aux.id', ansAux);
-        return checkIfUseModel;
-    } catch (error) {
-        return [1];
-    }
-    
-}

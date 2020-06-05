@@ -175,7 +175,7 @@ module.exports = {
                 result.forEach(r => {
                     soma = soma + parseFloat(r.percentage);
                 });
-                var percentage = round((soma/result.length), 2);
+                var percentage = BeansQnr.round((soma/result.length), 2);
                 return res.render('questionnaries/details',{
                     layout: 'default',
                     groups: result,
@@ -190,13 +190,10 @@ module.exports = {
             }
         }
         catch (error){
-            //console.log(error);
+            console.log(error);
             req.flash('error', 'Questionário Inválido');
             res.redirect('/questionnaries');
         }
-    },
-    async getdetails(req, res, next){
-        
     },
     async saveQuestionnaries(req,res,next){
         if( !req.body.qnr || typeof req.body.qnr == undefined || req.body.qnr  == null){
@@ -278,20 +275,3 @@ module.exports = {
         
     }
 }
-const round = (num, places) => {
-  if (!("" + num).includes("e")) {
-    return +(Math.round(num + "e+" + places) + "e-" + places);
-  } else {
-    let arr = ("" + num).split("e");
-    let sig = "";
-    if (+arr[1] + places > 0) {
-      sig = "+";
-    }
-
-    return +(
-      Math.round(+arr[0] + "e" + sig + (+arr[1] + places)) +
-      "e-" +
-      places
-    );
-  }
-};

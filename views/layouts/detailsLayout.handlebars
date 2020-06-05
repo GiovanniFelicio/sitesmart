@@ -6,15 +6,14 @@
   	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   	<link href="https://fonts.googleapis.com/css?family=Work+Sans:300,400,500,600,700" rel="stylesheet">
   	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
-  	{{#each style}}
-    	<link rel="stylesheet" href="/vendors/{{this}}">
-  	{{/each}}
-  	{{#each css}}
-    	<link rel="stylesheet" href="/css/{{this}}">
-  	{{/each}}
-  	{{#each jquery}}
-    	<script src="/js/{{this}}"></script>
-  	{{/each}}
+  	<link rel="stylesheet" href="/vendors/styles/style.css">
+    <link rel="stylesheet" href="/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="/css/myCss.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.datatable.min.js"></script>
+    <script src="/js/dataTables.bootstrap4.min.js"></script>
+    <script src="/js/dataTables.responsive.min.js"></script>
 	  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119386393-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -42,19 +41,14 @@
         {{error}}
       </div>
     {{/if}}
-	{{#each js}}
-		<script src="/js/{{this}}"></script>
-	{{/each}}
 		<div class="pd-ltr-20 xs-pd-20-10">
       {{{body}}}
       <br>
 		</div>
 	</div>
-  {{#each src}}
-      <script src="/src/{{this}}"></script>
-  {{/each}}
-  {{#each vendors}}
-      <script src="/vendors/{{this}}"></script>
-  {{/each}}
+  <script type="text/javascript" src="/js/loader.js"></script>
+  <script src="/src/plugins/highcharts-6.0.7/code/highcharts.js"></script>
+  <script src="/src/plugins/highcharts-6.0.7/code/highcharts-more.jss"></script>
+  <script src="/vendors/scripts/script.js"></script>
 </body>
 

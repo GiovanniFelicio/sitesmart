@@ -17,18 +17,6 @@ module.exports = {
         });
         return res.render('users/users',{
             layout: 'default',
-            style: ['styles/style.css'],
-            css: ['dataTables.bootstrap4.min.css',
-                    'responsive.dataTables.min.css'],
-            jquery: ['jquery.min.js'],
-            src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-            js: ['bootstrap.js',
-                'popper.min.js',
-                'jquery.datatable.min.js',
-                'dataTables.bootstrap4.min.js',
-                'dataTables.responsive.min.js'],
-            vendors: ['scripts/script.js'],
             users:users
         });
     },

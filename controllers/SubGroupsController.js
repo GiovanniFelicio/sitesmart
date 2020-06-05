@@ -19,18 +19,6 @@ module.exports = {
             
             return res.render('subgroups/subgroups',{
                 layout: 'default',
-                style: ['styles/style.css'],
-                css: ['dataTables.bootstrap4.min.css',
-                        'responsive.dataTables.min.css'],
-                jquery: ['jquery.min.js'],
-                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-                js: ['bootstrap.js',
-                    'popper.min.js',
-                    'jquery.datatable.min.js',
-                    'dataTables.bootstrap4.min.js',
-                    'dataTables.responsive.min.js'],
-                vendors: ['scripts/script.js'],
                 subgroups: subgroups,
                 reference: req.params.id,
                 name: nameGroup
@@ -108,20 +96,12 @@ module.exports = {
             let idsub = req.params.idsub;
             return res.render('subgroups/details',{
                 layout: 'detailsLayout',
-                style: ['styles/style.css'],
-                css: ['bootstrap.min.css'],
-                jquery: ['jquery.min.js'],
-                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-                js: ['bootstrap.js',
-                    'popper.min.js'],
-                vendors: ['scripts/script.js'],
                 idqnr: idqnr,
                 idsub: idsub
             });
         }
         catch (error){
-            //console.log(error);
+            console.log(error);
             req.flash('error', 'Questionário Inválido');
             res.redirect('/questionnaries');
         }
@@ -135,6 +115,7 @@ module.exports = {
             return res.send(subgroups);
         } catch (error) {
             console.log(error);
+            return null
         }
     }
 }
