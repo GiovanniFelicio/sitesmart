@@ -16,16 +16,6 @@ module.exports = {
         }
         return res.render('questionnaries/questionnaries',{
             layout: 'default',
-            style: ['styles/style.css'],
-            css: ['dataTables.bootstrap4.min.css',
-                    'responsive.dataTables.min.css'],
-            jquery: ['jquery.min.js'],
-            src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-            js: ['jquery.datatable.min.js',
-                'dataTables.bootstrap4.min.js',
-                'dataTables.responsive.min.js'],
-            vendors: ['scripts/script.js'],
             questionnaries: qnrs
         });
     },
@@ -51,15 +41,6 @@ module.exports = {
             });
             return res.render('questionnaries/add',{
                 layout: 'default',
-                style: ['styles/style.css'],
-                css: ['dataTables.bootstrap4.min.css', 'responsive.dataTables.min.css'],
-                jquery: ['jquery.min.js'],
-                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-                js: ['jquery.datatable.min.js',
-                    'dataTables.bootstrap4.min.js',
-                    'dataTables.responsive.min.js'],
-                vendors: ['scripts/script.js'],
                 groups: dados
             });
         } catch (error) {
@@ -152,14 +133,6 @@ module.exports = {
                 var subgroups = await BeansQnr.getQuestions(qnr, id);
                 return res.render('questionnaries/reply',{
                     layout: 'default',
-                    style: ['styles/style.css'],
-                    css: ['bootstrap.min.css'],
-                    jquery: ['jquery.min.js'],
-                    src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                            'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-                    js: ['bootstrap.js',
-                        'popper.min.js'],
-                    vendors: ['scripts/script.js'],
                     groups: subgroups,
                     reference: id
                 });
@@ -182,14 +155,6 @@ module.exports = {
             var subgroups = await BeansQnr.getQuestions(qnr ,id);
             return res.render('questionnaries/review',{
                 layout: 'default',
-                style: ['styles/style.css'],
-                css: ['bootstrap.min.css'],
-                jquery: ['jquery.min.js'],
-                src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                    'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-                js: ['bootstrap.js',
-                    'popper.min.js'],
-                vendors: ['scripts/script.js'],
                 groups: subgroups,
                 reference: id
             });
@@ -213,14 +178,6 @@ module.exports = {
                 var percentage = round((soma/result.length), 2);
                 return res.render('questionnaries/details',{
                     layout: 'default',
-                    style: ['styles/style.css'],
-                    css: ['bootstrap.min.css', 'myCss.css'],
-                    jquery: ['jquery.min.js'],
-                    src: ['plugins/highcharts-6.0.7/code/highcharts.js',
-                        'plugins/highcharts-6.0.7/code/highcharts-more.js'],
-                    js: ['bootstrap.js',
-                        'popper.min.js'],
-                    vendors: ['scripts/script.js'],
                     groups: result,
                     reference: req.params.id,
                     qnr: qnrDetails,

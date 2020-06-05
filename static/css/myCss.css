@@ -45,15 +45,14 @@
 
 .chart .radio_chart.animate {
     animation-name: circled;
-    animation-duration: 6s;
+    animation-duration: 6.295s;
     animation-timing-function: linear;
     -moz-animation-name: circled;
-    -moz-animation-duration: 6s;
+    -moz-animation-duration: 6.295s;
     -moz-animation-timing-function: linear;
     -webkit-animation-name: circled;
-    -webkit-animation-duration: 6s;
+    -webkit-animation-duration: 6.295s;
     -webkit-animation-timing-function: linear;
-    background: -webkit-repeating-linear-gradient(#75d3ff, #a2eff1);
 }
 
 .chart .cap {
@@ -74,7 +73,7 @@
     width: 100%;
     height: 100%;
     text-align: center;
-    font-size: 500%;
+    font-size: 400%;
     top: 37.5%;
     position: absolute;
     text-shadow: -2px -2px 5px #54E5EA, 2px 2px 5px #75D3FF, 0 0 50px #75D3FF;
@@ -86,7 +85,7 @@
     height: 100%;
     text-align: center;
     font-size: 150%;
-    top: 50%;
+    top: 37.5%;
     position: absolute;
     text-shadow: -2px -2px 5px #54E5EA, 2px 2px 5px #75D3FF, 0 0 50px #75D3FF;
 }
@@ -117,3 +116,22 @@
         background: rgb(30, 167, 5);
     }
 }
+    
+    .round {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center
+    }
+    .indice{
+        display: block;
+        color: #54E5EA;
+        font-size: 30px;
+        font-weight: bold;
+    }
+    body {
+        margin: 0px;
+    }
+    

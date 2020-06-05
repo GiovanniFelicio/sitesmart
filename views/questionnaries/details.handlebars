@@ -12,42 +12,41 @@
     </div>
     <hr>
     <div class="row">
-        <div class="col"></div>
         <div class="col">
-            <div class="chart chart-lg">
-                <div class="radio_chart" id="radioChartQnr"></div>
-                <div class="cap"></div>
-                <div class="value" id="percentChartQnr">
-                    0%
+            <div class="round">
+                <div class="chart chart-lg">
+                    <div class="radio_chart" id="radioChartQnr"></div>
+                    <div class="cap"></div>
+                    <div class="value" id="percentChartQnr">
+                        0%
+                    </div>
                 </div>
             </div>
+            <div class="text-center indice">Índice Smart</div>
         </div>
-        <div class="col"></div>
     </div>
-    <br>
-    <div class="row">
+    <br><br>
+    <div class="row groups">
         {{#each groups}}
-            <div class="col text-center">
-                <div class="row">
-                    <div class="col"></div>
-                    <div class="col">
-                        <div style="cursor: pointer;" class="chart chart-sm" onclick="redirect({{id}}, '{{../reference}}')">
-                            <div class="radio_chart radioChartContent"></div>
-                            <div class="cap"></div>
-                            <div class="value percentValue" data-progress="{{percentage}}">
-                                0%
-                            </div>
+            <div class="col">
+                <div class="round">
+                    <div style="cursor: pointer;" class="chart chart-sm" onclick="redirect({{id}}, '{{../reference}}')">
+                        <div class="radio_chart radioChartContent"></div>
+                        <div class="cap"></div>
+                        <div class="value percentValue" data-progress="{{percentage}}">
+                            0%
                         </div>
-                        <label for="">{{name}}</label>
                     </div>
-                    <div class="col"></div>
                 </div>
+                <div class="text-center text-secondary font-weight-bold">{{name}}</div>
             </div>
         {{/each}}
     </div>
 </div>
+<br>
+<hr>
 <script>
-    $(window).scrollTop(150);
+    $(window).scrollTop(200);
     function redirect(idgroup, idqnr){
         window.location.href = `/questionnaries/groups/details/${idqnr}/${idgroup}`;
     }
@@ -63,7 +62,6 @@
 
                 if (currentPercent >= frame || currentPercent >= 100) {
                     pVal.innerHTML = frame + '%';
-                    clearInterval(currTimeout);
 
                     chart.style.animationPlayState = "paused";
                     chart.style.webkitAnimationPlayState = "paused";
@@ -73,8 +71,8 @@
                     currentPercent++; 
                     pVal.innerHTML = currentPercent + "%";
                 }
-            }, 60);
-        }, 1000);
+            }, 50);
+        }, 800);
     }
 
     function reset(i) {
