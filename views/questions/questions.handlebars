@@ -126,6 +126,10 @@
             <div class="modal-body">
                 <form method="POST" action="/question/model" id="createQuestion">
                     <div class="form-group">
+                        <label for="">Questão:</label>
+                        <textarea style="height: 100px;" name="question" class="form-control" id="questionUp"></textarea>
+                    </div>
+                    <div class="form-group">
                         <label>Modelos:</label>
                         <div id="modelUp" class="row">
                         </div>
@@ -197,28 +201,28 @@
             url: '/question/model/'+dato[0],
             type: 'GET',
             success: function(result) {
-                console.log(result)
-                if(result != 0){
+                if(result[0] != 0){
                     $('#modelUp').html(`<input hidden value="${dato[0]}" name="reference"/>`);
-                    for(let i = 0; i < result.length; i++){
+                    for(let i = 0; i < result[0].length; i++){
                         let status;
                         let type;
                         let notDel = '';
-                        if(result[i].deleted_at == null){status = ['text-success', 1, 'Deletar']}
+                        if(result[0][i].deleted_at == null){status = ['text-success', 1, 'Deletar']}
                         else{status = ['text-danger', 0, 'Ativar']}
-                        if(result[i].canDel == 0){notDel = 'hidden disabled'}
+                        if(result[0][i].canDel == 0){notDel = 'hidden disabled'}
+                        $('#questionUp').val(result[1])
                         $('#modelUp').append(`
                             <div class="col-6">
                                 <div class="custom-control custom-checkbox ml-3">
-                                   <label id="status${result[i].id}" class="${status[0]}">${result[i].model}</label>
+                                   <label id="status${result[0][i].id}" class="${status[0]}">${result[0][i].model}</label>
                                 </div>
                             </div>
                             <div class="col-3">
-                                <div class="form-row" id="value${result[i].id}">
+                                <div class="form-row" id="value${result[0][i].id}">
                                     <div class="col-sm-7 col-lg-5">
                                         <div class="input-group">
-                                            <input name="value[]" type="text" class="form-control" id="inputValue${result[i].id}" placeholder="0" value="${result[i].value}" autocomplete="off">
-                                            <input name="model[]" hidden placeholder="0" value="${result[i].id}">
+                                            <input name="value[]" type="text" class="form-control" id="inputValue${result[0][i].id}" placeholder="0" value="${result[0][i].value}" autocomplete="off">
+                                            <input name="model[]" hidden placeholder="0" value="${result[0][i].id}">
                                         </div>
                                     </div>
                                 </div>
@@ -227,8 +231,8 @@
                                 <div class="form-row">
                                     <div class="col-sm-7 col-lg-5">
                                         <div class="input-group">
-                                            <div ${notDel} id="statusButton${result[i].id}" data-del="${result[i].canDel}" class="statusButton">
-                                                <a style="cursor: pointer"  onclick="statusModel(${result[i].id}, ${status[1]})">${status[2]}</a>
+                                            <div ${notDel} id="statusButton${result[0][i].id}" data-del="${result[0][i].canDel}" class="statusButton">
+                                                <a style="cursor: pointer"  onclick="statusModel(${result[0][i].id}, ${status[1]})">${status[2]}</a>
                                             </div>
                                         </div>
                                     </div>

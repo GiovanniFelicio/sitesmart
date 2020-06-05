@@ -181,25 +181,26 @@ module.exports = {
   async getmodel(req, res, next) {
     var id = req.params.id;
     try {
-        var models = await knex.select("aux.id", "m.model", "aux.value", "aux.deleted_at")
-                                    .from("sbr_groups_sub_qn_models as m")
-                                    .join("sbr_groups_sub_qn_models_aux as aux")
-                                    .whereRaw(`aux.id_sbr_groups_sub_qn = ${id}`)
-                                    .whereRaw("m.id = aux.id_sbr_groups_sub_qn_models");
-        for (let i = 0; i < models.length; i++) {
-            check = await BeansQn.checkIfUseModel(models[i].id);
-            if (check.length <= 0) {
-                models[i].canDel = 1;
-            }
-            else {
-                models[i].canDel = 0;
-            }
-        }
-        if (models) {
-            return res.send(models);
-        } else {
-            return res.send("0");
-        }
+      var models = await knex.select("aux.id", "m.model", "aux.value", "aux.deleted_at")
+                                  .from("sbr_groups_sub_qn_models as m")
+                                  .join("sbr_groups_sub_qn_models_aux as aux")
+                                  .whereRaw(`aux.id_sbr_groups_sub_qn = ${id}`)
+                                  .whereRaw("m.id = aux.id_sbr_groups_sub_qn_models");
+      for (let i = 0; i < models.length; i++) {
+          check = await BeansQn.checkIfUseModel(models[i].id);
+          if (check.length <= 0) {
+              models[i].canDel = 1;
+          }
+          else {
+              models[i].canDel = 0;
+          }
+      }
+      let {question} = await knex('sbr_groups_sub_qn').where('id', id).pluck('question').first();
+      if (models) {
+          return res.send([models, question]);
+      } else {
+          return res.send("0");
+      }
     } catch (e) {
       return res.send("0");
     }
@@ -213,7 +214,9 @@ module.exports = {
         } else if ( !req.body.value || typeof req.body.value == undefined || req.body.value == null || req.body.value.length <= 0) {
             errors.push("Valores inválidos");
         } else if (!req.body.model || typeof req.body.model == undefined || req.body.model == null ||req.body.value.length <= 0) {
-            errors.push("Modelos inválidos");
+          errors.push("Modelos inválidos"); 
+        } else if (!req.body.question || typeof req.body.question == undefined || req.body.question == null) {
+          errors.push("Questão inválida"); 
         } else if (req.body.value.length != req.body.model.length) {
             errors.push("Valores e modelos incompatíveis");
         }
@@ -225,21 +228,25 @@ module.exports = {
             res.redirect(req.header("Referer") || "/groups");
         } else {
             try {
-                var { value, model, reference } = req.body;
-                model.forEach(async (m, i) => {
-                    (value[i] > 100) ? val = 100 : val = value[i];
-                    await knex("sbr_groups_sub_qn_models_aux")
-                    .where("id_sbr_groups_sub_qn", req.body.reference)
-                    .where("id_sbr_groups_sub_qn_models", m)
-                    .update({
-                        value: val,
-                    });
-                });
-            req.flash("success_msg", "Atualizado com sucesso !!");
-            return res.redirect(req.header("Referer") || "/groups");
-            } catch (error) {
-            req.flash("error_msg", "Error durante a atualização !!");
-            res.redirect(req.header("Referer") || "/groups");
+              var { value, model, reference } = req.body;
+              model.forEach(async (m, i) => {
+                  (value[i] > 100) ? val = 100 : val = value[i];
+                  await knex("sbr_groups_sub_qn_models_aux")
+                  .where("id_sbr_groups_sub_qn", req.body.reference)
+                  .where("id_sbr_groups_sub_qn_models", m)
+                  .update({
+                      value: val,
+                  });
+              });
+              quest = await knex('sbr_groups_sub_qn')
+                              .where('id', req.body.reference)
+                              .update({ question: req.body.question });
+              req.flash("success_msg", "Atualizado com sucesso !!");
+              return res.redirect(req.header("Referer") || "/groups");
+            }
+            catch (error) {
+              req.flash("error_msg", "Error durante a atualização !!");
+              res.redirect(req.header("Referer") || "/groups");
             }
         }
     } catch (e) {
