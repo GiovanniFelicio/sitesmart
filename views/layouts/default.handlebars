@@ -25,7 +25,7 @@
 </head>
 <body>
 <div class="pre-loader"></div>
-	<div class="header clearfix">
+	<div class="header">
 		<div class="header-right">
 			<div class="menu-icon">
 				<span></span>
@@ -49,7 +49,7 @@
 			</div>
 		</div>
 	</div>
-    <div class="left-side-bar">
+     <div class="left-side-bar" hidden>
 		<div class="brand-logo">
 			<a href="./">
 				<img src="/img/smartbr-logo.png" alt="">
@@ -82,8 +82,7 @@
 			</div>
 		</div>
 	</div>
-	text
-	<div class="main-container">
+	<div class="container-fluid mt-4" style="padding: 70px 0 0px 0px;">
     {{#if success_msg}}
       <div class="alert alert-success">
         {{success_msg}}
@@ -100,11 +99,11 @@
       </div>
     {{/if}}
 		<div class="pd-ltr-20 xs-pd-20-10">
-        {{{body}}}
-		<br>
-        <div class="footer-wrap bg-white pd-20 mb-20 border-radius-5 box-shadow">
-            &copy; 2020 - SmartBr
-        </div>
+			{{{body}}}
+			<br>
+			<div class="footer-wrap bg-white pd-20 mb-20 border-radius-5 box-shadow">
+				&copy; 2020 - SmartBr
+			</div>
 		</div>
 	</div>
 	<script type="text/javascript" src="/js/loader.js"></script>

@@ -106,6 +106,8 @@ module.exports = {
         try {
             quest = await knex.select('id', 'id_sbr_groups', 'id_sbr_groups_sub', 'question').from('sbr_groups_sub_qn').whereIn('id', qnr);
             subgroup.questions = [];
+            var answered = [];
+            var notAnswered = [];
             for (let i = 0; i < quest.length; i++) {
                 if(quest[i].id_sbr_groups_sub == subgroup.id){
                     quest[i].models = await knex.select('aux.id', 'm.model')
@@ -121,9 +123,25 @@ module.exports = {
                                     .first();
                     (answer != undefined) ? quest[i].answer = answer.id_sbr_groups_sub_qn_models_aux : quest[i].answer = null;
                     subgroup.questions[i] = quest[i];
+                    if(quest[i].answer != null){
+                        answered.push(1);
+                    }
+                    else{
+                        notAnswered.push(0);
+                    }
+
                 }
             }
             subgroup.questions = this.filter_array(subgroup.questions);
+            if(subgroup.questions.length == answered.length){
+                subgroup.status = 2;
+            }
+            else if(subgroup.questions.length == notAnswered.length){
+                subgroup.status = 0;
+            }
+            else if(subgroup.questions.length == (parseInt(notAnswered.length) + parseInt(answered.length))){
+                subgroup.status = 1;
+            }
             return subgroup
         }
         catch (error) {

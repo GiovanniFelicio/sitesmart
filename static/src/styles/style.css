@@ -576,7 +576,7 @@ textarea.form-control{
 }
 .header-right{
 	float: right;
-	width: calc(100% - 250px);
+	width: 100%;
 	background: #ffffff;
 	height: 70px;
 	/*padding: 10px 20px;*/

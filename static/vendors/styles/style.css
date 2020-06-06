@@ -18441,7 +18441,7 @@ textarea.form-control {
 
 .header-right {
   float: right;
-  width: calc(100% - 250px);
+  width: 100%;
   background: #ffffff;
   height: 70px;
   /*padding: 10px 20px;*/
@@ -20413,7 +20413,7 @@ textarea.form-control {
   .device-usage-chart .width-50-p {
     width: 100%; } }
 
-@media (max-width: 1200px) {
+
   .main-container {
     padding-left: 0; }
   .header-right {
@@ -20433,7 +20433,7 @@ textarea.form-control {
   .header-right .menu-icon {
     display: block; }
   .footer-wrap {
-    width: 100%; } }
+    width: 100%; } 
 
 @media (max-width: 991px) {
   .device-usage-chart .width-50-p {

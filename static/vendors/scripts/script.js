@@ -33286,6 +33286,7 @@ jQuery(document).ready(function(){
 	// sidebar menu icon
 	$('.menu-icon').on('click', function(){
 		$(this).toggleClass('open');
+		$('.left-side-bar').prop('hidden', false);
 		$('.left-side-bar').toggleClass('open');
 	});
 
@@ -33293,6 +33294,7 @@ jQuery(document).ready(function(){
 	$(document).on('touchstart click', function(e){
 		if($(e.target).parents('.left-side-bar').length == 0 && !$(e.target).is('.menu-icon, .menu-icon span'))
 		{
+      $('.left-side-bar').prop('hidden', true);
 			$('.left-side-bar').removeClass('open');
 			$('.menu-icon').removeClass('open');
 		};
@@ -33300,6 +33302,7 @@ jQuery(document).ready(function(){
 	$(window).on('resize', function() {
 		var w = $(window).width();
 		if ($(window).width() > 1200) {
+      $('.left-side-bar').prop('hidden', true);
 			$('.left-side-bar').removeClass('open');
 			$('.menu-icon').removeClass('open');
 		}
