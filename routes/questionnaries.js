@@ -7,7 +7,8 @@ const QuestionnariesController = require('../controllers/QuestionnariesControlle
 routes.get('/questionnaries', isAuth, QuestionnariesController.index);
 routes.post('/questionnaries', isAuth, QuestionnariesController.create);
 routes.get('/questionnaries/add', isAuth, QuestionnariesController.add);
-routes.get('/questionnaries/reply/:id', isAuth, QuestionnariesController.reply);
+routes.get('/questionnaries/reply/groups/:id', isAuth, QuestionnariesController.replyGroups);
+routes.get('/questionnaries/reply/question/:idqnr/:idsub', isAuth, QuestionnariesController.replyQuestions);
 routes.get('/questionnaries/review/:id', isAuth, QuestionnariesController.review);
 routes.get('/questionnaries/details/:id', isAuth, QuestionnariesController.details);
 routes.get('/questionnaries/getscores/:id', isAuth, QuestionnariesController.getScores);

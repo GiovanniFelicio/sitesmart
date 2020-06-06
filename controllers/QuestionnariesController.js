@@ -118,7 +118,7 @@ module.exports = {
             res.redirect('/questionnaries');
         }
     },
-    async reply(req, res, next){
+    async replyGroups(req, res, next){
         try {
             var id = req.params.id;
             var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
@@ -131,10 +131,39 @@ module.exports = {
             else{
                 var groups = await BeansQnr.getGroups(qnr, id);
                 // res.send(groups);
-                return res.render('questionnaries/reply',{
+                return res.render('questionnaries/replyGroups',{
                     layout: 'default',
                     groups: groups,
                     reference: id
+                });
+            }
+        } catch (error) {
+            console.log(error)
+            req.flash('error', 'Questionário Inválido');
+            res.redirect('/questionnaries');
+        }
+    },
+    async replyQuestions(req, res, next){
+        try {
+            var idqnr = req.params.idqnr;
+            var idsub = req.params.idsub;
+            var query = req.query.question || 0;
+            var questions = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
+            var checkQnr = await BeansQnr.checkQuestionnarie(idqnr);
+            if(checkQnr){
+                await knex('sbr_qnr').where('id', id).update('status', 3);
+                req.flash('error', 'Questionnário finalizado');
+                res.redirect('/questionnaries');
+            }
+            else{
+                var subgroup = await knex('sbr_groups_sub').where('id', idsub).first();
+                var questions = await BeansQnr.getSubGroups(subgroup, questions, idqnr);
+                // res.send(questions);
+                return res.render('questionnaries/replyQuestions',{
+                    layout: 'default',
+                    subgroup: questions,
+                    reference: idqnr,
+                    query: 0
                 });
             }
         } catch (error) {

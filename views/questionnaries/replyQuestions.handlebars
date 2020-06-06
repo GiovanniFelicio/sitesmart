@@ -1,0 +1,32 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 col-md-12">
+            <div class="mySection">
+                <h3 class="mb-4">Questão</h3>
+                <div id="myquestion">
+                    
+                </div>
+                <button class="btn btn-info float-left mt-4">Anterior</button>
+                <button class="btn btn-info float-right mt-4">Próxima</button>
+            </div>
+        </div>
+        <div class="col">
+            <div class="myNavigation float-right">
+                <div class="row">
+                    <div class="col-8">
+                        <div class="row">
+                            {{#each subgroup.questions}}
+                                <div class="col-md-2">
+                                    <div class="numQuest">{{math @index '+' 1}}</div>
+                                </div>
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+</script>

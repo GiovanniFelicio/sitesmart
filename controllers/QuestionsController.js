@@ -5,7 +5,7 @@ const BeansQn = require('../beans/QuestionsBean');
 module.exports = {
   async index(req, res, next) {
     try {
-      var id = eq.params.id;
+      var id = req.params.id;
       var questions = await knex("sbr_groups_sub_qn").where("id_sbr_groups_sub", id);
       var navData = await knex.select('gp.name as gp_name', 'sub.name as sub_name', 'gp.id as id_group')
                                   .from('sbr_groups_sub as sub')
