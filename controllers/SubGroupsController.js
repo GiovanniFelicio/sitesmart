@@ -1,18 +1,15 @@
 const knex = require('../database');
-const Cryptr = require('cryptr');
-const cryptr = new Cryptr('myTotalySecretKey');
 const Moment = require('moment');
 const BeansSub = require('../beans/SubgroupsBean');
 
 module.exports = {
     async index(req, res, next){
         try {
-            var id = cryptr.decrypt(req.params.id);
+            var id = req.params.id;
             var nameGroup = await knex('sbr_groups').where('id', id).pluck('name');
             var subgroups = await knex('sbr_groups_sub').where('id_sbr_groups', id);
             subgroups.forEach(async e => {
                 questions = await knex('sbr_groups_sub_qn').where('id_sbr_groups_sub', e.id);
-                e.id = cryptr.encrypt(e.id);
                 e.qtde = questions.length;
                 e.created_at = Moment(e.created_at).format('DD-MM-Y  HH:mm:ss');
             });
@@ -48,7 +45,7 @@ module.exports = {
             else{
                 try{
                     await knex('sbr_groups_sub').insert({
-                        id_sbr_groups: cryptr.decrypt(req.body.reference),
+                        id_sbr_groups: req.body.reference,
                         name: req.body.name
                     });
                 }
@@ -66,7 +63,7 @@ module.exports = {
     async delete(req,res,next){
         var idEncrypt = req.params.id;
         try{
-            var idDecrypt = cryptr.decrypt(idEncrypt);
+            var idDecrypt = idEncrypt;
             var date = new Date();
             var currentDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
             try{
@@ -108,7 +105,7 @@ module.exports = {
     },
     async getdetails(req,res,next){
         try {
-            var idqnr = cryptr.decrypt(req.params.idqnr);
+            var idqnr = req.params.idqnr;
             var idsub = req.params.idsub;
             let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
             var subgroups = await BeansSub.totalQuestions(qnr, idsub, idqnr);

@@ -1,53 +1,64 @@
- <br><br>
+ <br><br>  
  {{#if groups }}
-    {{#each groups}}
-        <div class="row">
-            <div class="col-12">
-                <div class="card bg-light mb-3" style="max-width: 100%;">
-                    <div class="card-header text-center bg-info text-white"><h2><b>{{name}}</b></h2></div>
-                    <div class="card-body">
-                        <div class="card-text">
-{{#each questions as |quest i|}}
-    <div class="row">
-        <div class="col-12">
-            <div class="card bg-light mb-3" style="max-width: 100%;">
-                <div class="card-header">
-                    <div class="mr-3">
-                        {{math @key '+' 1}}) {{quest.question}}
-                    </div>
-                    <div class="float-right row align-items-center mr-1">
-                        <div id="divButtonSave{{quest.id}}">
-                            {{#compare quest.answer '!=' null}}
-                                <i class="fa fa-check text-success mr-2"></i>
-                            {{else}}
-                                <i class="fa fa-ban text-danger mr-2"></i>
-                            {{/compare}}
+    {{#each groups as |gp|}}
+        <hr>
+        <h3 class="text-center font-weight-bold">{{gp.name}}</h3>
+        <hr>
+        {{#each subgroups as |sub key|}}
+            <div class="row">
+                <div class="col-12">
+                    <div class="card bg-light mb-3" style="max-width: 100%;">
+                        <div class="card-header text-center bg-info text-white"><h2 class="text-white"><b>{{sub.name}}</b></h2></div>
+                        <div class="card-body">
+                            <div class="card-text">
+            {{#each questions as |quest key|}}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card bg-light mb-3" style="max-width: 100%;">
+                            <div class="card-header">
+                                <div class="mr-3">
+                                    {{math @key '+' 1}}) {{quest.question}}
+                                </div>
+                                <div class="float-right row align-items-center mr-1">
+                                    <div id="divButtonSave{{quest.id}}">
+                                        {{#compare quest.answer '!=' null}}
+                                            <i class="fa fa-check text-success mr-2"></i>
+                                        {{else}}
+                                            <i class="fa fa-ban text-danger mr-2"></i>
+                                        {{/compare}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-text">
+                                    {{#each models as |m keymodel|}}
+                                        <div class="custom-control custom-radio">
+                                            {{#compare quest.answer '==' m.id}}
+                                                <input checked type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}">
+                                            {{else}}
+                                                <input onchange="save({{quest.id}},{{m.id}})" type="radio" class="custom-control-input" id="answer{{quest.id}}{{m.id}}" name="answer{{quest.id}}" value="{{m.id}}">
+                                            {{/compare}}
+                                            <label class="custom-control-label mb-2" for="answer{{quest.id}}{{m.id}}">{{m.model}}</label>
+                                        </div>
+                                    {{/each}}
+                                    <br>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="card-text">
-                        {{#each models as |m keymodel|}}
-                            <div class="custom-control custom-radio">
-                                {{#compare quest.answer '==' m.id}}
-                                    <input checked type="radio" class="custom-control-input">
-                                {{else}}
-                                    <input type="radio" class="custom-control-input">
-                                {{/compare}}
-                                <label class="custom-control-label mb-2">{{m.model}}</label>
+            {{/each}}
                             </div>
-                        {{/each}}
-                        <br>
+                        </div>
                     </div>
                 </div>
             </div>
+        {{/each}}
+
+    {{/each}}
+    <div class="row align-items-center ml-1">
+        <button type="button" id="saveAll" class="btn btn-success mb-4 mr-4">Enviar</button>
+        <div id="divButtonSave">
         </div>
     </div>
-{{/each}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {{/each}}
 {{/if}}

@@ -1,13 +1,10 @@
 const knex = require('../database');
-const Cryptr = require('cryptr');
-const cryptr = new Cryptr('myTotalySecretKey');
 const Moment = require('moment');
 const BeansGroup = require('../beans/GroupsBeans');
 module.exports = {
     async index(req, res, next){
         var groups = await knex('sbr_groups');
         groups.forEach(e => {
-            e.id = cryptr.encrypt(e.id);
             e.created_at = Moment(e.created_at).format('DD-MM-Y  HH:mm:ss');
         });
         return res.render('groups/groups',{
@@ -48,13 +45,12 @@ module.exports = {
         }
     },
     async delete(req,res,next){
-        var idEncrypt = req.params.id;
+        var id = req.params.id;
         var date = new Date();
         var currentDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
         try{
-            var idDecrypt = cryptr.decrypt(idEncrypt);
             var subGroupUp = await knex('sbr_groups')
-                                        .whereRaw('sbr_groups.id = '+idDecrypt)
+                                        .whereRaw('sbr_groups.id = '+id)
                                         .update({
                                             'sbr_groups.deleted_at': currentDate
                                         });
@@ -73,9 +69,7 @@ module.exports = {
     async details(req,res,next){
         try {
             let idqnr = req.params.idqnr;
-            let id = cryptr.decrypt(idqnr);
-            let qnrDetails = await knex('sbr_qnr').where('id', id).first();
-            qnrDetails.id = cryptr.encrypt(qnrDetails.id);
+            let qnrDetails = await knex('sbr_qnr').where('id', idqnr).first();
             let idgroup = req.params.idgroup;
             let group = await knex('sbr_groups').where('id', idgroup).first();
             return res.render('groups/details',{
@@ -94,7 +88,7 @@ module.exports = {
     },
     async getdetails(req,res,next){
         try {
-            var idqnr = cryptr.decrypt(req.params.idqnr);
+            var idqnr = req.params.idqnr;
             var idgroup = req.params.idgroup;
             let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
             var subgroups = await BeansGroup.totalSubgroups(qnr, idgroup, idqnr);

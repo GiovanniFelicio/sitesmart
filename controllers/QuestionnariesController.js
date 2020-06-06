@@ -1,6 +1,4 @@
 const knex = require('../database');
-const Cryptr = require('cryptr');
-const cryptr = new Cryptr('myTotalySecretKey');
 const Moment = require('moment');
 const BeansQnr = require('../beans/QuestionnariesBean');
 
@@ -8,7 +6,7 @@ module.exports = {
     async index(req, res, next){
         var qnrs = await knex('sbr_qnr');
         for (let i = 0; i < qnrs.length; i++) {
-            qnrs[i].reference = cryptr.encrypt(qnrs[i].id);
+            qnrs[i].reference = qnrs[i].id;
             qnrs[i].id_sbr_users = await BeansQnr.findUser(qnrs[i].id_sbr_users);
             qnrs[i].created_at = Moment(qnrs[i].created_at).format('DD-MM-Y');
             qnrs[i].progress = await BeansQnr.progressQuestionnarie(qnrs[i].id);
@@ -122,20 +120,20 @@ module.exports = {
     },
     async reply(req, res, next){
         try {
-            var id = cryptr.decrypt(req.params.id);
+            var id = req.params.id;
             var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
             var checkQnr = await BeansQnr.checkQuestionnarie(id);
-            console.log(checkQnr)
             if(checkQnr){
                 await knex('sbr_qnr').where('id', id).update('status', 3);
                 req.flash('error', 'Questionnário finalizado');
                 res.redirect('/questionnaries');
             }
             else{
-                var subgroups = await BeansQnr.getQuestions(qnr, id);
+                var groups = await BeansQnr.getGroups(qnr, id);
+                // res.send(groups);
                 return res.render('questionnaries/reply',{
                     layout: 'default',
-                    groups: subgroups,
+                    groups: groups,
                     reference: id
                 });
             }
@@ -147,7 +145,7 @@ module.exports = {
     },
     async review(req,res,next){
         try {
-            var id = cryptr.decrypt(req.params.id);
+            var id = req.params.id;
             var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
             var checkQnr = await BeansQnr.checkQuestionnarie(id);
             if(checkQnr){
@@ -155,10 +153,10 @@ module.exports = {
                     status: 3
                 })
             }
-            var subgroups = await BeansQnr.getQuestions(qnr ,id);
+            var groups = await BeansQnr.getGroups(qnr ,id);
             return res.render('questionnaries/review',{
                 layout: 'default',
-                groups: subgroups,
+                groups: groups,
                 reference: id
             });
         }
@@ -170,7 +168,7 @@ module.exports = {
     async details(req, res, next){
         try {
             try {
-                let id = cryptr.decrypt(req.params.id);
+                let id = req.params.id;
                 let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
                 let qnrDetails = await knex('sbr_qnr').where('id', id).first();
                 var result = await BeansQnr.totalQuestions(qnr, id);
@@ -219,7 +217,7 @@ module.exports = {
     },
     async getScores(req, res, next){
         try {
-            let id = cryptr.decrypt(req.params.id);
+            let id = req.params.id;
             let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
             let idsSub = [];
             for (let i = 0; i < qnr.length; i++) {
@@ -267,7 +265,7 @@ module.exports = {
     },
     async results(req,res,next){
         try {
-            let id = cryptr.decrypt(req.params.id);
+            let id = req.params.id;
             let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
             var result = await BeansQnr.totalQuestions(qnr,id);
             return res.send(result)

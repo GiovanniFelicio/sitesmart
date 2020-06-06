@@ -1,6 +1,4 @@
 const knex = require('../database');
-const Cryptr = require('cryptr');
-const cryptr = new Cryptr('myTotalySecretKey');
 const Moment = require('moment');
 
 module.exports = {
@@ -12,7 +10,6 @@ module.exports = {
             res.redirect(req.header('Referer') || '/');
         }
         users.forEach(e => {
-            e.id = cryptr.encrypt(e.id);
             e.created_at = Moment(e.created_at).format('DD-MM-Y  HH:mm:ss');
         });
         return res.render('users/users',{
@@ -77,13 +74,12 @@ module.exports = {
         }
     },
     async delete(req,res,next){
-        var idEncrypt = req.params.id;
+        var id = req.params.id;
         var date = new Date();
         var currentDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
         try{
-            var idDecrypt = cryptr.decrypt(idEncrypt);
             const course = await knex('courses')
-                .where({id: idDecrypt})
+                .where({id: id})
                 .update({
                     deleted_at: currentDate
                 });

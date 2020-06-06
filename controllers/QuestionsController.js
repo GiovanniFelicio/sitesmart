@@ -1,14 +1,11 @@
 const knex = require('../database');
-const Cryptr = require('cryptr');
-const cryptr = new Cryptr('myTotalySecretKey');
 const Moment = require('moment');
 const BeansQn = require('../beans/QuestionsBean');
 
 module.exports = {
   async index(req, res, next) {
     try {
-      var id = cryptr.decrypt(req.params.id);
-      
+      var id = eq.params.id;
       var questions = await knex("sbr_groups_sub_qn").where("id_sbr_groups_sub", id);
       var navData = await knex.select('gp.name as gp_name', 'sub.name as sub_name', 'gp.id as id_group')
                                   .from('sbr_groups_sub as sub')
@@ -19,7 +16,6 @@ module.exports = {
       var {gp_name, sub_name, id_group} = navData;
       questions.forEach((e) => {
         e.number = e.id;
-        e.id = cryptr.encrypt(e.id);
         e.created_at = Moment(e.created_at).format("DD-MM-Y  H:m:ss");
       });
       var models = await knex("sbr_groups_sub_qn_models");
@@ -30,7 +26,7 @@ module.exports = {
         models: models,
         gp_name: gp_name,
         sub_name: sub_name,
-        id_group: cryptr.encrypt(id_group)
+        id_group: id_group
       });
     } catch (error) {
       console.log(error);
@@ -75,13 +71,12 @@ module.exports = {
           if (modelsCheck.length != value.length) {
             throw "Quantidade de models diferente da quantia de valor";
           }
-          var idSub = cryptr.decrypt(reference);
           var subgroup = await knex("sbr_groups_sub")
-            .where("id", idSub)
+            .where("id", reference)
             .first();
           var insertQuest = await knex("sbr_groups_sub_qn").insert({
             id_sbr_groups: subgroup.id_sbr_groups,
-            id_sbr_groups_sub: idSub,
+            id_sbr_groups_sub: reference,
             question: question,
           });
           modelsCheck.forEach(async (id, i) => {
@@ -159,13 +154,12 @@ module.exports = {
     }
   },
   async delete(req, res, next) {
-    var idEncrypt = req.params.id;
+    var id = req.params.id;
     var date = new Date();
     var currentDate = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() +  " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     try {
-      var idDecrypt = cryptr.decrypt(idEncrypt);
       var questionUp = await knex("sbr_groups_sub_qn")
-        .where("id", idDecrypt)
+        .where("id", id)
         .update({
           "sbr_groups_sub_qn.deleted_at": currentDate,
         });
@@ -296,7 +290,7 @@ module.exports = {
   },
   async details(req, res, next) {
     try {
-      var idqnr = cryptr.decrypt(req.params.idqnr);
+      var idqnr = req.params.idqnr;
       var idgroup = req.params.idsubgroup;
       let qnr = await knex("sbr_groups_sub_qn_qnr")
         .where("id_sbr_qnr", idqnr)
