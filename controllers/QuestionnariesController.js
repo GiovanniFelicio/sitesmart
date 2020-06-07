@@ -157,13 +157,17 @@ module.exports = {
             else{
                 var subgroup = await knex('sbr_groups_sub').where('id', idsub).first();
                 var quest = await BeansQnr.getSubGroups(subgroup, questionsQnr, idqnr);
+                var first = quest.questions[0].id;
+                var last = quest.questions[quest.questions.length-1].id;
                 var query = req.query.question || quest.questions[0].id;
                 // res.send(questions);
                 return res.render('questionnaries/replyQuestions',{
                     layout: 'default',
                     subgroup: quest,
                     reference: idqnr,
-                    query: query
+                    query: query,
+                    first: first,
+                    last: last
                 });
             }
         } catch (error) {

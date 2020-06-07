@@ -318,7 +318,7 @@ module.exports = {
                               .where('id_sbr_groups_sub_qn', quest.id)
                               .where('id_sbr_qnr', idqnr)
                               .first()
-                              .pluck('id_sbr_groups_subQn_models_aux');
+                              .pluck('id_sbr_groups_sub_qn_models_aux');
       }
       catch(err){
         quest.answer = null;

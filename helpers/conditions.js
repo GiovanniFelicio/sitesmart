@@ -28,7 +28,8 @@ var helpers = {
                 return options.inverse(this);
         }
     },
-    math: function(lvalue, operator, rvalue) {lvalue = parseFloat(lvalue);
+    math: function(lvalue, operator, rvalue) {
+        lvalue = parseFloat(lvalue);
         rvalue = parseFloat(rvalue);
         return {
             "+": lvalue + rvalue,

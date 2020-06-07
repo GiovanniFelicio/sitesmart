@@ -2,13 +2,19 @@
     <div class="row align-items-start">
         <div class="col-lg-7 col-md-12">
             <div class="mySection">
-                <h3 class="mb-4">Questão {{query}}</h3>
+                <h3 class="mb-4" id="numberQuest"></h3>
                 <div id="myquestion" class="align-items-center ">
-                    <p id="question"></p>
+                    <p id="question" class="ml-3"></p>
                     <div id="my-options"></div>
                 </div>
-                <button class="btn btn-info float-left mt-4">Anterior</button>
-                <button class="btn btn-info float-right mt-4">Próxima</button>
+                {{#compare query '==' first}}
+                    <a class="btn btn-info float-right mt-4" href="/questionnaries/reply/question/{{reference}}/{{subgroup.id}}/?question={{math }}">Próxima</a>
+                {{else compare query '==' last}}
+                    <a class="btn btn-info float-left mt-4" href="">Anterior</a>
+                {{else}}
+                    <a class="btn btn-info float-right mt-4" href="">Próxima</a>
+                    <a class="btn btn-info float-left mt-4" href="">Anterior</a>
+                {{/compare}}
             </div>
         </div>
         <div class="col-lg-5 round">
@@ -16,13 +22,18 @@
                 <label class="myLabel mt-4">Questões do Questionário</label>
                 <hr>
                 {{#each subgroup.questions}}
-                    <a class="numQuest alert-primary" href="#">{{math @index '+' 1}}</a>
+                    {{#compare ../query '==' id}}
+                        <a class="numQuest alert-primary" id="active" href="#">{{math 1 '+' @index}}</a>
+                    {{else}}
+                        <a class="numQuest" href="/questionnaries/reply/question/{{../reference}}/{{../subgroup.id}}/?question={{id}}">{{math 1 '+' @index}}</a>
+                    {{/compare}}
                 {{/each}}
             </div>
         </div>
     </div>
 </div>
 <script>
+    $('#numberQuest').text("Questão "+$('#active').text())
     $.ajax({
         type: 'GET',
         url: '/getquestion/{{query}}/{{reference}}',
@@ -34,26 +45,49 @@
         }
     })
     function question(id, models, ans){
-        var quest;
+        var quest = '';
         for(let i = 0; i < models.length; i++){
-            if(models.id == ans){
+            if(models[i].id == ans){
                 quest += `<div class="option-quest mb-2">
                                 <div class="custom-control custom-radio">
                                     <input checked type="radio" class="custom-control-input" id="answer${id}${models[i].id}" name="answer${id}">
-                                    <label class="custom-control-label mb-2" for="answer${id}${models[i].id}">${models[i].model}</label>
+                                    <label class="custom-control-label" for="answer${id}${models[i].id}">${models[i].model}</label>
                                 </div>
                             </div>`;
             }
             else{
-                quest += `<div class="option-quest">
+                quest += `<label style="width:100%" for="answer${id}${models[i].id}"><div class="option-quest mb-2">
                                 <div class="custom-control custom-radio">
                                     <input onchange="save(${id},${models[i].id})" type="radio" class="custom-control-input" id="answer${id}${models[i].id}" name="answer${id}" value="${models[i].id}">
-                                    <label class="custom-control-label mb-2" for="answer${id}${models[i].id}">${models[i].model}</label>
+                                    <label class="custom-control-label" for="answer${id}${models[i].id}">${models[i].model}</label>
                                 </div>
-                            </div>`;
+                            </div></label>`;
             }
-            
         }
         return quest;
     }
+    function save(idQuestion, answer){
+        if(typeof answer != undefined){
+            var qnr = {{reference}};
+            $.ajax({
+                type: "POST",
+                url: "/savequestion",
+                data: {idQuestion: idQuestion, answer:answer, qnr: qnr},
+                success: function(data){
+                    if(data == 1){
+                        $('#divButtonSave'+idQuestion+'').html(' ');
+                        $('#divButtonSave'+idQuestion+'').html('<i class="fa fa-check text-success mr-2"></i>');
+                    }
+                    else{
+                        $('#divButtonSave'+idQuestion+'').html(' ');
+                        $('#divButtonSave'+idQuestion+'').html('<i class="fa fa-ban text-danger mr-2"></i>');
+                    }
+                }
+            });
+            return false;
+        }
+        else{
+
+        }
+    };
 </script>
