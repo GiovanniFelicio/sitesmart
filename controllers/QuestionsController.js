@@ -302,4 +302,31 @@ module.exports = {
       return res.send('0');
     }
   },
-};
+  async getquestion(req, res, next) {
+    try {
+      var idquest = req.params.idquest;
+      var idqnr = req.params.idqnr;
+      let quest = await knex("sbr_groups_sub_qn").where("id", idquest).first();
+      quest.models = await knex.select('aux.id', 'm.model')
+                                        .from('sbr_groups_sub_qn_models as m')
+                                        .join('sbr_groups_sub_qn_models_aux as aux')
+                                        .where('aux.deleted_at', null)
+                                        .whereRaw(`aux.id_sbr_groups_sub_qn = ${quest.id}`)
+                                        .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
+      try{
+        quest.answer = await knex('sbr_groups_sub_qn_answers')
+                              .where('id_sbr_groups_sub_qn', quest.id)
+                              .where('id_sbr_qnr', idqnr)
+                              .first()
+                              .pluck('id_sbr_groups_subQn_models_aux');
+      }
+      catch(err){
+        quest.answer = null;
+      }
+      return res.send(quest);
+    } catch (error) {
+      console.log(error);
+      return res.send('0');
+    }
+  },
+}

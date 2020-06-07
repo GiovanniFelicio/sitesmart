@@ -11,5 +11,6 @@ routes.get('/question/model/:id', isAuth, QuestionsController.getmodel);
 routes.post('/question/model', isAuth, QuestionsController.updateModel);
 routes.delete('/question/model/:id/:type', isAuth, QuestionsController.deleteModel);
 routes.get('/questions/:idqnr/:idsubgroup', isAuth, QuestionsController.details);
+routes.get('/getquestion/:idquest/:idqnr', isAuth, QuestionsController.getquestion);
 
 module.exports = routes;

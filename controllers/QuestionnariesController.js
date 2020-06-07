@@ -147,8 +147,7 @@ module.exports = {
         try {
             var idqnr = req.params.idqnr;
             var idsub = req.params.idsub;
-            var query = req.query.question || 0;
-            var questions = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
+            var questionsQnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
             var checkQnr = await BeansQnr.checkQuestionnarie(idqnr);
             if(checkQnr){
                 await knex('sbr_qnr').where('id', id).update('status', 3);
@@ -157,13 +156,14 @@ module.exports = {
             }
             else{
                 var subgroup = await knex('sbr_groups_sub').where('id', idsub).first();
-                var questions = await BeansQnr.getSubGroups(subgroup, questions, idqnr);
+                var quest = await BeansQnr.getSubGroups(subgroup, questionsQnr, idqnr);
+                var query = req.query.question || quest.questions[0].id;
                 // res.send(questions);
                 return res.render('questionnaries/replyQuestions',{
                     layout: 'default',
-                    subgroup: questions,
+                    subgroup: quest,
                     reference: idqnr,
-                    query: 0
+                    query: query
                 });
             }
         } catch (error) {

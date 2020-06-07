@@ -1,32 +1,59 @@
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-8 col-md-12">
+    <div class="row align-items-start">
+        <div class="col-lg-7 col-md-12">
             <div class="mySection">
-                <h3 class="mb-4">Questão</h3>
-                <div id="myquestion">
-                    
+                <h3 class="mb-4">Questão {{query}}</h3>
+                <div id="myquestion" class="align-items-center ">
+                    <p id="question"></p>
+                    <div id="my-options"></div>
                 </div>
                 <button class="btn btn-info float-left mt-4">Anterior</button>
                 <button class="btn btn-info float-right mt-4">Próxima</button>
             </div>
         </div>
-        <div class="col">
-            <div class="myNavigation float-right">
-                <div class="row">
-                    <div class="col-8">
-                        <div class="row">
-                            {{#each subgroup.questions}}
-                                <div class="col-md-2">
-                                    <div class="numQuest">{{math @index '+' 1}}</div>
-                                </div>
-                            {{/each}}
-                        </div>
-                    </div>
-                </div>
+        <div class="col-lg-5 round">
+            <div class="myNavigation text-center">
+                <label class="myLabel mt-4">Questões do Questionário</label>
+                <hr>
+                {{#each subgroup.questions}}
+                    <a class="numQuest alert-primary" href="#">{{math @index '+' 1}}</a>
+                {{/each}}
             </div>
         </div>
     </div>
 </div>
 <script>
-
+    $.ajax({
+        type: 'GET',
+        url: '/getquestion/{{query}}/{{reference}}',
+        success: function(data){
+            if(data != 0){
+                $('#question').text(data.question);
+                $('#my-options').html(question({{query}},data.models, data.answer));
+            }
+        }
+    })
+    function question(id, models, ans){
+        var quest;
+        for(let i = 0; i < models.length; i++){
+            if(models.id == ans){
+                quest += `<div class="option-quest mb-2">
+                                <div class="custom-control custom-radio">
+                                    <input checked type="radio" class="custom-control-input" id="answer${id}${models[i].id}" name="answer${id}">
+                                    <label class="custom-control-label mb-2" for="answer${id}${models[i].id}">${models[i].model}</label>
+                                </div>
+                            </div>`;
+            }
+            else{
+                quest += `<div class="option-quest">
+                                <div class="custom-control custom-radio">
+                                    <input onchange="save(${id},${models[i].id})" type="radio" class="custom-control-input" id="answer${id}${models[i].id}" name="answer${id}" value="${models[i].id}">
+                                    <label class="custom-control-label mb-2" for="answer${id}${models[i].id}">${models[i].model}</label>
+                                </div>
+                            </div>`;
+            }
+            
+        }
+        return quest;
+    }
 </script>
