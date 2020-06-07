@@ -164,7 +164,11 @@ body {
     background-color: #f39a9a;
     border-color: #ebccd1
 }
-
+.myBg-primary{
+    color: #004085;
+    background-color: #cce5ff;
+    border-color: #b8daff;
+}
 .myContent{
     height: 500px;
     background-color: white;

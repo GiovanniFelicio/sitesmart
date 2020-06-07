@@ -158,24 +158,24 @@ module.exports = {
                 idsGroups[i] = aux.id_sbr_groups;
             }
             var groups = await knex.select('id', 'name').from('sbr_groups').whereIn('id', idsGroups);
-            let totalGroups = 0;
+            var groupsAux = [];
             for (let i = 0; i < groups.length; i++) {
-                groups[i].subgroups = [];
                 var maxGroups = 0;
                 var totalGroup = 0;
                 for (let j = 0; j < totalSub.length; j++) {
                     if(totalSub[j].id_sbr_groups == groups[i].id){
-                        groups[i].subgroups[j] = totalSub[j];
                         maxGroups += totalSub[j].maxValue;
                         totalGroup += totalSub[j].currentValue;
                     }
                 }
-                groups[i].subgroups = this.filter_array(groups[i].subgroups);
-                groups[i].maxValue = maxGroups;
-                groups[i].currentValue = totalGroup;
-                groups[i].percentage = this.round(this.proportion(maxGroups, totalGroup), 2);
+                if(totalGroup != null){
+                    groups[i].maxValue = maxGroups;
+                    groups[i].currentValue = totalGroup;
+                    groups[i].percentage = this.round(this.proportion(maxGroups, totalGroup), 2);
+                    groupsAux[i] = groups[i];
+                } 
             }
-            return groups;
+            return groupsAux;
         } catch (error) {
             console.log(error);
             return null;
@@ -209,15 +209,13 @@ module.exports = {
                 let quest = await knex.select('id','id_sbr_groups', 'id_sbr_groups_sub', 'question')
                                         .from('sbr_groups_sub_qn')
                                         .whereIn('id', id);
-                subgroups[i].questions = [];
                 var totalSub = 0;
                 var maxSub = 0;
                 for (let j = 0; j < quest.length; j++) {
                     if(quest[j].id_sbr_groups_sub == subgroups[i].id){
                         valueMax = await knex('sbr_groups_sub_qn_models_aux')
                                             .max('value as value')
-                                            .where('id_sbr_groups_sub_qn', quest[j].id).first();                        
-                        quest[j].maxValue = valueMax.value;
+                                            .where('id_sbr_groups_sub_qn', quest[j].id).first();
                         model = await knex('sbr_groups_sub_qn_answers')
                                         .where('id_sbr_qnr', idQnr)
                                         .where('id_sbr_groups_sub_qn', quest[j].id).first();
@@ -228,18 +226,18 @@ module.exports = {
                         }
                         catch(err){
                             answer = 0;
-                        }                    
-                        quest[j].currentValue = answer.value; 
-                        quest[j].percentage = Math.round(this.proportion(quest[j].maxValue, quest[j].currentValue), 2);
-                        subgroups[i].questions[j] = quest[j];
-                        maxSub += quest[j].maxValue;
-                        totalSub += quest[j].currentValue;
+                        }                 
+                        if(answer != 0){
+                            maxSub += valueMax.value;
+                            totalSub += answer.value;
+                        }
                     }
                 }
-                subgroups[i].questions = this.filter_array(subgroups[i].questions);
-                subgroups[i].maxValue = maxSub;
-                subgroups[i].currentValue = totalSub;
-                subgroups[i].percentage = this.round(this.proportion(maxSub, totalSub), 2);
+                if(totalSub != 0){
+                    subgroups[i].maxValue = maxSub;
+                    subgroups[i].currentValue = totalSub;
+                    subgroups[i].percentage = this.round(this.proportion(maxSub, totalSub), 2);
+                }
             }
             return subgroups;
         } catch (error) {
@@ -265,6 +263,20 @@ module.exports = {
             }
     
             return +(Math.round(+arr[0] + "e" + sig + (+arr[1] + places)) + "e-" + places);
+        }
+    },
+    async checkIfAnswered(idqnr){
+        try {
+            var quests1 = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
+            var quests2 = await knex('sbr_groups_sub_qn_answers').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
+            if(quests1.length == quests2.length){
+                return true;
+            }
+            else{
+                return false;
+            }
+        } catch (error) {
+            return false;
         }
     }
 }

@@ -122,6 +122,7 @@ module.exports = {
         try {
             var id = req.params.id;
             var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
+            var nameQnr = await knex('sbr_qnr').where('id', id).first().pluck('name');
             var checkQnr = await BeansQnr.checkQuestionnarie(id);
             if(checkQnr){
                 await knex('sbr_qnr').where('id', id).update('status', 3);
@@ -134,7 +135,8 @@ module.exports = {
                 return res.render('questionnaries/replyGroups',{
                     layout: 'default',
                     groups: groups,
-                    reference: id
+                    reference: id,
+                    nameQnr: nameQnr
                 });
             }
         } catch (error) {
@@ -148,9 +150,10 @@ module.exports = {
             var idqnr = req.params.idqnr;
             var idsub = req.params.idsub;
             var questionsQnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
+            var nameQnr = await knex('sbr_qnr').where('id', idqnr).first().pluck('name');
             var checkQnr = await BeansQnr.checkQuestionnarie(idqnr);
             if(checkQnr){
-                await knex('sbr_qnr').where('id', id).update('status', 3);
+                await knex('sbr_qnr').where('id', idqnr).update('status', 3);
                 req.flash('error', 'Questionnário finalizado');
                 res.redirect('/questionnaries');
             }
@@ -167,7 +170,8 @@ module.exports = {
                     reference: idqnr,
                     query: query,
                     first: first,
-                    last: last
+                    last: last,
+                    nameQnr: nameQnr
                 });
             }
         } catch (error) {
@@ -205,14 +209,19 @@ module.exports = {
                 let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
                 let qnrDetails = await knex('sbr_qnr').where('id', id).first();
                 var result = await BeansQnr.totalQuestions(qnr, id);
+                var qnrAux = [];
                 let soma = 0;
-                result.forEach(r => {
+                result.forEach((r,i) => {
                     soma = soma + parseFloat(r.percentage);
+                    if(r.currentValue > 0){
+                        qnrAux[i] = r;
+                    }
                 });
-                var percentage = BeansQnr.round((soma/result.length), 2);
+                var percentage = BeansQnr.round((soma/qnrAux.length), 2) || 0;
+                //res.send(qnrAux);
                 return res.render('questionnaries/details',{
                     layout: 'default',
-                    groups: result,
+                    groups: qnrAux,
                     reference: req.params.id,
                     qnr: qnrDetails,
                     percentage: percentage
@@ -234,15 +243,16 @@ module.exports = {
             return res.send('0');
         }
         try{
-            updatedQnr = await knex('sbr_qnr').where('id', req.body.qnr).update({
-                status: 3
-            });
-            if(updatedQnr){
-                return res.send('1');
+            if(await BeansQnr.checkIfAnswered(req.body.qnr)){
+                updatedQnr = await knex('sbr_qnr').where('id', req.body.qnr).update({
+                    status: 3
+                });
+                return (updatedQnr) ? res.send('1') : res.send('0') ;
             }
             else{
                 return res.send('0');
             }
+
         }
         catch(e){
             return res.send('0');

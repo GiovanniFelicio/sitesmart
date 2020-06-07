@@ -1,3 +1,14 @@
+<div class="col-md-12 col-sm-12">
+    <nav aria-label="breadcrumb" role="navigation">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a class="text-secondary" href="/home">Home</a></li>
+            <li class="breadcrumb-item" aria-current="page"><a class="text-secondary" href="/questionnaries">Questionário</a></li>
+            <li class="breadcrumb-item" aria-current="page"><a class="text-secondary" href="/questionnaries/reply/groups/{{reference}}">{{nameQnr}}</a></li>
+            <li class="breadcrumb-item" aria-current="page"><a class="text-primary">{{subgroup.name}}</a></li>
+        </ol>
+    </nav>
+</div>
+<hr>
 <div class="container-fluid">
     <div class="row align-items-start">
         <div class="col-lg-7 col-md-12">
@@ -8,12 +19,13 @@
                     <div id="my-options"></div>
                 </div>
                 {{#compare query '==' first}}
-                    <a class="btn btn-info float-right mt-4" href="/questionnaries/reply/question/{{reference}}/{{subgroup.id}}/?question={{math }}">Próxima</a>
+                    <a class="btn btn-info float-right mt-4" href="/questionnaries/reply/question/{{reference}}/{{subgroup.id}}/?question={{math query '+' 1}}">Próxima</a>
                 {{else compare query '==' last}}
-                    <a class="btn btn-info float-left mt-4" href="">Anterior</a>
+                    <a class="btn btn-info float-left mt-4" href="/questionnaries/reply/question/{{reference}}/{{subgroup.id}}/?question={{math query '-' 1}}">Anterior</a>
+                    <a class="btn btn-info float-right mt-4" href="/questionnaries/reply/groups/{{reference}}">Início</a>
                 {{else}}
-                    <a class="btn btn-info float-right mt-4" href="">Próxima</a>
-                    <a class="btn btn-info float-left mt-4" href="">Anterior</a>
+                    <a class="btn btn-info float-right mt-4" href="/questionnaries/reply/question/{{reference}}/{{subgroup.id}}/?question={{math query '+' 1}}">Próxima</a>
+                    <a class="btn btn-info float-left mt-4" href="/questionnaries/reply/question/{{reference}}/{{subgroup.id}}/?question={{math query '-' 1}}">Anterior</a>
                 {{/compare}}
             </div>
         </div>
@@ -28,6 +40,7 @@
                         <a class="numQuest" href="/questionnaries/reply/question/{{../reference}}/{{../subgroup.id}}/?question={{id}}">{{math 1 '+' @index}}</a>
                     {{/compare}}
                 {{/each}}
+                <hr>
             </div>
         </div>
     </div>
@@ -48,17 +61,19 @@
         var quest = '';
         for(let i = 0; i < models.length; i++){
             if(models[i].id == ans){
-                quest += `<div class="option-quest mb-2">
+                quest += `<label style="width:100%" for="answer${id}${models[i].id}">
+                            <div class="option-quest mb-2">
                                 <div class="custom-control custom-radio">
-                                    <input checked type="radio" class="custom-control-input" id="answer${id}${models[i].id}" name="answer${id}">
+                                    <input checked type="radio" class="custom-control-input" id="answer${id}${models[i].id}" name="answer">
                                     <label class="custom-control-label" for="answer${id}${models[i].id}">${models[i].model}</label>
                                 </div>
-                            </div>`;
+                            </div></label>`;
             }
             else{
-                quest += `<label style="width:100%" for="answer${id}${models[i].id}"><div class="option-quest mb-2">
+                quest += `<label style="width:100%" for="answer${id}${models[i].id}">
+                            <div class="option-quest mb-2" >
                                 <div class="custom-control custom-radio">
-                                    <input onchange="save(${id},${models[i].id})" type="radio" class="custom-control-input" id="answer${id}${models[i].id}" name="answer${id}" value="${models[i].id}">
+                                    <input onchange="save(${id},${models[i].id})" type="radio" class="custom-control-input" id="answer${id}${models[i].id}" name="answer" value="${models[i].id}">
                                     <label class="custom-control-label" for="answer${id}${models[i].id}">${models[i].model}</label>
                                 </div>
                             </div></label>`;
