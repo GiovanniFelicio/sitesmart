@@ -1,16 +1,16 @@
-<div class="container-fluid">
-    <div class="row h4">
-        <div class="col-lg-12">
-            <nav aria-label="breadcrumb" role="navigation">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a class="text-secondary" href="/home">Home</a></li>
-                    <li class="breadcrumb-item" aria-current="page"><a class="text-secondary" href="/questionnaries">Questionários</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a class="text-primary">{{qnr.name}}</a></li>
-                </ol>
-            </nav>
-        </div>
+<div class="row h4">
+    <div class="col-lg-12">
+        <nav aria-label="breadcrumb" role="navigation">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a class="text-secondary" href="/home">Home</a></li>
+                <li class="breadcrumb-item" aria-current="page"><a class="text-secondary" href="/questionnaries">Questionários</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><a class="text-primary">{{qnr.name}}</a></li>
+            </ol>
+        </nav>
     </div>
-    <hr>
+</div>
+<hr>
+<div class="container-fluid">
     <div class="row">
         <div class="col">
             <div class="round">
@@ -46,7 +46,7 @@
 <br>
 <hr>
 <script>
-    $(window).scrollTop(200);
+    $(window).scrollTop(140);
     function redirect(idgroup, idqnr){
         window.location.href = `/questionnaries/groups/details/${idqnr}/${idgroup}`;
     }

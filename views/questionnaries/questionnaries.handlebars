@@ -1,4 +1,3 @@
-
 <div class="col-md-12 col-sm-12">
     <nav aria-label="breadcrumb" role="navigation">
         <ol class="breadcrumb">
@@ -7,6 +6,7 @@
         </ol>
     </nav>
 </div>
+<hr>
 <div class="container-fluid">
     <div class="row">
         <div class="col mt-5">
@@ -39,10 +39,10 @@
                                 </td>
                                 <td>
                                 {{#compare status '!=' 3}}
-                                    <a class="btn btn-success" title="Reply" href="/questionnaries/reply/groups/{{reference}}">Responder</a>
+                                    <a class="btn btn-success" title="Reply" href="/questionnaries/groups/{{reference}}">Responder</a>
                                 {{else}}
                                     <a href="/questionnaries/details/{{reference}}" class="btn btn-success" title="Detalhes"><i class="fa fa-eye"></i></a>
-                                    <a class="btn btn-primary" title="Revisar" href="/questionnaries/review/{{reference}}">Revisar</a>
+                                    <a class="btn btn-primary" title="Revisar" href="/questionnaries/groups/{{reference}}">Revisar</a>
                                 {{/compare}}
                                 </td>
                             </tr>

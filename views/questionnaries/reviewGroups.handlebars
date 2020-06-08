@@ -24,13 +24,13 @@
                                         <div class="list-group">
                                             {{#each subgroups as |sub key|}}
                                                 {{#compare sub.status '==' 0}}
-                                                    <a href="/questionnaries/question/{{../../reference}}/{{sub.id}}" class="myBg-danger list-group-item mb-1">{{sub.name}}<i class="fa fa-arrow-right float-right"></i></a>
+                                                    <a href="/questionnaries/reply/question/{{../../reference}}/{{sub.id}}" class="myBg-danger list-group-item mb-1">{{sub.name}}<i class="fa fa-arrow-right float-right"></i></a>
                                                 {{else compare sub.status '==' 1}}
-                                                    <a href="/questionnaries/question/{{../../reference}}/{{sub.id}}" class="myBg-warning list-group-item mb-1">{{sub.name}}<i class="fa fa-arrow-right float-right"></i></a>
+                                                    <a href="/questionnaries/reply/question/{{../../reference}}/{{sub.id}}" class="myBg-warning list-group-item mb-1">{{sub.name}}<i class="fa fa-arrow-right float-right"></i></a>
                                                 {{else compare sub.status '==' 2}}
-                                                    <a href="/questionnaries/question/{{../../reference}}/{{sub.id}}" class="myBg-success list-group-item mb-1">{{sub.name}}<i class="fa fa-arrow-right float-right"></i></a>
+                                                    <a href="/questionnaries/reply/question/{{../../reference}}/{{sub.id}}" class="myBg-success list-group-item mb-1">{{sub.name}}<i class="fa fa-arrow-right float-right"></i></a>
                                                 {{else}}
-                                                    <a href="/questionnaries/question/{{../../reference}}/{{sub.id}}" class="list-group-item mb-1">{{sub.name}}<i class="fa fa-arrow-right float-right"></i></a>
+                                                    <a href="/questionnaries/reply/question/{{../../reference}}/{{sub.id}}" class="list-group-item mb-1">{{sub.name}}<i class="fa fa-arrow-right float-right"></i></a>
                                                 {{/compare}}
                                             {{/each}}
                                         </div>
@@ -48,40 +48,3 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="upQnr" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"> ERROR !!</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>X</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Responda todas as questões para finalizar o questionário
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-dismiss="modal">OK</button>
-            </div>
-        </div>
-    </div>
-</div>
-<script>
-    $('#saveAll').click(function(){
-        var qnr = {{reference}};
-        $.ajax({
-            type: "POST",
-            url: "/questionnaries/save",
-            data: {qnr: qnr},
-            success: function(data){
-                if(data == 1){
-                    window.location.href = "/questionnaries"; 
-                }
-                else{
-                    $('#upQnr').modal('show');
-                }
-            }
-        });
-    });
-
-</script>

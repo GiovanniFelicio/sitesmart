@@ -44,8 +44,7 @@ module.exports = {
         } catch (error) {
             req.flash('error', 'Erro interno no servidor');
             res.redirect('/questionnaries');
-        }
-        
+        } 
     },
     async create(req, res, next){
         var errors = [];
@@ -118,7 +117,7 @@ module.exports = {
             res.redirect('/questionnaries');
         }
     },
-    async replyGroups(req, res, next){
+    async replyReviewGroups(req, res, next){
         try {
             var id = req.params.id;
             var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
@@ -131,13 +130,18 @@ module.exports = {
             }
             else{
                 var groups = await BeansQnr.getGroups(qnr, id);
-                // res.send(groups);
-                return res.render('questionnaries/replyGroups',{
+                var dados = {
                     layout: 'default',
                     groups: groups,
                     reference: id,
                     nameQnr: nameQnr
-                });
+                };
+                if(qnr.status == 1){
+                    return res.render('questionnaries/replyGroups',dados); 
+                }
+                else{
+                    return res.render('questionnaries/replyGroups', dados);
+                }
             }
         } catch (error) {
             console.log(error)
@@ -145,12 +149,12 @@ module.exports = {
             res.redirect('/questionnaries');
         }
     },
-    async replyQuestions(req, res, next){
+    async replyReviewQuestions(req, res, next){
         try {
             var idqnr = req.params.idqnr;
             var idsub = req.params.idsub;
             var questionsQnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
-            var nameQnr = await knex('sbr_qnr').where('id', idqnr).first().pluck('name');
+            var qnr = await knex('sbr_qnr').where('id', idqnr).first();
             var checkQnr = await BeansQnr.checkQuestionnarie(idqnr);
             if(checkQnr){
                 await knex('sbr_qnr').where('id', idqnr).update('status', 3);
@@ -160,44 +164,29 @@ module.exports = {
             else{
                 var subgroup = await knex('sbr_groups_sub').where('id', idsub).first();
                 var quest = await BeansQnr.getSubGroups(subgroup, questionsQnr, idqnr);
+                var groupName = await knex('sbr_groups').where('id', quest.id_sbr_groups).first().pluck('name');
                 var first = quest.questions[0].id;
                 var last = quest.questions[quest.questions.length-1].id;
                 var query = req.query.question || quest.questions[0].id;
-                // res.send(questions);
-                return res.render('questionnaries/replyQuestions',{
+                var dados = {
                     layout: 'default',
                     subgroup: quest,
                     reference: idqnr,
                     query: query,
                     first: first,
                     last: last,
-                    nameQnr: nameQnr
-                });
+                    qnrName: qnr.name,
+                    nameGroup: groupName
+                };
+                if(qnr.status == 1){
+                    return res.render('questionnaries/replyQuestions',dados); 
+                }
+                else{
+                    return res.render('questionnaries/reviewQuestions', dados);
+                }
             }
-        } catch (error) {
+        }catch (error) {
             console.log(error)
-            req.flash('error', 'Questionário Inválido');
-            res.redirect('/questionnaries');
-        }
-    },
-    async review(req,res,next){
-        try {
-            var id = req.params.id;
-            var qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', id).pluck('id_sbr_groups_sub_qn');
-            var checkQnr = await BeansQnr.checkQuestionnarie(id);
-            if(checkQnr){
-                await knex('sbr_qnr').where('id', id).update({
-                    status: 3
-                })
-            }
-            var groups = await BeansQnr.getGroups(qnr ,id);
-            return res.render('questionnaries/review',{
-                layout: 'default',
-                groups: groups,
-                reference: id
-            });
-        }
-        catch (error){
             req.flash('error', 'Questionário Inválido');
             res.redirect('/questionnaries');
         }

@@ -115,21 +115,14 @@ module.exports = {
                                                     .join('sbr_groups_sub_qn_models_aux as aux')
                                                     .where('aux.deleted_at', null)
                                                     .whereRaw(`aux.id_sbr_groups_sub_qn = ${quest[i].id}`)
-                                                    .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');
-                    
+                                                    .whereRaw('m.id = aux.id_sbr_groups_sub_qn_models');   
                     answer = await knex('sbr_groups_sub_qn_answers')
                                     .where('id_sbr_qnr', idqnr)
                                     .where('id_sbr_groups_sub_qn', quest[i].id)
                                     .first();
                     (answer != undefined) ? quest[i].answer = answer.id_sbr_groups_sub_qn_models_aux : quest[i].answer = null;
                     subgroup.questions[i] = quest[i];
-                    if(quest[i].answer != null){
-                        answered.push(1);
-                    }
-                    else{
-                        notAnswered.push(0);
-                    }
-
+                    (quest[i].answer != null)?answered.push(1):notAnswered.push(0);
                 }
             }
             subgroup.questions = this.filter_array(subgroup.questions);

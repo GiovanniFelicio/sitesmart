@@ -3,8 +3,8 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a class="text-secondary" href="/home">Home</a></li>
             <li class="breadcrumb-item" aria-current="page"><a class="text-secondary" href="/questionnaries">Questionário</a></li>
-            <li class="breadcrumb-item" aria-current="page"><a class="text-secondary" href="/questionnaries/reply/groups/{{reference}}">{{qnrName}}</a></li>
-            <li class="breadcrumb-item" aria-current="page"><a class="text-secondary" href="/questionnaries/reply/groups/{{reference}}">{{nameGroup}}</a></li>
+            <li class="breadcrumb-item" aria-current="page"><a class="text-secondary" href="/questionnaries/groups/{{reference}}">{{qnrName}}</a></li>
+            <li class="breadcrumb-item" aria-current="page"><a class="text-secondary" href="/questionnaries/groups/{{reference}}">{{nameGroup}}</a></li>
             <li class="breadcrumb-item" aria-current="page"><a class="text-primary">{{subgroup.name}}</a></li>
         </ol>
     </nav>
@@ -82,28 +82,4 @@
         }
         return quest;
     }
-    function save(idQuestion, answer){
-        if(typeof answer != undefined){
-            var qnr = {{reference}};
-            $.ajax({
-                type: "POST",
-                url: "/savequestion",
-                data: {idQuestion: idQuestion, answer:answer, qnr: qnr},
-                success: function(data){
-                    if(data == 1){
-                        $('#divButtonSave'+idQuestion+'').html(' ');
-                        $('#divButtonSave'+idQuestion+'').html('<i class="fa fa-check text-success mr-2"></i>');
-                    }
-                    else{
-                        $('#divButtonSave'+idQuestion+'').html(' ');
-                        $('#divButtonSave'+idQuestion+'').html('<i class="fa fa-ban text-danger mr-2"></i>');
-                    }
-                }
-            });
-            return false;
-        }
-        else{
-
-        }
-    };
 </script>
