@@ -154,21 +154,29 @@ module.exports = {
             var groupsAux = [];
             for (let i = 0; i < groups.length; i++) {
                 var maxGroups = 0;
-                var totalGroup = 0;
+                var currentValue = 0;
                 for (let j = 0; j < totalSub.length; j++) {
-                    if(totalSub[j].id_sbr_groups == groups[i].id){
-                        maxGroups += totalSub[j].maxValue;
-                        totalGroup += totalSub[j].currentValue;
+                    if (totalSub[j].id_sbr_groups == groups[i].id) {
+                        if (totalSub[j].maxValue != 0 &&
+                            typeof totalSub[j].maxValue != undefined &&
+                            totalSub[j].maxValue != null &&
+                            totalSub[j].currentValue != 0 &&
+                            typeof totalSub[j].currentValue != undefined &&
+                            totalSub[j].currentValue != null) {
+                            maxGroups += totalSub[j].maxValue;
+                            currentValue += totalSub[j].currentValue;  
+                        }
+                        
                     }
                 }
-                if(totalGroup != null){
+                if (currentValue != 0) {
                     groups[i].maxValue = maxGroups;
-                    groups[i].currentValue = totalGroup;
-                    groups[i].percentage = this.round(this.proportion(maxGroups, totalGroup), 2);
+                    groups[i].currentValue = currentValue;
+                    groups[i].percentage = this.round(this.proportion(maxGroups, currentValue), 2);
                     groupsAux[i] = groups[i];
                 } 
             }
-            return groupsAux;
+            return this.filter_array(groupsAux);
         } catch (error) {
             console.log(error);
             return null;
@@ -219,19 +227,20 @@ module.exports = {
                         }
                         catch(err){
                             answer = 0;
-                        }                 
-                        if(answer != 0){
+                        }
+                        if(answer.value != 0 && answer.value != null && valueMax.value != null && valueMax.value != 0){
                             maxSub += valueMax.value;
                             totalSub += answer.value;
                         }
                     }
                 }
-                if(totalSub != 0){
+                if(totalSub != 0 && typeof totalSub != undefined){
                     subgroups[i].maxValue = maxSub;
                     subgroups[i].currentValue = totalSub;
                     subgroups[i].percentage = this.round(this.proportion(maxSub, totalSub), 2);
                 }
             }
+            console.log(subgroups)
             return subgroups;
         } catch (error) {
             console.log(error)

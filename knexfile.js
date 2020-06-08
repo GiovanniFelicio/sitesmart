@@ -8,7 +8,7 @@ module.exports = {
         host: '127.0.0.1',
         database: "site",
         user: "root",
-        password: ""
+        password: "09112013"
     },
     // connection: {
     //     host: '192.168.200.140',
