@@ -1,53 +1,40 @@
 const knex = require('../database');
 module.exports = {
-    async totalSubgroups(idQuests, idgroup, idQnr){
+    async totalQuestions(idQuests, idsub, idQnr){
         try {
-            let idsSub = [];
-            for (let i = 0; i < idQuests.length; i++) {
-                aux = await knex.select('id_sbr_groups_sub').from('sbr_groups_sub_qn').where('id', idQuests[i]).first();
-                idsSub[i] = aux.id_sbr_groups_sub;
-            }
-            var subgroups = await knex.select('id', 'id_sbr_groups','name')
-                                        .from('sbr_groups_sub')
-                                        .where('id_sbr_groups', idgroup)
-                                        .whereIn('id', idsSub);
-            for (let i = 0; i < subgroups.length; i++) {
-                let quest = await knex.select('id','id_sbr_groups', 'id_sbr_groups_sub', 'question')
-                                        .from('sbr_groups_sub_qn')
-                                        .whereIn('id', idQuests);
-                subgroups[i].questions = [];
-                var totalSub = 0;
-                var maxSub = 0;
-                for (let j = 0; j < quest.length; j++) {
-                    if(quest[j].id_sbr_groups_sub == subgroups[i].id){
-                        valueMax = await knex('sbr_groups_sub_qn_models_aux')
-                                            .max('value as value')
-                                            .where('id_sbr_groups_sub_qn', quest[j].id).first();                        
-                        quest[j].maxValue = valueMax.value;
-                        model = await knex('sbr_groups_sub_qn_answers')
-                                        .where('id_sbr_qnr', idQnr)
-                                        .where('id_sbr_groups_sub_qn', quest[j].id).first();
-                        try{
-                            answer = await knex('sbr_groups_sub_qn_models_aux')
+            var quest = await knex.select('id','id_sbr_groups', 'id_sbr_groups_sub', 'question')
+                                    .from('sbr_groups_sub_qn')
+                                    .where('id_sbr_groups_sub', idsub)
+                                    .whereIn('id', idQuests);
+            var questAux = [];
+            for (let j = 0; j < quest.length; j++) {
+                valueMax = await knex('sbr_groups_sub_qn_models_aux')
+                                    .max('value as value')
+                                    .where('id_sbr_groups_sub_qn', quest[j].id).first();   
+                model = await knex('sbr_groups_sub_qn_answers')
+                                .where('id_sbr_qnr', idQnr)
+                                .where('id_sbr_groups_sub_qn', quest[j].id).first();
+                try{
+                    answer = await knex('sbr_groups_sub_qn_models_aux')
+                                    .where('id_sbr_groups_sub_qn', quest[j].id)
+                                    .where('id', model.id_sbr_groups_sub_qn_models_aux).first();
+                    notApplicable = await knex('sbr_groups_sub_qn_models_aux')
                                             .where('id_sbr_groups_sub_qn', quest[j].id)
-                                            .where('id_sbr_groups_sub_qn_models', model.id_sbr_groups_sub_qn_models).first();
-                        }
-                        catch(err){
-                            answer = 0;
-                        }                    
-                        quest[j].currentValue = answer.value; 
-                        quest[j].percentage = Math.round(this.proportion(quest[j].maxValue, quest[j].currentValue), 2);
-                        subgroups[i].questions[j] = quest[j];
-                        maxSub += quest[j].maxValue;
-                        totalSub += quest[j].currentValue;
-                    }
+                                            .where('value', answer.value).first().pluck('id_sbr_groups_sub_qn_models');                        
                 }
-                subgroups[i].questions = this.filter_array(subgroups[i].questions);
-                subgroups[i].maxValue = maxSub;
-                subgroups[i].currentValue = totalSub;
-                subgroups[i].percentage = this.round(this.proportion(maxSub, totalSub), 2);
+                catch(err){
+                    answer = 0;
+                    notApplicable = 10;
+                }
+                if(notApplicable != 10){
+                    quest[j].maxValue = valueMax.value;
+                    quest[j].currentValue = answer.value; 
+                    quest[j].percentage = Math.round(this.proportion(quest[j].maxValue, quest[j].currentValue), 2);
+                    questAux[j] = quest[j];
+                }
             }
-            return subgroups;
+            questAux = this.filter_array(questAux);
+            return questAux;
         } catch (error) {
             console.log(error)
         }

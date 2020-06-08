@@ -70,6 +70,9 @@
                 } else {  
                     currentPercent++; 
                     pVal.innerHTML = currentPercent + "%";
+                    if (currentPercent === 100 || currentPercent === 99) {
+                        chart.style.background = 'rgb(30, 167, 5)';
+                    }
                 }
             }, 50);
         }, 800);
@@ -103,6 +106,9 @@
                 } else {  
                     currentPercentQnr++; 
                     pValQnr.html(currentPercentQnr + "%");
+                    if (currentPercentQnr === 100 || currentPercentQnr === 99) {
+                        chartQnr.css('background-color','rgb(30, 167, 5)');
+                    }
                 }
             }, 60);
         }, 1000);
@@ -110,7 +116,6 @@
 
     function resetQnr() {
         var chartQnr = $("#radioChartQnr");
-        console.log(chartQnr)
         var pValQnr = $("#percentChartQnr");
         chartQnr.removeClass("animate");
         pValQnr.innerHTML = "0%";

@@ -1,6 +1,7 @@
 const knex = require('../database');
 const Moment = require('moment');
 const BeansGroup = require('../beans/GroupsBeans');
+const BeansSubGroup = require('../beans/SubgroupsBean');
 module.exports = {
     async index(req, res, next){
         var groups = await knex('sbr_groups');
@@ -91,7 +92,7 @@ module.exports = {
             var idqnr = req.params.idqnr;
             var idgroup = req.params.idgroup;
             let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
-            var subgroups = await BeansGroup.totalSubgroups(qnr, idgroup, idqnr);
+            var subgroups = await BeansSubGroup.totalSubgroups(qnr, idgroup, idqnr);
             return res.send(subgroups);
         } catch (error) {
             console.log(error);

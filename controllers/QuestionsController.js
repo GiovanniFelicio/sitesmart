@@ -280,7 +280,6 @@ module.exports = {
             else {
                 return res.send('Não pode ser deletado')
             }
-            
         }
         return res.send("0");
     } catch (error) {
@@ -293,9 +292,10 @@ module.exports = {
       var idqnr = req.params.idqnr;
       var idgroup = req.params.idsubgroup;
       let qnr = await knex("sbr_groups_sub_qn_qnr")
-        .where("id_sbr_qnr", idqnr)
-        .pluck("id_sbr_groups_sub_qn");
-      var subgroups = await BeansQn.totalSubgroups(qnr, idgroup, idqnr);
+                        .where("id_sbr_qnr", idqnr)
+                        .pluck("id_sbr_groups_sub_qn");
+      var subgroups = await BeansQn.totalQuestions(qnr, idgroup, idqnr);
+      console.log(subgroups)
       return res.send(subgroups);
     } catch (error) {
       console.log(error);

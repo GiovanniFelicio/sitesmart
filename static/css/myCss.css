@@ -45,13 +45,24 @@
 
 .chart .radio_chart.animate {
     animation-name: circled;
-    animation-duration: 6.295s;
+    animation-duration: 6s;
     animation-timing-function: linear;
     -moz-animation-name: circled;
-    -moz-animation-duration: 6.295s;
+    -moz-animation-duration: 6s;
     -moz-animation-timing-function: linear;
     -webkit-animation-name: circled;
-    -webkit-animation-duration: 6.295s;
+    -webkit-animation-duration: 6s;
+    -webkit-animation-timing-function: linear;
+}
+.chart-sm .radio_chart.animate {
+    animation-name: circled;
+    animation-duration: 5s;
+    animation-timing-function: linear;
+    -moz-animation-name: circled;
+    -moz-animation-duration: 5s;
+    -moz-animation-timing-function: linear;
+    -webkit-animation-name: circled;
+    -webkit-animation-duration: 5s;
     -webkit-animation-timing-function: linear;
 }
 

@@ -53,7 +53,7 @@ module.exports = {
             if( !req.body.name || typeof req.body.name == undefined || req.body.name  == null){
                 errors.push('Nome Inválido');
             }
-            if(await BeansQnr.findQuestionnaries(req.body.name, 1) == false){
+            if(await BeansQnr.findQuestionnaries(req.body.name, req.user.id) == false){
                 req.flash('error_msg', 'Este questionário já existe');
                 return res.redirect('/questionnaries');
             }
@@ -80,9 +80,9 @@ module.exports = {
             else{
                 try{
                     if(await BeansQnr.findQuestionnaries(req.body.name, 1)){
-                        var insertQnr = await knex('sbr_qnr').insert({
-                            name: req.body.name,
-                            id_sbr_users: 1
+                        var insertQnr = await knex("sbr_qnr").insert({
+                          name: req.body.name,
+                          id_sbr_users: req.user.id,
                         });
                         try {
                             subgroups.forEach(async sub => {
@@ -178,7 +178,7 @@ module.exports = {
                     qnrName: qnr.name,
                     nameGroup: groupName
                 };
-                if(qnr.status == 1){
+                if(qnr.status == 1 || qnr.status == 2){
                     return res.render('questionnaries/replyQuestions',dados); 
                 }
                 else{

@@ -169,7 +169,7 @@ module.exports = {
                         
                     }
                 }
-                if (currentValue != 0) {
+                if (typeof currentValue != undefined){
                     groups[i].maxValue = maxGroups;
                     groups[i].currentValue = currentValue;
                     groups[i].percentage = this.round(this.proportion(maxGroups, currentValue), 2);
@@ -217,6 +217,7 @@ module.exports = {
                         valueMax = await knex('sbr_groups_sub_qn_models_aux')
                                             .max('value as value')
                                             .where('id_sbr_groups_sub_qn', quest[j].id).first();
+                        
                         model = await knex('sbr_groups_sub_qn_answers')
                                         .where('id_sbr_qnr', idQnr)
                                         .where('id_sbr_groups_sub_qn', quest[j].id).first();
@@ -224,23 +225,26 @@ module.exports = {
                             answer = await knex('sbr_groups_sub_qn_models_aux')
                                             .where('id_sbr_groups_sub_qn', quest[j].id)
                                             .where('id', model.id_sbr_groups_sub_qn_models_aux).first();
+                            notApplicable = await knex("sbr_groups_sub_qn_models_aux")
+                                                    .where("id_sbr_groups_sub_qn", quest[j].id)
+                                                    .where("value", answer.value).first().pluck('id_sbr_groups_sub_qn_models');
                         }
                         catch(err){
                             answer = 0;
+                            notApplicable = 10;
                         }
-                        if(answer.value != 0 && answer.value != null && valueMax.value != null && valueMax.value != 0){
+                        if (notApplicable != 10) {
                             maxSub += valueMax.value;
                             totalSub += answer.value;
                         }
                     }
                 }
-                if(totalSub != 0 && typeof totalSub != undefined){
+                if(typeof totalSub != undefined){
                     subgroups[i].maxValue = maxSub;
                     subgroups[i].currentValue = totalSub;
                     subgroups[i].percentage = this.round(this.proportion(maxSub, totalSub), 2);
                 }
             }
-            console.log(subgroups)
             return subgroups;
         } catch (error) {
             console.log(error)

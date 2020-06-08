@@ -1,35 +1,31 @@
 const knex = require('../database');
+const BeansQuestions = require('../beans/QuestionsBean');
 module.exports = {
-    async totalQuestions(idQuests, idsub, idQnr){
+    async totalSubgroups(idQuests, idgroup, idQnr) {
         try {
-            var quest = await knex.select('id','id_sbr_groups', 'id_sbr_groups_sub', 'question')
-                                    .from('sbr_groups_sub_qn')
-                                    .where('id_sbr_groups_sub', idsub)
-                                    .whereIn('id', idQuests);
-            var totalSub = 0;
-            var maxSub = 0;
-            for (let j = 0; j < quest.length; j++) {
-                valueMax = await knex('sbr_groups_sub_qn_models_aux')
-                                    .max('value as value')
-                                    .where('id_sbr_groups_sub_qn', quest[j].id).first();                        
-                quest[j].maxValue = valueMax.value;
-                model = await knex('sbr_groups_sub_qn_answers')
-                                .where('id_sbr_qnr', idQnr)
-                                .where('id_sbr_groups_sub_qn', quest[j].id).first();
-                try{
-                    answer = await knex('sbr_groups_sub_qn_models_aux')
-                                    .where('id_sbr_groups_sub_qn', quest[j].id)
-                                    .where('id', model.id_sbr_groups_sub_qn_models_aux).first();
-                }
-                catch(err){
-                    answer = 0;
-                }                    
-                quest[j].currentValue = answer.value; 
-                quest[j].percentage = Math.round(proportion(quest[j].maxValue, quest[j].currentValue), 2);
-                maxSub += quest[j].maxValue;
-                totalSub += quest[j].currentValue;
+            let idsSub = [];
+            for (let i = 0; i < idQuests.length; i++) {
+                aux = await knex.select('id_sbr_groups_sub').from('sbr_groups_sub_qn').where('id', idQuests[i]).first();
+                idsSub[i] = aux.id_sbr_groups_sub;
             }
-            return quest;
+            var subgroups = await knex.select('id', 'id_sbr_groups','name')
+                                        .from('sbr_groups_sub')
+                                        .where('id_sbr_groups', idgroup)
+                                        .whereIn('id', idsSub);
+            for (let i = 0; i < subgroups.length; i++) {
+                var valueMax = 0;
+                var currentValue = 0;
+                quest = await BeansQuestions.totalQuestions(idQuests, subgroups[i].id, idQnr);
+                for (let j = 0; j < quest.length; j++) {
+                    currentValue += quest[j].currentValue; 
+                    valueMax += quest[j].maxValue;
+                }
+                var percentage = Math.round(proportion(valueMax, currentValue), 2);
+                subgroups[i].maxValue = valueMax;
+                subgroups[i].currentValue = currentValue;
+                subgroups[i].percentage = percentage;
+            }
+            return subgroups;
         } catch (error) {
             console.log(error)
         }
