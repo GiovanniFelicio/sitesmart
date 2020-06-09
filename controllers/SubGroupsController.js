@@ -109,8 +109,11 @@ module.exports = {
             var idqnr = req.params.idqnr;
             var idsub = req.params.idsub;
             let qnr = await knex('sbr_groups_sub_qn_qnr').where('id_sbr_qnr', idqnr).pluck('id_sbr_groups_sub_qn');
+            var subName = await knex('sbr_groups_sub').where('id', idsub).first().pluck('name');
             var subgroups = await BeansQuestions.totalQuestions(qnr, idsub, idqnr);
-            return res.send(subgroups);
+            var result = [subName, subgroups];
+            console.log(result)
+            return res.send(result);
         } catch (error) {
             console.log(error);
             return null

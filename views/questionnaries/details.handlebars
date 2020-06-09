@@ -14,15 +14,17 @@
     <div class="row">
         <div class="col">
             <div class="round">
-                <div class="chart chart-lg">
+                <div class="my-progress-bar bar-lg" data-percent="{{percentage}}" data-duration="3000" data-color="#ccc,yellow"></div>
+                
+                {{!-- <div class="chart chart-lg">
                     <div class="radio_chart" id="radioChartQnr"></div>
                     <div class="cap"></div>
                     <div class="value" id="percentChartQnr">
                         0%
                     </div>
-                </div>
+                </div> --}}
             </div>
-            <div class="text-center indice">Índice Smart</div>
+            <div class="text-center text-secondary font-weight-bold h3">Índice Smart</div>
         </div>
     </div>
     <br><br>
@@ -30,13 +32,14 @@
         {{#each groups}}
             <div class="col">
                 <div class="round">
-                    <div style="cursor: pointer;" class="chart chart-sm" onclick="redirect({{id}}, '{{../reference}}')">
+                    {{!-- <div style="cursor: pointer;" class="chart chart-sm" onclick="redirect({{id}}, '{{../reference}}')">
                         <div class="radio_chart radioChartContent"></div>
                         <div class="cap"></div>
                         <div class="value percentValue" data-progress="{{percentage}}">
                             0%
                         </div>
-                    </div>
+                    </div> --}}
+                    <div style="cursor: pointer;" onclick="redirect({{id}}, '{{../reference}}')" class="my-progress-bar bar-sm" data-percent="{{percentage}}" data-duration="3000" data-color="#ccc,green"></div>
                 </div>
                 <div class="text-center text-secondary font-weight-bold">{{name}}</div>
             </div>
@@ -50,7 +53,8 @@
     function redirect(idgroup, idqnr){
         window.location.href = `/questionnaries/groups/details/${idqnr}/${idgroup}`;
     }
-    function goTo(i) {
+    $(".my-progress-bar").loading();
+    /*function goTo(i) {
         reset(i);
         setTimeout(function () {
             var chart = $(".radioChartContent")[i];
@@ -126,5 +130,5 @@
     var mypVal = $(".percentValue");
     for(let i = 0; i < mypVal.length; i++){
         goTo(i);
-    }   
+    }   */
 </script>

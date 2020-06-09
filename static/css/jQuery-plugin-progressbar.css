@@ -1,0 +1,193 @@
+body {
+  background-color: #ECF0F1;
+}
+
+/***********************/
+
+.bar-lg {
+  position: relative;
+  height: 350px;
+  width: 350px;
+}
+
+.bar-lg div {
+  position: absolute;
+  height: 350px;
+  width: 350px;
+  border-radius: 50%;
+}
+
+.bar-lg div span {
+  position: absolute;
+  font-family: Arial;
+  font-size: 25px;
+  line-height: 300px;
+  height: 300px;
+  width: 300px;
+  left: 25.5px;
+  top: 25.5px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.bar-lg .background {
+  background-color: #b3cef6;
+}
+
+.bar-lg .rotate {
+  clip: rect(0 175px 350px 0);
+  background-color: #4b86db;
+}
+
+.bar-lg .left {
+  clip: rect(0 175px 350px 0);
+  opacity: 1;
+  background-color: #b3cef6;
+}
+
+.bar-lg .right {
+  clip: rect(0 175px 350px 0);
+  transform: rotate(180deg);
+  opacity: 0;
+  background-color: #4b86db;
+}
+
+/**********************/
+
+/***********************/
+
+.bar-md {
+  position: relative;
+  height: 250px;
+  width: 250px;
+}
+
+.bar-md div {
+  position: absolute;
+  height: 250px;
+  width: 250px;
+  border-radius: 50%;
+}
+
+.bar-md div span {
+  position: absolute;
+  font-family: Arial;
+  font-size: 25px;
+  line-height: 225px;
+  height: 225px;
+  width: 225px;
+  left: 12.5px;
+  top: 12.5px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.bar-md .background {
+  background-color: #b3cef6;
+}
+
+.bar-md .rotate {
+  clip: rect(0 125px 250px 0);
+  background-color: #4b86db;
+}
+
+.bar-md .left {
+  clip: rect(0 125px 250px 0);
+  opacity: 1;
+  background-color: #b3cef6;
+}
+
+.bar-md .right {
+  clip: rect(0 125px 250px 0);
+  transform: rotate(180deg);
+  opacity: 0;
+  background-color: #4b86db;
+}
+
+/***********************/
+
+.bar-sm {
+  position: relative;
+  height: 150px;
+  width: 150px;
+}
+
+.bar-sm div {
+  position: absolute;
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+}
+
+.bar-sm div span {
+  position: absolute;
+  font-family: Arial;
+  font-size: 25px;
+  line-height: 125px;
+  height: 125px;
+  width: 125px;
+  left: 12.5px;
+  top: 12.5px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.bar-sm .background {
+  background-color: #b3cef6;
+}
+
+.bar-sm .rotate {
+  clip: rect(0 75px 150px 0);
+  background-color: #4b86db;
+}
+
+.bar-sm .left {
+  clip: rect(0 75px 150px 0);
+  opacity: 1;
+  background-color: #b3cef6;
+}
+
+.bar-sm .right {
+  clip: rect(0 75px 150px 0);
+  transform: rotate(180deg);
+  opacity: 0;
+  background-color: #4b86db;
+}
+
+/**********************/
+
+.my-progress {
+  animation-name: circled;
+  animation-duration: 3s;
+  animation-timing-function: linear;
+}
+
+@keyframes circled {
+  0% {
+    background: rgb(246, 0, 0);
+  }
+  25% {
+    background: rgb(246, 0, 0);
+  }
+  50% {
+    background: rgb(217, 255, 0);
+  }
+  75% {
+    background: rgb(217, 255, 0);
+  }
+  100% {
+    background: rgb(30, 167, 5);
+  }
+}
+
+@keyframes toggle {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

@@ -54,10 +54,15 @@
                         2]);
 
         var options = {
-          title: "SubGrupos ",
+          title: '{{group.name}}',
           width: '100%',
           height: 700,
           legend: { position: "none" },
+          animation: {
+            "startup": true,
+            duration: 3500,
+            easing: 'out',
+          },
           vAxis: {
               viewWindow:{
                 max:100,
@@ -84,7 +89,7 @@
         }
       }
       function results(){
-        var aux = [["Element", "Density", { role: "style" } ]];
+        var aux = [["Sub Grupo", "Pontuação", { role: "style" } ]];
         for(let i = 0; i < datos.length; i++){
           ids.push(datos[i].id);
           aux.push([datos[i].name, datos[i].percentage,'strstrokeoke-color: #0077b6; stroke-opacity: 0.8; stroke-width: 4; fill-color: #0077b6; fill-opacity: 0.5']);
