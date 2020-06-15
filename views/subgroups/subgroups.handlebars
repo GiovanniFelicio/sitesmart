@@ -10,32 +10,36 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col mt-5">
-            <button class="btn btn-info float-right" data-toggle="modal" data-target="#addSubGroup"><i class="fa fa-plus mr-2"></i>ADD SUBGRUPO</button>
+            <button class="btn btn-info float-right" data-toggle="modal" data-target="#addSubGroup"><i
+                    class="fa fa-plus mr-2"></i>ADD SUBGRUPO</button>
             <div class="table-responsive mt-5">
-                <table id="subgroups" class="table table-bordered subgroups text-center display nowrap" style="width: 100%;">
+                <table id="subgroups" class="table table-bordered subgroups text-center display nowrap"
+                    style="width: 100%;">
                     <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Questões</th>
-                        <th>Adicionado Em</th>
-                        <th>Opções</th>
-                    </tr>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Questões</th>
+                            <th>Adicionado Em</th>
+                            <th>Opções</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {{#each subgroups}}
-                            <tr {{#compare deleted_at '!=' null}}class="alert-danger"{{/compare}}>
-                                <td>{{name}}</td>
-                                <td>{{qtde}}</td>
-                                <td>{{created_at}}</td>
-                                <td>
-                                    {{#compare deleted_at '!=' null}}
-                                        Deletado
-                                    {{else}}
-                                        <a class="btn btn-success" href="/groups/sub/questions/{{id}}"  title="View"><i class="fa fa-eye"></i></a>
-                                        <button class="btn btn-danger del" data-id="{{id}}" title="Delete"><i class="fa fa-trash"></i></button>
-                                    {{/compare}}
-                                </td>
-                            </tr>
+                        <tr {{#compare deleted_at '!=' null}}class="alert-danger" {{/compare}}>
+                            <td>{{name}}</td>
+                            <td>{{qtde}}</td>
+                            <td>{{created_at}}</td>
+                            <td>
+                                {{#compare deleted_at '!=' null}}
+                                Deletado
+                                {{else}}
+                                <a class="btn btn-success" href="/groups/sub/questions/{{id}}" title="View"><i
+                                        class="fa fa-eye"></i></a>
+                                <button class="btn btn-danger del" data-id="{{id}}" title="Delete"><i
+                                        class="fa fa-trash"></i></button>
+                                {{/compare}}
+                            </td>
+                        </tr>
                         {{/each}}
                     </tbody>
                 </table>
@@ -54,10 +58,11 @@
             </div>
             <div class="modal-body">
                 <form method="POST" action="/groups/sub" id="createSubGroup">
-                    <input value="{{reference}}" name="reference" hidden/>
+                    <input value="{{reference}}" name="reference" hidden />
                     <div class="form-group">
                         <label>Nome do SubGrupo</label>
-                        <input class="form-control" id="name" type="text" name="name" placeholder="Ex: Realização da compra" autofocus>
+                        <input class="form-control" id="name" type="text" name="name"
+                            placeholder="Ex: Realização da compra" autofocus>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary">ADD</button>
@@ -99,13 +104,13 @@
     });
     $('.yes').click(function () {
         $.ajax({
-            url: '/groups/sub/'+idEncrypt,
+            url: '/groups/sub/' + idEncrypt,
             type: 'DELETE',
-            success: function(result) {
-                if(result == 1){
+            success: function (result) {
+                if (result == 1) {
                     window.location.reload();
                 }
-                else{
+                else {
                     $('#delSubgroup').modal('hide');
                     alert("Error when deleting");
                 }

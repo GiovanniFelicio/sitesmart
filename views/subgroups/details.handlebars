@@ -54,7 +54,6 @@
     $.getJSON("/questionnaries/subgroups/getdetails/{{idqnr}}/{{idsub}}", (dato)=>{
       let datos = dato[1];
       let subName = dato[0];
-      console.log(subName[0])
       google.charts.load("visualization", "1", {packages:['corechart']});
       google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
